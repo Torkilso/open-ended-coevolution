@@ -1,39 +1,80 @@
 use crate::maze::{MazeGenome, PathGene, WallGene, Orientation};
+
+#[macro_use]
+extern crate envconfig_derive;
+extern crate envconfig;
+extern crate lazy_static;
+
+use std::env;
 use envconfig::Envconfig;
+use lazy_static::*;
+use std::borrow::Borrow;
 
 mod maze;
 mod navigator;
 mod testing;
 mod evolution;
 mod simulator;
+mod visualization;
 
 #[derive(Envconfig)]
 pub struct MazeMutationOptions {
-    mutate_structure_probability: f32,
-    add_wall_probability: f32,
-    delete_wall_probability: f32,
-    add_waypoint_probability: f32,
-    delete_waypoint_probability: f32,
+    #[envconfig(from = "mutate_structure", default = "0.5")]
+    mutate_structure: f32,
+
+    #[envconfig(from = "add_wall", default = "0.1")]
+    add_wall: f32,
+
+    #[envconfig(from = "delete_wall", default = "0.001")]
+    delete_wall: f32,
+
+    #[envconfig(from = "add_waypoint", default = "0.1")]
+    add_waypoint: f32,
+
+    #[envconfig(from = "delete_waypoint", default = "0.001")]
+    delete_waypoint: f32,
 }
 
+#[derive(Envconfig)]
 pub struct NavigatorMutationOptions {
-    mutate_weight_probability: f32,
-    add_connection_probability: f32,
-    add_neuron_probability: f32,
-    delete_neuron_probability: f32,
+    #[envconfig(from = "mutate_weight", default = "0.001")]
+    mutate_weight: f32,
+
+    #[envconfig(from = "add_connection", default = "0.001")]
+    add_connection: f32,
+
+    #[envconfig(from = "add_neuron", default = "0.001")]
+    add_neuron: f32,
+
+    #[envconfig(from = "delete_neuron", default = "0.001")]
+    delete_neuron: f32,
 }
 
+#[derive(Envconfig)]
 pub struct MCCOptions {
-    generations: i32,
+    #[envconfig(from = "generations", default = "10")]
+    pub generations: i32,
+
+    #[envconfig(from = "maze_population_capacity", default = "250")]
     maze_population_capacity: i32,
-    maze_seed_amount: i32,
+
+    #[envconfig(from = "maze_seed_amount", default = "20")]
+    pub maze_seed_amount: i32,
+
+    #[envconfig(from = "navigator_population_capacity", default = "250")]
     navigator_population_capacity: usize,
-    navigator_seed_amount: i32,
-    maze_mutation_options: MazeMutationOptions,
-    navigator_mutation_options: NavigatorMutationOptions,
+
+    #[envconfig(from = "navigator_seed_amount", default = "20")]
+    pub navigator_seed_amount: i32,
 }
 
-fn run_mcc_plain(options: MCCOptions) {
+lazy_static! {
+    pub static ref mcc_options: MCCOptions = MCCOptions::init().unwrap();
+    pub static ref maze_options: MazeMutationOptions = MazeMutationOptions::init().unwrap();
+    pub static ref navigator_options: NavigatorMutationOptions = NavigatorMutationOptions::init().unwrap();
+}
+
+fn run_mcc_plain() {
     /*let mazes = maze::generate_random_mazes(options.maze_population_capacity);
     let viable_navigators = evolution::evolve_seed_navigators(&mazes, options.navigator_seed_amount);
 
@@ -57,10 +98,15 @@ fn run_mcc_plain(options: MCCOptions) {
 }
 
 
-//fn run_mcc_speciated() {}
-
-
 fn main() {
+    let a = &mcc_options;
+    let b = &maze_options;
+    let c = &navigator_options;
+
+    test();
+}
+
+fn test() {
     let p1 = PathGene::new(2, 3, Orientation::Vertical);
     let p2 = PathGene::new(5, 6, Orientation::Vertical);
 

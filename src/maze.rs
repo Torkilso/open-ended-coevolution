@@ -2,6 +2,7 @@ use crate::maze::Orientation::Horizontal;
 use draw::*;
 use crate::MazeMutationOptions;
 
+
 #[derive(Debug, Clone)]
 pub struct WallGene {
     position: f32,
@@ -25,13 +26,13 @@ pub enum Orientation {
 
 #[derive(Debug, Clone)]
 pub struct PathGene {
-    x: usize,
-    y: usize,
+    x: u32,
+    y: u32,
     orientation: Orientation,
 }
 
 impl PathGene {
-    pub fn new(x: usize, y: usize, orientation: Orientation) -> PathGene {
+    pub fn new(x: u32, y: u32, orientation: Orientation) -> PathGene {
         PathGene {
             x,
             y,
@@ -42,14 +43,14 @@ impl PathGene {
 
 #[derive(Debug, Clone)]
 pub struct MazeGenome {
-    width: usize,
-    height: usize,
+    width: u32,
+    height: u32,
     path_genes: Vec<PathGene>,
     wall_genes: Vec<WallGene>,
 }
 
 impl MazeGenome {
-    pub fn new(width: usize, height: usize, path_genes: Vec<PathGene>, wall_genes: Vec<WallGene>) -> MazeGenome {
+    pub fn new(width: u32, height: u32, path_genes: Vec<PathGene>, wall_genes: Vec<WallGene>) -> MazeGenome {
         MazeGenome {
             width,
             height,
@@ -93,13 +94,13 @@ pub enum PathDirection {
 
 #[derive(Debug, Clone)]
 pub struct MazeCell {
-    north_wall: bool,
-    east_wall: bool,
-    south_wall: bool,
-    west_wall: bool,
-    is_waypoint: bool,
-    is_juncture: bool,
-    path_direction: PathDirection,
+    pub north_wall: bool,
+    pub east_wall: bool,
+    pub south_wall: bool,
+    pub west_wall: bool,
+    pub is_waypoint: bool,
+    pub is_juncture: bool,
+    pub path_direction: PathDirection,
 }
 
 impl MazeCell {
@@ -118,17 +119,17 @@ impl MazeCell {
 
 #[derive(Debug, Clone)]
 pub struct MazePhenotype {
-    width: usize,
-    height: usize,
-    grid: Vec<Vec<MazeCell>>,
+    pub width: u32,
+    pub height: u32,
+    pub grid: Vec<Vec<MazeCell>>,
 }
 
 impl MazePhenotype {
-    pub fn new(width: usize, height: usize) -> MazePhenotype {
+    pub fn new(width: u32, height: u32) -> MazePhenotype {
         MazePhenotype {
             width,
             height,
-            grid: vec![vec![MazeCell::new(); height]; width],
+            grid: vec![vec![MazeCell::new(); height as usize]; width as usize],
         }
     }
 
@@ -136,44 +137,56 @@ impl MazePhenotype {
         println!("{:?}", self.grid)
     }
 
+    pub fn get_cell_at(&self, x: u32, y: u32) -> &MazeCell {
+        &self.grid[x as usize][y as usize]
+    }
+
+    pub fn update_cell_is_juncture(&mut self, x: u32, y: u32, is_juncture: bool) {
+        self.grid[x as usize][y as usize].is_juncture = is_juncture;
+    }
+
+    pub fn update_cell_is_waypoint(&mut self, x: u32, y: u32, is_waypoint: bool) {
+        self.grid[x as usize][y as usize].is_waypoint = is_waypoint;
+    }
+
+    pub fn update_cell_path_direction(&mut self, x: u32, y: u32, path_direction: PathDirection) {
+        self.grid[x as usize][y as usize].path_direction = path_direction;
+    }
+
+
     pub fn add_path(&mut self, path_genes: &Vec<PathGene>) {
-        let first = 0;
+        let start_position = PathGene::new(0, 0, Orientation::Vertical);
+        self.add_waypoint(&start_position, &path_genes[0]);
 
-        for (i, path_gene) in path_genes.iter().enumerate() {
-            let current_point: PathGene;
-            let target_point: PathGene;
 
-            if i == 0 {
-                current_point = PathGene::new(0, 0, Orientation::Vertical)
-            } else {
-                current_point = path_genes[i - 1].clone()
+        for (i, path_gene) in path_genes[0..path_genes.len() - 1].iter().enumerate() {
+            let target_point = &path_genes[i + 1];
+            self.add_waypoint(&path_gene, &target_point);
+        }
+
+        let end_position = PathGene::new(self.width - 1, self.height - 1, path_genes[path_genes.len() - 1].orientation);
+        self.add_waypoint(&path_genes[path_genes.len() - 1], &end_position);
+    }
+
+    pub fn add_waypoint(&mut self, current_point: &PathGene, target_point: &PathGene) {
+        let orientation = target_point.orientation;
+        self.update_cell_is_waypoint(target_point.x, target_point.y, true);
+
+        if orientation == Orientation::Horizontal {
+            self.horizontal_path_reroute(&current_point, &target_point);
+            self.add_vertical_path_segment(&current_point, &target_point);
+            self.add_horizontal_path_segment(&current_point, &target_point);
+
+            if current_point.x != target_point.x && current_point.y != target_point.y {
+                self.update_cell_is_juncture(current_point.x, target_point.y, true);
             }
+        } else {
+            self.vertical_path_reroute(&current_point, &target_point);
+            self.add_horizontal_path_segment(&current_point, &target_point);
+            self.add_vertical_path_segment(&current_point, &target_point);
 
-            if i == path_genes.len() - 1 {
-                target_point = PathGene::new(self.width - 1, self.height - 1, Orientation::Vertical)
-            } else {
-                target_point = path_genes[i].clone()
-            }
-
-            let orientation = target_point.orientation;
-            self.grid[target_point.x][target_point.y].is_waypoint = true;
-
-            if orientation == Orientation::Horizontal {
-                self.horizontal_path_reroute(&current_point, &target_point);
-                self.add_vertical_path_segment(&current_point, &target_point);
-                self.add_horizontal_path_segment(&current_point, &target_point);
-
-                if current_point.x != target_point.x && current_point.y != target_point.y {
-                    self.grid[current_point.x][target_point.y].is_juncture = true;
-                }
-            } else {
-                self.vertical_path_reroute(&current_point, &target_point);
-                self.add_horizontal_path_segment(&current_point, &target_point);
-                self.add_vertical_path_segment(&current_point, &target_point);
-
-                if current_point.x != target_point.x && current_point.y != target_point.y {
-                    self.grid[target_point.x][current_point.y].is_juncture = true;
-                }
+            if current_point.x != target_point.x && current_point.y != target_point.y {
+                self.update_cell_is_juncture(target_point.x, current_point.y, true);
             }
         }
     }
@@ -181,11 +194,11 @@ impl MazePhenotype {
     pub fn add_vertical_path_segment(&mut self, current_point: &PathGene, end_point: &PathGene) {
         if current_point.y <= end_point.y {
             for y in current_point.y..end_point.y {
-                self.grid[current_point.x][y].path_direction = PathDirection::South;
+                self.update_cell_path_direction(current_point.x, y, PathDirection::South);
             }
         } else {
             for y in end_point.y..current_point.y {
-                self.grid[current_point.x][y].path_direction = PathDirection::North;
+                self.update_cell_path_direction(current_point.x, y, PathDirection::North);
             }
         }
     }
@@ -193,11 +206,11 @@ impl MazePhenotype {
     pub fn add_horizontal_path_segment(&mut self, current_point: &PathGene, end_point: &PathGene) {
         if current_point.x <= end_point.x {
             for x in current_point.x..end_point.x {
-                self.grid[x][current_point.y].path_direction = PathDirection::East;
+                self.update_cell_path_direction(x, current_point.y, PathDirection::East);
             }
         } else {
             for x in end_point.x..current_point.x {
-                self.grid[x][current_point.y].path_direction = PathDirection::West;
+                self.update_cell_path_direction(x, current_point.y, PathDirection::West);
             }
         }
     }
@@ -205,36 +218,37 @@ impl MazePhenotype {
     pub fn horizontal_path_reroute(&mut self, current_point: &PathGene, end_point: &PathGene) {
         if end_point.y < current_point.y && end_point.x > current_point.x {
             let mut current_y = current_point.y;
-            if self.grid[current_point.x + 1][current_y].path_direction == PathDirection::None {
-                self.grid[current_point.x][current_y].path_direction = PathDirection::South;
-                self.grid[current_point.x][current_y + 1].is_juncture = true;
+
+            if self.get_cell_at(current_point.x + 1, current_y).path_direction == PathDirection::None {
+                self.update_cell_path_direction(current_point.x, current_y, PathDirection::South);
+                self.update_cell_is_juncture(current_point.x, current_y, true);
                 current_y += 1;
             }
 
             let rightmost_waypoint_x = if current_point.x > end_point.x { current_point.x } else { end_point.x };
 
             for x in current_point.x..rightmost_waypoint_x {
-                self.grid[x][current_y].path_direction = PathDirection::South;
+                self.update_cell_path_direction(x, current_y, PathDirection::South);
             }
-            self.grid[current_point.x][current_y].is_juncture = true;
+            self.update_cell_is_juncture(current_point.x, current_y, true);
         }
     }
 
     pub fn vertical_path_reroute(&mut self, current_point: &PathGene, end_point: &PathGene) {
         if end_point.x < current_point.x && end_point.y > current_point.y {
             let mut current_x = current_point.x;
-            if self.grid[current_x][current_point.y + 1].path_direction == PathDirection::None {
-                self.grid[current_x][current_point.y].path_direction = PathDirection::East;
-                self.grid[current_x + 1][current_point.y].is_juncture = true;
+
+            if self.get_cell_at(current_x, current_point.y + 1).path_direction == PathDirection::None {
+                self.update_cell_path_direction(current_x, current_point.y, PathDirection::East);
+                self.update_cell_is_juncture(current_x + 1, current_point.y, true);
                 current_x += 1;
             }
-
             let lowest_waypoint_y = if current_point.x > end_point.x { current_point.x } else { end_point.x };
 
             for y in current_point.y..lowest_waypoint_y {
-                self.grid[current_x][y].path_direction = PathDirection::South;
+                self.update_cell_path_direction(current_x, y, PathDirection::South);
             }
-            self.grid[current_x][current_point.y].is_juncture = true;
+            self.update_cell_is_juncture(current_x, current_point.y, true);
         }
     }
 
@@ -249,8 +263,6 @@ impl MazePhenotype {
     pub fn insert_partition_opening(&self) {}
 
     pub fn subdivide_partition(&self) {}
-
-    pub fn visualize(&self) {}
 }
 
 /*pub fn generate_random_maze_genome() -> MazeGenome {
