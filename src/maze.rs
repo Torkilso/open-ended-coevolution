@@ -1,7 +1,9 @@
+extern crate queues;
+
 use crate::maze::Orientation::Horizontal;
 use draw::*;
 use crate::MazeMutationOptions;
-
+use queues::*;
 
 #[derive(Debug, Clone)]
 pub struct WallGene {
@@ -113,6 +115,24 @@ impl MazeCell {
             is_waypoint: false,
             is_juncture: false,
             path_direction: PathDirection::None,
+        }
+    }
+}
+
+pub struct MazeSubdivision {
+    start_x: u32,
+    start_y: u32,
+    end_x: u32,
+    end_y: u32,
+}
+
+impl MazeSubdivision {
+    pub fn new(start_x: u32, start_y: u32, end_x: u32, end_y: u32) -> MazeSubdivision {
+        MazeSubdivision {
+            start_x,
+            start_y,
+            end_x,
+            end_y,
         }
     }
 }
@@ -252,11 +272,57 @@ impl MazePhenotype {
         }
     }
 
-    pub fn add_walls(&self, wall_genes: &Vec<WallGene>) {}
+    pub fn add_walls(&self, wall_genes: &Vec<WallGene>) {
+        let mut current_wall_gene = 0;
+        let mut loop_iteration = 0;
+
+        self.enclose_adjacent_path_segments();
+        let subdivisions = self.subdivide_maze();
+
+        for subdivision in subdivisions {
+            let subdivision_queue: Queue<MazeSubdivision> = queue![];
+        }
+    }
 
     pub fn enclose_adjacent_path_segments(&self) {}
 
-    pub fn subdivide_maze(&self) {}
+    pub fn subdivide_maze(&self) -> Vec<MazeSubdivision> {
+        let mut subdivisions: Vec<MazeSubdivision> = vec![];
+        for y in 0..self.height {
+            for x in 0..self.width {
+                if self.get_cell_at(x, y).path_direction == PathDirection::None && !self.is_cell_in_subdivision() {
+                    let start_point = (x, y);
+                    let mut end_point = start_point.clone();
+
+                    let mut wall_found = false;
+
+                    while end_point.0 < self.width && self.get_cell_at(end_point.0, end_point.1).path_direction == PathDirection::None {
+                        end_point.0 += 1;
+                    }
+
+                    while !wall_found && end_point.1 < self.height {
+                        end_point.1 += 1;
+                        let mut current_x = start_point.0;
+
+                        while !wall_found && current_x < self.width {
+                            if self.get_cell_at(current_x, end_point.1).path_direction != PathDirection::None {
+                                wall_found = true;
+                                end_point.1 += 1;
+                            }
+                            current_x += 1;
+                        }
+                    }
+
+                    subdivisions.push(MazeSubdivision::new(start_point.0, start_point.1, end_point.0, end_point.1));
+                }
+            }
+        }
+        subdivisions
+    }
+
+    pub fn is_cell_in_subdivision(&self) -> bool {
+        false
+    }
 
     pub fn mark_partition_boundaries(&self) {}
 
