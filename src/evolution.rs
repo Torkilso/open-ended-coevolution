@@ -1,5 +1,5 @@
+use crate::maze_genotype::MazeGenome;
 use crate::navigator::Navigator;
-use crate::maze::MazeGenome;
 
 pub fn evolve_seed_navigators(mazes: &Vec<MazeGenome>, seed_amount: i32) -> Vec<Navigator> {
     vec![Navigator::new()]

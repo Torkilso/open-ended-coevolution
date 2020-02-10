@@ -1,5 +1,5 @@
+use crate::maze_genotype::MazeGenome;
 use crate::navigator::Navigator;
-use crate::maze::MazeGenome;
 
 pub struct SimulationResult {}
 

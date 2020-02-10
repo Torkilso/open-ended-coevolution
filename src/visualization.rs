@@ -1,62 +1,140 @@
-use crate::maze::{MazePhenotype, MazeGenome, MazeCell};
-use draw::*;
-use draw::shape::LinePoint;
+use std::path::Path;
 
-fn add_borders(c: &mut Canvas, height: u32, width: u32) {
-    let mut top = Drawing::new()
-        .with_shape(Shape::Rectangle { height: 1, width: width * 20 })
-        .with_xy(0.0, 0.0)
-        .with_style(Style::filled(Color::black()));
+use image::{Rgb, RgbImage};
+use imageproc::drawing::{
+    draw_cross_mut, draw_filled_circle_mut, draw_filled_rect_mut, draw_hollow_circle_mut,
+    draw_hollow_rect_mut, draw_line_segment_mut,
+};
+use imageproc::rect::Rect;
 
-    let mut right = Drawing::new()
-        .with_shape(Shape::Rectangle { height: 20 * height, width: 1 })
-        .with_xy((20 * width - 1) as f32, 0.0)
-        .with_style(Style::filled(Color::black()));
-
-    let mut bottom = Drawing::new()
-        .with_shape(Shape::Rectangle { height: 1, width: width * 20 })
-        .with_xy(0.0, (20 * height - 1) as f32)
-        .with_style(Style::filled(Color::black()));
-
-    let mut left = Drawing::new()
-        .with_shape(Shape::Rectangle { height: 20 * height, width: 1 })
-        .with_xy(0.0, 0.0)
-        .with_style(Style::filled(Color::black()));
-
-    c.display_list.add(top);
-    c.display_list.add(right);
-    c.display_list.add(bottom);
-    c.display_list.add(left);
-}
-
+use crate::maze_genotype::MazeGenome;
+use crate::general::PathDirection;
+use crate::maze_phenotype::{MazePhenotype, MazeCell};
 
 impl MazePhenotype {
     pub fn visualize(&self) {
-        let mut canvas = Canvas::new(self.height * 20, self.width * 20);
+        let mut scale = 20;
+        let mut offset = 10;
+        let radius = 2;
 
-        add_borders(&mut canvas, self.height, self.width);
+        let mut drawing = RgbImage::new(self.width * scale, self.height * scale);
 
+        draw_filled_rect_mut(
+            &mut drawing,
+            Rect::at(0, 0).of_size(self.width * scale, self.height * scale),
+            Rgb([255u8, 255u8, 255u8]),
+        );
+
+        let width: f32 = (self.width * scale - 1) as f32;
+        let height: f32 = (self.height * scale - 1) as f32;
+
+        self.draw_maze_borders(&mut drawing, width, height);
 
         for (x, row) in self.grid.iter().enumerate() {
             for (y, cell) in row.iter().enumerate() {
-                if cell.is_waypoint || cell.is_juncture {
-                    println!["found point: {}, {}, {}, {}", x, y, cell.is_waypoint, cell.is_juncture];
-                    let mut rect = Drawing::new()
-                        .with_shape(Shape::Circle {
-                            radius: 2,
-                        })
-                        .with_xy((20 * x + 10) as f32, (20 * y + 10) as f32)
-                        .with_style(Style::filled(Color::black()));
-
-                    canvas.display_list.add(rect);
+                if cell.path_direction != PathDirection::None {
+                    println!("{:#?}", cell);
+                }
+                self.draw_cell_borders(
+                    &mut drawing,
+                    cell,
+                    (x * scale as usize) as f32,
+                    (y * scale as usize) as f32,
+                    scale as f32,
+                );
+                if cell.is_waypoint {
+                    draw_filled_circle_mut(
+                        &mut drawing,
+                        (
+                            (x * scale as usize + offset) as i32,
+                            (y * scale as usize + offset) as i32,
+                        ),
+                        radius,
+                        Rgb([0, 0, 0]),
+                    );
+                }
+                if cell.is_juncture {
+                    draw_filled_circle_mut(
+                        &mut drawing,
+                        (
+                            (x * scale as usize + offset) as i32,
+                            (y * scale as usize + offset) as i32,
+                        ),
+                        radius,
+                        Rgb([0, 0, 0]),
+                    );
+                }
+                if cell.path_direction != PathDirection::None {
+                    draw_filled_circle_mut(
+                        &mut drawing,
+                        (
+                            (x * scale as usize + offset) as i32,
+                            (y * scale as usize + offset) as i32,
+                        ),
+                        radius,
+                        Rgb([0, 0, 0]),
+                    );
                 }
             }
         }
 
-        render::save(
-            &canvas,
-            "testing/test.svg",
-            SvgRenderer::new(),
-        ).expect("Failed to save")
+        drawing.save(Path::new("testing/test.png")).unwrap();
+    }
+
+    fn draw_maze_borders(&self, drawing: &mut RgbImage, width: f32, height: f32) {
+        draw_line_segment_mut(drawing, (0.0, 0.0), (width, 0.0), Rgb([0, 0, 0]));
+        draw_line_segment_mut(drawing, (width, 0.0), (width, height), Rgb([0, 0, 0]));
+        draw_line_segment_mut(drawing, (0.0, height), (width, height), Rgb([0, 0, 0]));
+        draw_line_segment_mut(drawing, (0.0, 0.0), (0.0, height), Rgb([0, 0, 0]));
+    }
+
+    fn draw_cell_borders(
+        &self,
+        drawing: &mut RgbImage,
+        cell: &MazeCell,
+        x: f32,
+        y: f32,
+        scale: f32,
+    ) {
+        if cell.north_wall {
+            println!("drawing north: {}, {} to {}, {}", x, y, x + scale, y);
+            draw_line_segment_mut(drawing, (x, y), (x + scale, y), Rgb([0, 0, 0]));
+        }
+        if cell.east_wall {
+            println!(
+                "drawing east: {}, {} to {}, {}",
+                x + scale,
+                y,
+                x + scale,
+                y + scale
+            );
+            draw_line_segment_mut(
+                drawing,
+                (x + scale, y),
+                (x + scale, y + scale),
+                Rgb([0, 0, 0]),
+            );
+        }
+        if cell.south_wall {
+            println!(
+                "drawing south: {}, {} to {}, {}",
+                x,
+                y + scale,
+                x + scale,
+                y + scale
+            );
+
+            draw_line_segment_mut(
+                drawing,
+                (x, y + scale),
+                (x + scale, y + scale),
+                Rgb([0, 0, 0]),
+            );
+        }
+        if cell.west_wall {
+            println!("drawing west: {}, {} to {}, {}", x, y, x, y + scale);
+
+            draw_line_segment_mut(drawing, (x, y), (x, y + scale), Rgb([0, 0, 0]));
+        }
     }
 }

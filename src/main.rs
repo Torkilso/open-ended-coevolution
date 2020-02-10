@@ -1,20 +1,27 @@
-use crate::maze::{MazeGenome, PathGene, WallGene, Orientation};
-
+extern crate elapsed;
+extern crate envconfig;
 #[macro_use]
 extern crate envconfig_derive;
-extern crate envconfig;
 extern crate lazy_static;
 
+use std::borrow::Borrow;
 use std::env;
+use std::time::Instant;
+
+use elapsed::measure_time;
 use envconfig::Envconfig;
 use lazy_static::*;
-use std::borrow::Borrow;
 
-mod maze;
-mod navigator;
-mod testing;
+use crate::general::Orientation;
+use crate::maze_genotype::{MazeGenome, PathGene, WallGene};
+
 mod evolution;
+mod general;
+mod maze_genotype;
+mod maze_phenotype;
+mod navigator;
 mod simulator;
+mod testing;
 mod visualization;
 
 #[derive(Envconfig)]
@@ -69,13 +76,13 @@ pub struct MCCOptions {
 }
 
 lazy_static! {
-    pub static ref mcc_options: MCCOptions = MCCOptions::init().unwrap();
-    pub static ref maze_options: MazeMutationOptions = MazeMutationOptions::init().unwrap();
-    pub static ref navigator_options: NavigatorMutationOptions = NavigatorMutationOptions::init().unwrap();
+    pub static ref MCC: MCCOptions = MCCOptions::init().unwrap();
+    pub static ref MAZE: MazeMutationOptions = MazeMutationOptions::init().unwrap();
+    pub static ref NAVIGATOR: NavigatorMutationOptions = NavigatorMutationOptions::init().unwrap();
 }
 
-fn run_mcc_plain() {
-    /*let mazes = maze::generate_random_mazes(options.maze_population_capacity);
+/*fn run_mcc_plain() {
+    let mazes = maze::generate_random_mazes(options.maze_population_capacity);
     let viable_navigators = evolution::evolve_seed_navigators(&mazes, options.navigator_seed_amount);
 
     for x in 0..options.generations {
@@ -94,27 +101,30 @@ fn run_mcc_plain() {
             let amount_to_remove = viable_navigators.len() - options.navigator_population_capacity;
             evolution::remove_oldest(&viable_navigators, amount_to_remove)
         }
-    }*/
-}
-
+    }
+}*/
 
 fn main() {
-    let a = &mcc_options;
-    let b = &maze_options;
-    let c = &navigator_options;
+    &MCC;
+    &MAZE;
+    &NAVIGATOR;
 
     test();
 }
 
 fn test() {
     let p1 = PathGene::new(2, 3, Orientation::Vertical);
-    let p2 = PathGene::new(5, 6, Orientation::Vertical);
+    let p2 = PathGene::new(5, 7, Orientation::Vertical);
 
-    let w1 = WallGene::new(0.278, 0.855);
-    let w2 = WallGene::new(400.0, 0.808);
+    let w1 = WallGene::new(0.278, 0.855, Orientation::Vertical);
+    let w2 = WallGene::new(0.400, 0.808, Orientation::Horizontal);
 
     let mazey_boi = MazeGenome::new(10, 10, vec![p1, p2], vec![w1, w2]);
 
-    let pheno = mazey_boi.to_phenotype();
-    pheno.visualize();
+    let start = std::time::Instant::now();
+
+    let phenome = mazey_boi.to_phenotype();
+    //phenome.visualize();
+
+    eprintln!("elapsed {:?}", start.elapsed());
 }

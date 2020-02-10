@@ -3,13 +3,11 @@ pub struct Navigator {
 }
 
 pub struct Species {
-    population: Vec<Navigator>
+    population: Vec<Navigator>,
 }
 
 impl Navigator {
     pub fn new() -> Navigator {
-        Navigator {
-            test: 0
-        }
+        Navigator { test: 0 }
     }
 }
