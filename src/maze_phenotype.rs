@@ -106,20 +106,29 @@ impl MazePhenotype {
     pub fn update_cell_wall_north(&mut self, x: u32, y: u32, wall: bool) {
         self.grid[x as usize][y as usize].north_wall = wall;
         if y > 0 {
-            // TODO make sure no wall still blocks openings
+            self.grid[x as usize][y as usize - 1].south_wall = wall;
         }
     }
 
     pub fn update_cell_wall_east(&mut self, x: u32, y: u32, wall: bool) {
         self.grid[x as usize][y as usize].east_wall = wall;
+        if x < self.width - 1 {
+            self.grid[x as usize + 1][y as usize].west_wall = wall;
+        }
     }
 
     pub fn update_cell_wall_south(&mut self, x: u32, y: u32, wall: bool) {
         self.grid[x as usize][y as usize].south_wall = wall;
+        if y < self.height - 1 {
+            self.grid[x as usize][y as usize + 1].north_wall = wall;
+        }
     }
 
     pub fn update_cell_wall_west(&mut self, x: u32, y: u32, wall: bool) {
         self.grid[x as usize][y as usize].west_wall = wall;
+        if x > 0 {
+            self.grid[x as usize - 1][y as usize].east_wall = wall;
+        }
     }
 
     pub fn update_cell_in_subdivision(&mut self, x: u32, y: u32, value: bool) {
@@ -258,9 +267,7 @@ impl MazePhenotype {
         self.enclose_adjacent_path_segments();
         let subdivisions = self.subdivide_maze();
 
-        println!("{:#?}", subdivisions);
-
-        /*for subdivision in subdivisions {
+        for subdivision in subdivisions {
             let mut subdivision_queue: Queue<MazeSubdivision> = queue![];
             if subdivision.height > 1 || subdivision.width > 1 {
                 loop_iteration += 1;
@@ -272,10 +279,12 @@ impl MazePhenotype {
                 subdivision_queue.add(subdivision);
 
                 while subdivision_queue.size() > 0 {
-                    let current_subdivision = subdivision_queue.remove().unwrap_or(panic! {});
+                    let current_subdivision = subdivision_queue.remove().unwrap();
+                    println!("current subdivision {:#?}", current_subdivision);
 
                     loop_iteration += 1;
                     current_wall_gene = loop_iteration % wall_genes.len();
+
 
                     let (child_1, child_2) = self.subdivide_subdivision(
                         &current_subdivision,
@@ -293,7 +302,7 @@ impl MazePhenotype {
             } else {
                 self.mark_subdivision_boundaries(&subdivision)
             }
-        }*/
+        }
     }
 
     pub fn enclose_adjacent_path_segments(&mut self) {
@@ -353,7 +362,6 @@ impl MazePhenotype {
                     !self.get_cell_at(x, y).is_waypoint &&
                     !self.get_cell_at(x, y).in_subdivision
                 {
-                    println!("subdivisions found: {}\n\n", subdivisions.len());
                     let mut start_x = x;
                     let mut start_y = y;
 
@@ -365,16 +373,11 @@ impl MazePhenotype {
                     {
                         end_x += 1;
                     }
-                    println!("end_x {}", end_x);
-                    println!("finding end_y");
-
                     let mut blockade_found = false;
 
                     for y_search in start_y..self.height {
                         for x_search in start_x..end_x + 1 {
-                            println!("{}, {}", x_search, y_search);
                             if self.get_cell_at(x_search, y_search).path_direction != PathDirection::None {
-                                println!("breaking at {}, {}", x_search, y_search);
                                 blockade_found = true;
                                 break;
                             }
@@ -389,8 +392,6 @@ impl MazePhenotype {
                     if !blockade_found {
                         end_y = self.height - 1;
                     }
-
-                    println!("end values: {}, {}", end_x, end_y);
 
                     subdivisions.push(MazeSubdivision::new(
                         start_x,
@@ -485,6 +486,7 @@ impl MazePhenotype {
                 }
             }
 
+
             let child_1 = MazeSubdivision {
                 start_x: subdivision.start_x,
                 start_y: subdivision.start_y,
@@ -493,15 +495,19 @@ impl MazePhenotype {
                 width: subdivision.width,
                 height: wall_location_y - subdivision.start_y + 1,
             };
+            println!("child 1 {:#?}", child_1);
 
             let child_2 = MazeSubdivision {
                 start_x: subdivision.start_x,
-                start_y: wall_location_y + 1,
+                start_y: child_1.end_y + 1,
                 end_x: subdivision.end_x,
                 end_y: subdivision.end_y,
                 width: subdivision.width,
-                height: subdivision.end_y - wall_location_y + 1 + 1,
+                height: subdivision.end_y - child_1.end_y,
             };
+            println!("child_2 {:#?}", child_2);
+
+
             (child_1, child_2)
         } else {
             let wall_location_x = round::floor(
@@ -533,13 +539,16 @@ impl MazePhenotype {
             };
 
             let child_2 = MazeSubdivision {
-                start_x: wall_location_x,
+                start_x: child_1.end_x + 1,
                 start_y: subdivision.start_y,
                 end_x: subdivision.end_x,
                 end_y: subdivision.end_y,
-                width: subdivision.end_x - wall_location_x + 1,
+                width: subdivision.end_x - child_1.end_x,
                 height: subdivision.height,
             };
+            println!("child 1 {:#?}", child_1);
+            println!("child_2 {:#?}", child_2);
+
             (child_1, child_2)
         };
     }

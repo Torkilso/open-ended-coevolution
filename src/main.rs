@@ -6,6 +6,7 @@ extern crate lazy_static;
 
 use std::borrow::Borrow;
 use std::env;
+use std::path::Path;
 use std::time::Instant;
 
 use elapsed::measure_time;
@@ -113,18 +114,19 @@ fn main() {
 }
 
 fn test() {
-    let p1 = PathGene::new(2, 3, Orientation::Vertical);
-    let p2 = PathGene::new(5, 7, Orientation::Vertical);
+    let p1 = PathGene::new(4, 6, Orientation::Vertical);
+    let p2 = PathGene::new(12, 10, Orientation::Vertical);
 
-    let w1 = WallGene::new(0.278, 0.855, Orientation::Vertical);
-    let w2 = WallGene::new(0.400, 0.808, Orientation::Horizontal);
+    let w1 = WallGene::new(0.278, 0.855, Orientation::Horizontal);
+    let w2 = WallGene::new(0.400, 0.808, Orientation::Vertical);
+    let w3 = WallGene::new(0.600, 0.308, Orientation::Horizontal);
 
-    let mazey_boi = MazeGenome::new(10, 10, vec![p1, p2], vec![w1, w2]);
+    let mazey_boi = MazeGenome::new(20, 20, vec![p1, p2], vec![w1, w2, w3]);
 
     let start = std::time::Instant::now();
 
     let phenome = mazey_boi.to_phenotype();
-    //phenome.visualize();
+    phenome.visualize(Path::new("testing/test.png"));
 
     eprintln!("elapsed {:?}", start.elapsed());
 }

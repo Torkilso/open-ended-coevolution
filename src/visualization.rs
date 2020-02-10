@@ -7,12 +7,12 @@ use imageproc::drawing::{
 };
 use imageproc::rect::Rect;
 
-use crate::maze_genotype::MazeGenome;
 use crate::general::PathDirection;
-use crate::maze_phenotype::{MazePhenotype, MazeCell};
+use crate::maze_genotype::MazeGenome;
+use crate::maze_phenotype::{MazeCell, MazePhenotype};
 
 impl MazePhenotype {
-    pub fn visualize(&self) {
+    pub fn visualize(&self, file_path: &Path) {
         let mut scale = 20;
         let mut offset = 10;
         let radius = 2;
@@ -42,7 +42,7 @@ impl MazePhenotype {
                     (y * scale as usize) as f32,
                     scale as f32,
                 );
-                if cell.is_waypoint {
+                /*if cell.is_waypoint {
                     draw_filled_circle_mut(
                         &mut drawing,
                         (
@@ -74,11 +74,11 @@ impl MazePhenotype {
                         radius,
                         Rgb([0, 0, 0]),
                     );
-                }
+                }*/
             }
         }
 
-        drawing.save(Path::new("testing/test.png")).unwrap();
+        drawing.save(file_path).unwrap();
     }
 
     fn draw_maze_borders(&self, drawing: &mut RgbImage, width: f32, height: f32) {
