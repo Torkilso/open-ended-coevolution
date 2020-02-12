@@ -32,9 +32,9 @@ impl MazePhenotype {
 
         for (x, row) in self.grid.iter().enumerate() {
             for (y, cell) in row.iter().enumerate() {
-                if cell.path_direction != PathDirection::None {
+                /*if cell.path_direction != PathDirection::None {
                     println!("{:#?}", cell);
-                }
+                }*/
                 self.draw_cell_borders(
                     &mut drawing,
                     cell,
@@ -42,7 +42,7 @@ impl MazePhenotype {
                     (y * scale as usize) as f32,
                     scale as f32,
                 );
-                /*if cell.is_waypoint {
+                if cell.is_waypoint {
                     draw_filled_circle_mut(
                         &mut drawing,
                         (
@@ -74,7 +74,7 @@ impl MazePhenotype {
                         radius,
                         Rgb([0, 0, 0]),
                     );
-                }*/
+                }
             }
         }
 
@@ -97,17 +97,9 @@ impl MazePhenotype {
         scale: f32,
     ) {
         if cell.north_wall {
-            println!("drawing north: {}, {} to {}, {}", x, y, x + scale, y);
             draw_line_segment_mut(drawing, (x, y), (x + scale, y), Rgb([0, 0, 0]));
         }
         if cell.east_wall {
-            println!(
-                "drawing east: {}, {} to {}, {}",
-                x + scale,
-                y,
-                x + scale,
-                y + scale
-            );
             draw_line_segment_mut(
                 drawing,
                 (x + scale, y),
@@ -116,14 +108,6 @@ impl MazePhenotype {
             );
         }
         if cell.south_wall {
-            println!(
-                "drawing south: {}, {} to {}, {}",
-                x,
-                y + scale,
-                x + scale,
-                y + scale
-            );
-
             draw_line_segment_mut(
                 drawing,
                 (x, y + scale),
@@ -132,8 +116,6 @@ impl MazePhenotype {
             );
         }
         if cell.west_wall {
-            println!("drawing west: {}, {} to {}, {}", x, y, x, y + scale);
-
             draw_line_segment_mut(drawing, (x, y), (x, y + scale), Rgb([0, 0, 0]));
         }
     }

@@ -114,14 +114,17 @@ fn main() {
 }
 
 fn test() {
-    let p1 = PathGene::new(4, 6, Orientation::Vertical);
-    let p2 = PathGene::new(12, 10, Orientation::Vertical);
+    let p1 = PathGene::new(1, 2, Orientation::Vertical);
+    let p2 = PathGene::new(3, 0, Orientation::Vertical);
+    let p3 = PathGene::new(9, 6, Orientation::Vertical);
+    let p4 = PathGene::new(4, 4, Orientation::Vertical);
+    let p5 = PathGene::new(0, 8, Orientation::Vertical);
 
-    let w1 = WallGene::new(0.278, 0.855, Orientation::Horizontal);
-    let w2 = WallGene::new(0.400, 0.808, Orientation::Vertical);
-    let w3 = WallGene::new(0.600, 0.308, Orientation::Horizontal);
+    let w1 = WallGene::new(0.278, 0.469, Orientation::Horizontal);
+    let w2 = WallGene::new(0.400, 0.8, Orientation::Vertical);
 
-    let mazey_boi = MazeGenome::new(20, 20, vec![p1, p2], vec![w1, w2, w3]);
+    let mazey_boi = MazeGenome::new(10, 10, vec![p1, p2, p3, p4, p5], vec![w1, w2]);
+    //let mazey_boi = MazeGenome::new(4, 4, vec![p1], vec![w2]);
 
     let start = std::time::Instant::now();
 
