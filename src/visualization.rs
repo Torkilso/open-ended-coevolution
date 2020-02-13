@@ -2,19 +2,17 @@ use std::path::Path;
 
 use image::{Rgb, RgbImage};
 use imageproc::drawing::{
-    draw_cross_mut, draw_filled_circle_mut, draw_filled_rect_mut, draw_hollow_circle_mut,
-    draw_hollow_rect_mut, draw_line_segment_mut,
+    draw_filled_circle_mut, draw_filled_rect_mut, draw_line_segment_mut,
 };
 use imageproc::rect::Rect;
 
 use crate::general::PathDirection;
-use crate::maze_genotype::MazeGenome;
 use crate::maze_phenotype::{MazeCell, MazePhenotype};
 
 impl MazePhenotype {
     pub fn visualize(&self, file_path: &Path) {
-        let mut scale = 20;
-        let mut offset = 10;
+        let scale = 20;
+        let offset = 10;
         let radius = 2;
 
         let mut drawing = RgbImage::new(self.width * scale, self.height * scale);
@@ -42,7 +40,7 @@ impl MazePhenotype {
                     (y * scale as usize) as f32,
                     scale as f32,
                 );
-                if cell.is_waypoint {
+                /*if cell.is_waypoint {
                     draw_filled_circle_mut(
                         &mut drawing,
                         (
@@ -74,7 +72,7 @@ impl MazePhenotype {
                         radius,
                         Rgb([0, 0, 0]),
                     );
-                }
+                }*/
             }
         }
 

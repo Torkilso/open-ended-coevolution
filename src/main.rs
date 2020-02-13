@@ -1,19 +1,17 @@
 extern crate elapsed;
-extern crate envconfig;
-#[macro_use]
-extern crate envconfig_derive;
-extern crate lazy_static;
+//extern crate envconfig;
+//#[macro_use]
+//extern crate envconfig_derive;
+//extern crate lazy_static;
 
-use std::borrow::Borrow;
-use std::env;
+//use std::{env, thread};
 use std::path::Path;
-use std::time::Instant;
 
-use elapsed::measure_time;
-use envconfig::Envconfig;
-use lazy_static::*;
+//use elapsed::measure_time;
+//use envconfig::Envconfig;
+//use lazy_static::*;
 
-use crate::general::Orientation;
+use crate::general::{Orientation, OpeningLocation};
 use crate::maze_genotype::{MazeGenome, PathGene, WallGene};
 
 mod evolution;
@@ -25,7 +23,7 @@ mod simulator;
 mod testing;
 mod visualization;
 
-#[derive(Envconfig)]
+/*#[derive(Envconfig)]
 pub struct MazeMutationOptions {
     #[envconfig(from = "mutate_structure", default = "0.5")]
     mutate_structure: f32,
@@ -80,7 +78,7 @@ lazy_static! {
     pub static ref MCC: MCCOptions = MCCOptions::init().unwrap();
     pub static ref MAZE: MazeMutationOptions = MazeMutationOptions::init().unwrap();
     pub static ref NAVIGATOR: NavigatorMutationOptions = NavigatorMutationOptions::init().unwrap();
-}
+}*/
 
 /*fn run_mcc_plain() {
     let mazes = maze::generate_random_mazes(options.maze_population_capacity);
@@ -106,30 +104,75 @@ lazy_static! {
 }*/
 
 fn main() {
-    &MCC;
-    &MAZE;
-    &NAVIGATOR;
+    //&MCC;
+    //&MAZE;
+    //&NAVIGATOR;
 
     test();
+    /*let amount = 10000;
+    let mut total_time_without_threading = 0;
+    let mut total_time_with_threading = 0;
+    let start = std::time::Instant::now();
+
+    for i in 0..amount {
+        for i in 0..100 {
+            test();
+        }
+    }
+    let stop = start.elapsed().as_micros();
+
+    println!("without threading total elapsed {}", stop);
+    println!("average {}", stop / amount);
+
+
+    let mut children = vec![];
+
+    let start_threading = std::time::Instant::now();
+
+    for i in 0..amount {
+        children.push(thread::spawn(move || {
+            for i in 0..100 {
+                test();
+            }
+        }));
+    }
+
+    for child in children {
+        let _ = child.join();
+    }
+
+    let stop_threading = start_threading.elapsed().as_micros();
+
+    println!("with threading total elapsed {}", stop_threading);
+    println!("average {}", stop_threading / amount);
+
+    println!("ratio: {}", (stop as f64 / stop_threading as f64));*/
 }
 
 fn test() {
-    let p1 = PathGene::new(1, 2, Orientation::Vertical);
-    let p2 = PathGene::new(3, 0, Orientation::Vertical);
-    let p3 = PathGene::new(9, 6, Orientation::Vertical);
-    let p4 = PathGene::new(4, 4, Orientation::Vertical);
-    let p5 = PathGene::new(0, 8, Orientation::Vertical);
+    let p1 = PathGene::new(2, 3, Orientation::Vertical);
+    let p2 = PathGene::new(4, 1, Orientation::Vertical);
+    let p3 = PathGene::new(5, 5, Orientation::Vertical);
+    let p4 = PathGene::new(6, 14, Orientation::Vertical);
+    let p5 = PathGene::new(10, 18, Orientation::Vertical);
+    let p6 = PathGene::new(24, 8, Orientation::Vertical);
+    let p7 = PathGene::new(34, 22, Orientation::Vertical);
+    let p8 = PathGene::new(10, 26, Orientation::Vertical);
+    let p9 = PathGene::new(20, 36, Orientation::Vertical);
 
-    let w1 = WallGene::new(0.278, 0.469, Orientation::Horizontal);
-    let w2 = WallGene::new(0.400, 0.8, Orientation::Vertical);
+    let w1 = WallGene::new(0.278, 0.469, Orientation::Horizontal, OpeningLocation::East);
+    let w2 = WallGene::new(0.400, 0.6, Orientation::Vertical, OpeningLocation::North);
+    let w3 = WallGene::new(0.245, 0.6, Orientation::Horizontal, OpeningLocation::North);
+    let w4 = WallGene::new(0.400, 0.5, Orientation::Vertical, OpeningLocation::East);
 
-    let mazey_boi = MazeGenome::new(10, 10, vec![p1, p2, p3, p4, p5], vec![w1, w2]);
+    let mazey_boi = MazeGenome::new(100, 100, vec![p1, p2, p3, p4, p5, p6, p7, p8, p9], vec![w1]);
+    //let mazey_boi2 = MazeGenome::new(10, 10, vec![p1, p2, p3, p4, p5], vec![w1, w2]);
     //let mazey_boi = MazeGenome::new(4, 4, vec![p1], vec![w2]);
 
     let start = std::time::Instant::now();
-
     let phenome = mazey_boi.to_phenotype();
+
     phenome.visualize(Path::new("testing/test.png"));
 
-    eprintln!("elapsed {:?}", start.elapsed());
+    println!("single used {:?}", start.elapsed());
 }

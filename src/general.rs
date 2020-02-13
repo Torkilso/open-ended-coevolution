@@ -13,3 +13,11 @@ pub enum PathDirection {
     West,
     None,
 }
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub enum OpeningLocation {
+    North,
+    East,
+    South,
+    West,
+}

@@ -1,4 +1,4 @@
-use crate::maze_genotype::MazeGenome;
+/*use crate::maze_genotype::MazeGenome;
 use crate::navigator::Navigator;
 
 pub fn evolve_seed_navigators(mazes: &Vec<MazeGenome>, seed_amount: i32) -> Vec<Navigator> {
@@ -15,4 +15,4 @@ pub fn dequeue<T>(queue: &Vec<T>, amount: i32) -> &Vec<T> {
 
 pub fn enqueue<T>(queue: &Vec<T>, items: &Vec<T>) {}
 
-pub fn remove_oldest(queue: &Vec<Navigator>, size: usize) {}
+pub fn remove_oldest(queue: &Vec<Navigator>, size: usize) {}*/
