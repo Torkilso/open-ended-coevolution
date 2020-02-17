@@ -7,17 +7,18 @@ extern crate elapsed;
 //use std::{env, thread};
 use std::path::Path;
 
+use crate::general::{OpeningLocation, Orientation};
+use crate::maze_genotype::{MazeGenome, PathGene, WallGene};
+
 //use elapsed::measure_time;
 //use envconfig::Envconfig;
 //use lazy_static::*;
-
-use crate::general::{Orientation, OpeningLocation};
-use crate::maze_genotype::{MazeGenome, PathGene, WallGene};
 
 mod evolution;
 mod general;
 mod maze_genotype;
 mod maze_phenotype;
+mod mcc;
 mod navigator;
 mod simulator;
 mod testing;
@@ -80,29 +81,6 @@ lazy_static! {
     pub static ref NAVIGATOR: NavigatorMutationOptions = NavigatorMutationOptions::init().unwrap();
 }*/
 
-/*fn run_mcc_plain() {
-    let mazes = maze::generate_random_mazes(options.maze_population_capacity);
-    let viable_navigators = evolution::evolve_seed_navigators(&mazes, options.navigator_seed_amount);
-
-    for x in 0..options.generations {
-        println!("Generation {}", x);
-
-        let parents = evolution::dequeue(&viable_navigators, 10);
-        let children = evolution::reproduce_navigators(parents);
-        evolution::enqueue(&viable_navigators, parents);
-
-        //
-
-        let survivors = simulator::evaluate_navigators(&children, &mazes);
-        evolution::enqueue(&viable_navigators, &survivors);
-
-        if viable_navigators.len() > options.navigator_population_capacity {
-            let amount_to_remove = viable_navigators.len() - options.navigator_population_capacity;
-            evolution::remove_oldest(&viable_navigators, amount_to_remove)
-        }
-    }
-}*/
-
 fn main() {
     //&MCC;
     //&MAZE;
@@ -150,27 +128,31 @@ fn main() {
 }
 
 fn test() {
-    let p1 = PathGene::new(2, 3, Orientation::Vertical);
-    let p2 = PathGene::new(4, 1, Orientation::Vertical);
-    let p3 = PathGene::new(5, 5, Orientation::Vertical);
-    let p4 = PathGene::new(6, 14, Orientation::Vertical);
-    let p5 = PathGene::new(10, 18, Orientation::Vertical);
-    let p6 = PathGene::new(24, 8, Orientation::Vertical);
-    let p7 = PathGene::new(34, 22, Orientation::Vertical);
-    let p8 = PathGene::new(10, 26, Orientation::Vertical);
-    let p9 = PathGene::new(20, 36, Orientation::Vertical);
+    let p1 = PathGene::new(4, 3);
+    let p2 = PathGene::new(6, 1);
+    let p3 = PathGene::new(9, 6);
+    let p4 = PathGene::new(1, 8);
+    let p5 = PathGene::new(8, 8);
+    let p6 = PathGene::new(24, 8);
+    let p7 = PathGene::new(34, 22);
+    let p8 = PathGene::new(10, 26);
+    let p9 = PathGene::new(20, 36);
 
-    let w1 = WallGene::new(0.278, 0.469, Orientation::Horizontal, OpeningLocation::East);
-    let w2 = WallGene::new(0.400, 0.6, Orientation::Vertical, OpeningLocation::North);
-    let w3 = WallGene::new(0.245, 0.6, Orientation::Horizontal, OpeningLocation::North);
+    let w1 = WallGene::new(0.278, 0.469, Orientation::Horizontal, OpeningLocation::South);
+    let w2 = WallGene::new(0.6, 0.6, Orientation::Vertical, OpeningLocation::North);
+    let w3 = WallGene::new(0.245, 0.6, Orientation::Horizontal, OpeningLocation::South);
     let w4 = WallGene::new(0.400, 0.5, Orientation::Vertical, OpeningLocation::East);
 
-    let mazey_boi = MazeGenome::new(100, 100, vec![p1, p2, p3, p4, p5, p6, p7, p8, p9], vec![w1]);
+    let mazey_boi = MazeGenome::new(10, 10, Orientation::Horizontal, vec![p1, p2, p3, p4], vec![w1, w2, w3, w4]);
     //let mazey_boi2 = MazeGenome::new(10, 10, vec![p1, p2, p3, p4, p5], vec![w1, w2]);
     //let mazey_boi = MazeGenome::new(4, 4, vec![p1], vec![w2]);
 
     let start = std::time::Instant::now();
     let phenome = mazey_boi.to_phenotype();
+
+    let x: u32 = 10;
+    let s: String = x.to_string();
+    println!("{}", s);
 
     phenome.visualize(Path::new("testing/test.png"));
 

@@ -1,10 +1,8 @@
 extern crate queues;
 
 use math::round;
-use queues::*;
 use crate::maze_genotype::{PathGene, WallGene};
 use crate::general::{Orientation, PathDirection, OpeningLocation};
-use std::borrow::{Borrow, BorrowMut};
 
 
 #[derive(Debug, Clone)]
@@ -15,7 +13,6 @@ pub struct MazeCell {
     pub west_wall: bool,
     pub is_waypoint: bool,
     pub is_juncture: bool,
-    pub passage_direction: PathDirection,
     pub path_direction: PathDirection,
     pub in_subdivision: bool,
 }
@@ -29,7 +26,6 @@ impl MazeCell {
             west_wall: false,
             is_waypoint: false,
             is_juncture: false,
-            passage_direction: PathDirection::None,
             path_direction: PathDirection::None,
             in_subdivision: false,
         }
@@ -70,14 +66,16 @@ impl MazeSubdivision {
 pub struct MazePhenotype {
     pub width: u32,
     pub height: u32,
+    pub first_direction: Orientation,
     pub grid: Vec<Vec<MazeCell>>,
 }
 
 impl MazePhenotype {
-    pub fn new(width: u32, height: u32, path_genes: &Vec<PathGene>, wall_genes: &Vec<WallGene>) -> MazePhenotype {
+    pub fn new(width: u32, height: u32, first_direction: Orientation, path_genes: &Vec<PathGene>, wall_genes: &Vec<WallGene>) -> MazePhenotype {
         let mut phenotype = MazePhenotype {
             width,
             height,
+            first_direction,
             grid: vec![vec![MazeCell::new(); height as usize]; width as usize],
         };
         phenotype.add_path(path_genes);
@@ -130,10 +128,6 @@ impl MazePhenotype {
         }
     }
 
-    pub fn update_cell_passage_direction(&mut self, x: u32, y: u32, passage_direction: PathDirection) {
-        self.grid[x as usize][y as usize].passage_direction = passage_direction;
-    }
-
     pub fn update_cell_in_subdivision(&mut self, x: u32, y: u32, value: bool) {
         self.grid[x as usize][y as usize].in_subdivision = value;
     }
@@ -147,7 +141,7 @@ impl MazePhenotype {
     }
 
     pub fn add_path(&mut self, path_genes: &Vec<PathGene>) {
-        let start_position = PathGene::new(0, 0, Orientation::Vertical);
+        let start_position = PathGene::new(0, 0);
         self.add_waypoint(&start_position, &path_genes[0]);
 
         for (i, path_gene) in path_genes[0..path_genes.len() - 1].iter().enumerate() {
@@ -158,7 +152,6 @@ impl MazePhenotype {
         let end_position = PathGene::new(
             self.width - 1,
             self.height - 1,
-            path_genes[path_genes.len() - 1].orientation,
         );
         self.add_waypoint(&path_genes[path_genes.len() - 1], &end_position);
     }
@@ -166,101 +159,45 @@ impl MazePhenotype {
     pub fn add_waypoint(&mut self, current_point: &PathGene, target_point: &PathGene) {
         self.update_cell_is_waypoint(target_point.x, target_point.y, true);
 
-        if target_point.orientation == Orientation::Horizontal {
-            //self.horizontal_path_reroute(&current_point, &target_point);
-            self.add_vertical_path_segment(&current_point, &target_point);
-            self.add_horizontal_path_segment(&current_point, &target_point);
-
+        if self.first_direction == Orientation::Vertical {
+            self.add_vertical_path_segment(current_point.x, current_point.y, target_point.y);
+            self.add_horizontal_path_segment(target_point.y, current_point.x, target_point.x);
             if current_point.x != target_point.x && current_point.y != target_point.y {
                 self.update_cell_is_juncture(current_point.x, target_point.y, true);
             }
-        } else {
-            //self.vertical_path_reroute(&current_point, &target_point);
-            self.add_horizontal_path_segment(&current_point, &target_point);
-            self.add_vertical_path_segment(&current_point, &target_point);
-
+        } else if self.first_direction == Orientation::Horizontal {
+            self.add_horizontal_path_segment(current_point.y, current_point.x, target_point.x);
+            self.add_vertical_path_segment(target_point.x, current_point.y, target_point.y);
             if current_point.x != target_point.x && current_point.y != target_point.y {
                 self.update_cell_is_juncture(target_point.x, current_point.y, true);
             }
         }
     }
 
-    pub fn add_vertical_path_segment(&mut self, current_point: &PathGene, end_point: &PathGene) {
-        if current_point.y <= end_point.y {
-            for y in current_point.y..end_point.y + 1 {
-                self.update_cell_path_direction(end_point.x, y, PathDirection::South);
+    pub fn add_vertical_path_segment(&mut self, from_x: u32, from_y: u32, to_y: u32) {
+        if from_y <= to_y {
+            for y in from_y..to_y + 1 {
+                self.update_cell_path_direction(from_x, y, PathDirection::South);
             }
         } else {
-            for y in end_point.y..current_point.y + 1 {
-                self.update_cell_path_direction(end_point.x, y, PathDirection::North);
+            for y in to_y..from_y + 1 {
+                self.update_cell_path_direction(from_x, y, PathDirection::North);
             }
         }
     }
 
-    pub fn add_horizontal_path_segment(&mut self, current_point: &PathGene, end_point: &PathGene) {
-        if current_point.x <= end_point.x {
-            for x in current_point.x..end_point.x + 1 {
-                self.update_cell_path_direction(x, current_point.y, PathDirection::East);
+    pub fn add_horizontal_path_segment(&mut self, from_y: u32, from_x: u32, to_x: u32) {
+        if from_x <= to_x {
+            for x in from_x..to_x + 1 {
+                self.update_cell_path_direction(x, from_y, PathDirection::East);
             }
         } else {
-            for x in end_point.x..current_point.x + 1 {
-                self.update_cell_path_direction(x, current_point.y, PathDirection::West);
+            for x in to_x..from_x + 1 {
+                self.update_cell_path_direction(x, from_y, PathDirection::West);
             }
         }
     }
 
-    /*pub fn horizontal_path_reroute(&mut self, current_point: &PathGene, end_point: &PathGene) {
-        if end_point.y < current_point.y && end_point.x > current_point.x {
-            let mut current_y = current_point.y;
-
-            if self
-                .get_cell_at(current_point.x + 1, current_y)
-                .path_direction
-                == PathDirection::None
-            {
-                self.update_cell_path_direction(current_point.x, current_y, PathDirection::South);
-                self.update_cell_is_juncture(current_point.x, current_y, true);
-                current_y += 1;
-            }
-
-            let rightmost_waypoint_x = if current_point.x > end_point.x {
-                current_point.x
-            } else {
-                end_point.x
-            };
-
-            for x in current_point.x..rightmost_waypoint_x {
-                self.update_cell_path_direction(x, current_y, PathDirection::South);
-            }
-            self.update_cell_is_juncture(current_point.x, current_y, true);
-        }
-    }
-
-    pub fn vertical_path_reroute(&mut self, current_point: &PathGene, end_point: &PathGene) {
-        if end_point.x < current_point.x && end_point.y > current_point.y {
-            let mut current_x = current_point.x;
-
-            if self
-                .get_cell_at(current_x, current_point.y + 1)
-                .path_direction
-                == PathDirection::None
-            {
-                self.update_cell_path_direction(current_x, current_point.y, PathDirection::East);
-                self.update_cell_is_juncture(current_x + 1, current_point.y, true);
-                current_x += 1;
-            }
-            let lowest_waypoint_y = if current_point.x > end_point.x {
-                current_point.x
-            } else {
-                end_point.x
-            };
-
-            for y in current_point.y..lowest_waypoint_y {
-                self.update_cell_path_direction(current_x, y, PathDirection::South);
-            }
-            self.update_cell_is_juncture(current_x, current_point.y, true);
-        }
-    }*/
 
     pub fn add_walls(&mut self, wall_genes: &Vec<WallGene>) {
         self.enclose_adjacent_path_segments();
@@ -299,9 +236,7 @@ impl MazePhenotype {
                 if self.get_cell_at(previous_x, previous_y).path_direction != PathDirection::West {
                     self.update_cell_wall_east(x, y, true);
                 }
-            }
-
-            if cell.path_direction == PathDirection::West || cell.path_direction == PathDirection::East {
+            } else if cell.path_direction == PathDirection::West || cell.path_direction == PathDirection::East {
                 if self.get_cell_at(previous_x, previous_y).path_direction != PathDirection::South {
                     self.update_cell_wall_north(x, y, true);
                 }
@@ -384,8 +319,6 @@ impl MazePhenotype {
     }
 
     pub fn mark_subdivision_boundaries(&mut self, subdivision: &MazeSubdivision) {
-        //println!("marking boundaries");
-
         for x in subdivision.start_x..subdivision.end_x + 1 {
             self.update_cell_wall_north(x, subdivision.start_y, true);
             self.update_cell_wall_south(x, subdivision.end_y, true);
@@ -395,14 +328,6 @@ impl MazePhenotype {
             self.update_cell_wall_west(subdivision.start_x, y, true);
             self.update_cell_wall_east(subdivision.end_x, y, true);
         }
-
-        /*if subdivision.width == 1 || subdivision.height == 1 {
-            if subdivision.start_x == 0 {
-                self.update_cell_wall_east(subdivision.end_x, subdivision.start_y, false);
-            } else {
-                self.update_cell_wall_west(subdivision.start_x, subdivision.start_y, false);
-            }
-        }*/
     }
 
     pub fn insert_partition_opening(
@@ -410,8 +335,6 @@ impl MazePhenotype {
         subdivision: &MazeSubdivision,
         wall_gene: &WallGene,
     ) {
-
-        // find side with wall against path
         let mut north_wall = 0;
         let mut south_wall = 0;
         let mut west_wall = 0;
@@ -493,10 +416,42 @@ impl MazePhenotype {
                     }
                 }
             }
-        }
-        //println!("{} {} {} {} {:#?}", north_wall, east_wall, west_wall, south_wall, wall_gene.opening_location);
-
-        if wall_gene.opening_location == OpeningLocation::East {
+        } else if wall_gene.opening_location == OpeningLocation::South {
+            if south_wall > 0 {
+                for current_x in 0..subdivision.width {
+                    let x_to_use = subdivision.start_x + (x + current_x) % subdivision.width;
+                    if self.get_cell_at(x_to_use, subdivision.end_y + 1).path_direction != PathDirection::None {
+                        self.update_cell_wall_south(x_to_use, subdivision.end_y, false);
+                        break;
+                    }
+                }
+            } else if north_wall > 0 {
+                for current_x in 0..subdivision.width {
+                    let x_to_use = subdivision.start_x + (x + current_x) % subdivision.width;
+                    if self.get_cell_at(x_to_use, subdivision.start_y - 1).path_direction != PathDirection::None {
+                        self.update_cell_wall_north(x_to_use, subdivision.start_y, false);
+                        break;
+                    }
+                }
+            } else if west_wall > 0 && west_wall >= east_wall {
+                for current_y in 0..subdivision.height {
+                    let y_to_use = subdivision.start_y + (y + current_y) % subdivision.height;
+                    if self.get_cell_at(subdivision.start_x - 1, y_to_use).path_direction != PathDirection::None {
+                        self.update_cell_wall_west(subdivision.start_x, y_to_use, false);
+                        break;
+                    }
+                }
+            } else {
+                for current_y in 0..subdivision.height {
+                    let y_to_use = subdivision.start_y + (y + current_y) % subdivision.height;
+                    if self.get_cell_at(subdivision.end_x + 1, y_to_use).path_direction != PathDirection::None {
+                        self.update_cell_wall_east(subdivision.end_x, y_to_use, false);
+                        break;
+                    }
+                }
+            }
+            return;
+        } else if wall_gene.opening_location == OpeningLocation::East {
             if east_wall > 0 {
                 for current_y in 0..subdivision.height {
                     let y_to_use = subdivision.start_y + (y + current_y) % subdivision.height;
@@ -510,6 +465,40 @@ impl MazePhenotype {
                     let y_to_use = subdivision.start_y + (y + current_y) % subdivision.height;
                     if self.get_cell_at(subdivision.start_x - 1, y_to_use).path_direction != PathDirection::None {
                         self.update_cell_wall_west(subdivision.start_x, y_to_use, false);
+                        break;
+                    }
+                }
+            } else if north_wall > 0 && north_wall >= south_wall {
+                for current_x in 0..subdivision.width {
+                    let x_to_use = subdivision.start_x + (x + current_x) % subdivision.width;
+                    if self.get_cell_at(x_to_use, subdivision.start_y - 1).path_direction != PathDirection::None {
+                        self.update_cell_wall_north(x_to_use, subdivision.start_y, false);
+                        break;
+                    }
+                }
+            } else if south_wall > 0 {
+                for current_x in 0..subdivision.width {
+                    let x_to_use = subdivision.start_x + (x + current_x) % subdivision.width;
+                    if self.get_cell_at(x_to_use, subdivision.end_y + 1).path_direction != PathDirection::None {
+                        self.update_cell_wall_south(x_to_use, subdivision.end_y, false);
+                        break;
+                    }
+                }
+            }
+        } else if wall_gene.opening_location == OpeningLocation::West {
+            if west_wall > 0 {
+                for current_y in 0..subdivision.height {
+                    let y_to_use = subdivision.start_y + (y + current_y) % subdivision.height;
+                    if self.get_cell_at(subdivision.start_x - 1, y_to_use).path_direction != PathDirection::None {
+                        self.update_cell_wall_west(subdivision.start_x, y_to_use, false);
+                        break;
+                    }
+                }
+            } else if east_wall > 0 {
+                for current_y in 0..subdivision.height {
+                    let y_to_use = subdivision.start_y + (y + current_y) % subdivision.height;
+                    if self.get_cell_at(subdivision.end_x + 1, y_to_use).path_direction != PathDirection::None {
+                        self.update_cell_wall_east(subdivision.end_x, y_to_use, false);
                         break;
                     }
                 }
@@ -547,25 +536,20 @@ impl MazePhenotype {
         let new_wall_gene_index = (wall_gene_index + 1) % wall_genes.len();
 
         if wall_gene.orientation == Orientation::Horizontal {
-            let wall_location_y = round::floor(
-                (subdivision.start_y as f32 + subdivision.height as f32 * wall_gene.wall_position)
-                    as f64,
-                0,
-            ) as u32;
+            let mut wall_location_y = subdivision.start_y + round::floor(subdivision.height as f64 * wall_gene.wall_position as f64, 0) as u32;
+            if wall_location_y >= subdivision.end_y {
+                wall_location_y -= subdivision.end_y - 1
+            };
 
-            let passage_location_x = round::floor(
-                (subdivision.start_x as f32 + subdivision.width as f32 * wall_gene.passage_position)
-                    as f64,
-                0,
-            );
+            let passage_location_x = subdivision.start_x + round::floor(subdivision.width as f64 * wall_gene.passage_position as f64, 0) as u32;
 
             for x in subdivision.start_x..subdivision.end_x + 1 {
                 if x == passage_location_x as u32 {
                     self.update_cell_wall_south(x, wall_location_y, false);
                 } else {
                     self.update_cell_wall_south(x, wall_location_y, true);
-                }
-            }
+                };
+            };
 
             let child_1 = MazeSubdivision {
                 start_x: subdivision.start_x,
@@ -577,29 +561,24 @@ impl MazePhenotype {
             };
 
             let child_2 = MazeSubdivision {
-                start_x: child_1.start_x,
+                start_x: subdivision.start_x,
                 start_y: wall_location_y + 1,
-                end_x: child_1.end_x,
+                end_x: subdivision.end_x,
                 end_y: subdivision.end_y,
                 width: subdivision.width,
-                height: subdivision.height - child_1.height,
+                height: subdivision.end_y - wall_location_y,
             };
 
             self.subdivide_subdivision(&child_1, new_wall_gene_index, wall_genes);
             self.subdivide_subdivision(&child_2, new_wall_gene_index, wall_genes);
         } else {
-            let wall_location_x = round::floor(
-                (subdivision.start_x as f32 + subdivision.width as f32 * wall_gene.wall_position)
-                    as f64,
-                0,
-            ) as u32;
+            let mut wall_location_x = subdivision.start_x + round::floor(subdivision.width as f64 * wall_gene.wall_position as f64, 0) as u32;
 
-            let passage_location_y = round::floor(
-                (subdivision.start_y as f32
-                    + subdivision.height as f32 * wall_gene.passage_position)
-                    as f64,
-                0,
-            );
+            if wall_location_x >= subdivision.end_x {
+                wall_location_x = subdivision.end_x - 1;
+            };
+
+            let passage_location_y = subdivision.start_y + round::floor(subdivision.height as f64 * wall_gene.passage_position as f64, 0) as u32;
 
             for y in subdivision.start_y..subdivision.end_y + 1 {
                 if y == passage_location_y as u32 {
@@ -608,6 +587,7 @@ impl MazePhenotype {
                     self.update_cell_wall_east(wall_location_x, y, true);
                 }
             }
+
 
             let child_1 = MazeSubdivision {
                 start_x: subdivision.start_x,
@@ -619,11 +599,11 @@ impl MazePhenotype {
             };
 
             let child_2 = MazeSubdivision {
-                start_x: child_1.end_x + 1,
+                start_x: wall_location_x + 1,
                 start_y: subdivision.start_y,
                 end_x: subdivision.end_x,
                 end_y: subdivision.end_y,
-                width: subdivision.width - child_1.width,
+                width: subdivision.end_x - wall_location_x,
                 height: subdivision.height,
             };
 

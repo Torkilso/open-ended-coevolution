@@ -30,9 +30,6 @@ impl MazePhenotype {
 
         for (x, row) in self.grid.iter().enumerate() {
             for (y, cell) in row.iter().enumerate() {
-                /*if cell.path_direction != PathDirection::None {
-                    println!("{:#?}", cell);
-                }*/
                 self.draw_cell_borders(
                     &mut drawing,
                     cell,
@@ -40,7 +37,7 @@ impl MazePhenotype {
                     (y * scale as usize) as f32,
                     scale as f32,
                 );
-                /*if cell.is_waypoint {
+                if cell.is_waypoint {
                     draw_filled_circle_mut(
                         &mut drawing,
                         (
@@ -72,7 +69,7 @@ impl MazePhenotype {
                         radius,
                         Rgb([0, 0, 0]),
                     );
-                }*/
+                }
             }
         }
 

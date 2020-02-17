@@ -1,4 +1,4 @@
-/*pub struct Navigator {
+pub struct Navigator {
     test: i32,
 }
 
@@ -7,4 +7,3 @@ impl Navigator {
         Navigator { test: 0 }
     }
 }
-*/
