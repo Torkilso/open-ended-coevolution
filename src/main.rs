@@ -9,6 +9,8 @@ use std::path::Path;
 
 use crate::general::{OpeningLocation, Orientation};
 use crate::maze_genotype::{MazeGenome, PathGene, WallGene};
+use crate::simulator::get_sensor_value;
+use crate::maze_phenotype::MazeCell;
 
 //use elapsed::measure_time;
 //use envconfig::Envconfig;
@@ -86,7 +88,14 @@ fn main() {
     //&MAZE;
     //&NAVIGATOR;
 
-    test();
+    let mut maze_cell = MazeCell::new();
+    maze_cell.north_wall = true;
+    maze_cell.east_wall = true;
+
+    let value = get_sensor_value(0.1, 0.5, 30.0, &maze_cell);
+
+    println!("hypotenuse {}", value);
+    //test();
     /*let amount = 10000;
     let mut total_time_without_threading = 0;
     let mut total_time_with_threading = 0;
@@ -148,13 +157,13 @@ fn test() {
     //let mazey_boi = MazeGenome::new(4, 4, vec![p1], vec![w2]);
 
     let start = std::time::Instant::now();
-    let phenome = mazey_boi.to_phenotype();
+    let phenotype = mazey_boi.to_phenotype();
 
-    let x: u32 = 10;
+    /*let x: u32 = 10;
     let s: String = x.to_string();
-    println!("{}", s);
+    println!("{}", s);*/
 
-    phenome.visualize(Path::new("testing/test.png"));
+    phenotype.visualize(Path::new("testing/test.png"));
 
     println!("single used {:?}", start.elapsed());
 }
