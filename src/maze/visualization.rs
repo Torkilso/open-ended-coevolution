@@ -1,13 +1,12 @@
 use std::path::Path;
 
 use image::{Rgb, RgbImage};
-use imageproc::drawing::{
-    draw_filled_circle_mut, draw_filled_rect_mut, draw_line_segment_mut,
-};
+use imageproc::drawing::{draw_filled_circle_mut, draw_filled_rect_mut, draw_line_segment_mut};
 use imageproc::rect::Rect;
 
-use crate::general::PathDirection;
-use crate::maze_phenotype::{MazeCell, MazePhenotype};
+use crate::common::PathDirection;
+use crate::maze::maze_phenotype::MazeCell;
+use crate::maze::maze_phenotype::MazePhenotype;
 
 impl MazePhenotype {
     pub fn visualize(&self, file_path: &Path) {

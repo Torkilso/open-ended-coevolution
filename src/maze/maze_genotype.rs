@@ -1,7 +1,7 @@
 extern crate queues;
 
-use crate::maze_phenotype::MazePhenotype;
-use crate::general::{Orientation, OpeningLocation};
+use crate::common::{OpeningLocation, Orientation};
+use crate::maze::maze_phenotype::MazePhenotype;
 
 #[derive(Debug, Clone)]
 pub struct WallGene {
@@ -12,7 +12,12 @@ pub struct WallGene {
 }
 
 impl WallGene {
-    pub fn new(wall_position: f32, passage_position: f32, orientation: Orientation, opening_location: OpeningLocation) -> WallGene {
+    pub fn new(
+        wall_position: f32,
+        passage_position: f32,
+        orientation: Orientation,
+        opening_location: OpeningLocation,
+    ) -> WallGene {
         WallGene {
             wall_position,
             passage_position,
@@ -73,7 +78,13 @@ impl MazeGenome {
     }*/
 
     pub fn to_phenotype(&self) -> MazePhenotype {
-        let phenotype = MazePhenotype::new(self.width, self.height, self.first_direction, self.get_path_genes(), self.get_wall_genes());
+        let phenotype = MazePhenotype::new(
+            self.width,
+            self.height,
+            self.first_direction,
+            self.get_path_genes(),
+            self.get_wall_genes(),
+        );
         phenotype
     }
 }

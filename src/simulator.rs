@@ -1,90 +1,301 @@
-use crate::navigator::Navigator;
-use crate::maze_phenotype::{MazePhenotype, MazeCell};
-
-pub static CELL_TO_UNITS: u32 = 20;
+use crate::agent::agent::Agent;
+use crate::maze::maze_phenotype::{MazeCell, MazePhenotype};
 
 pub struct RunState {
     current_cell_x: u32,
     current_cell_y: u32,
-    current_x_in_cell: f32,
-    current_y_in_cell: f32,
-    angle: f32,
+    current_x_in_cell: f64,
+    current_y_in_cell: f64,
+    rotation_offset: f64,
+    /* 0 - 359 */
 }
 
-// recursive
-pub fn find_sensor_value(angle_offset: f32, run_state: &RunState, maze: &MazePhenotype) -> f32 {
-    let mut missing_side = (1.0 - run_state.current_x_in_cell) * angle.to_radians().tan();
+impl RunState {
+    pub fn new() -> RunState {
+        RunState {
+            current_cell_x: 0,
+            current_cell_y: 0,
+            current_x_in_cell: 0.5,
+            current_y_in_cell: 0.5,
+            rotation_offset: 0.0,
+        }
+    }
+}
 
-    1.0
+pub struct SimulatorResult {
+    completed: bool,
+    distance_from_goal: f64,
+}
 
-    /*if missing_side + run_state.current_y_in_cell < 1.0 {
-        if maze_cell.east_wall {
-            ((1.0 - x_in_cell).powi(2) + missing_side.powi(2)).sqrt()
+impl SimulatorResult {
+    pub fn new(completed: bool, distance_from_goal: f64) -> SimulatorResult {
+        SimulatorResult {
+            completed,
+            distance_from_goal,
+        }
+    }
+}
+
+pub fn find_sensor_value_north_east(
+    angle: f64,
+    current_x_in_cell: f64,
+    current_y_in_cell: f64,
+    current_cell_x: u32,
+    current_cell_y: u32,
+    maze: &MazePhenotype,
+) -> f64 {
+    let mut missing_side: f64 = (1.0 - current_x_in_cell) * angle.to_radians().tan();
+
+    if missing_side + current_y_in_cell < 1.0 {
+        let hypotenuse = ((1.0 - current_x_in_cell).powi(2) + missing_side.powi(2)).sqrt();
+
+        if maze.get_cell_at(current_cell_x, current_cell_y).east_wall {
+            hypotenuse
         } else {
-            1.0
+            hypotenuse
+                + find_sensor_value_north_east(
+                    angle,
+                    0.0,
+                    missing_side + current_y_in_cell,
+                    current_cell_x + 1,
+                    current_cell_y,
+                    maze,
+                )
         }
     } else {
-        missing_side = (1.0 - y_in_cell) * (90.0 - angle).to_radians().tan();
+        missing_side = (1.0 - current_y_in_cell) * (90.0 - angle).to_radians().tan();
+        let hypotenuse = ((1.0 - current_y_in_cell).powi(2) + missing_side.powi(2)).sqrt();
 
-        if maze_cell.north_wall {
-            (1.0 - y_in_cell).powi(2) + missing_side.powi(2).sqrt()
+        if maze.get_cell_at(current_cell_x, current_cell_y).north_wall {
+            hypotenuse
         } else {
-            1.0
+            hypotenuse
+                + find_sensor_value_north_east(
+                    angle,
+                    missing_side + current_x_in_cell,
+                    0.0,
+                    current_cell_x,
+                    current_cell_y - 1,
+                    maze,
+                )
         }
-    }*/
+    }
 }
 
-pub fn get_sensor_value(x_in_cell: f32, y_in_cell: f32, angle: f32, maze_cell: &MazeCell) -> f32 {
-    if angle > 0.0 && angle < 90.0 {
-        find_sensor_value(x_in_cell, y_in_cell, angle, maze_cell)
-    } else if angle >= 90.0 && angle < 180 {
-        find_sensor_value(x_in_cell, y_in_cell, angle, maze_cell)
+pub fn find_sensor_value_north_west(
+    angle: f64,
+    current_x_in_cell: f64,
+    current_y_in_cell: f64,
+    current_cell_x: u32,
+    current_cell_y: u32,
+    maze: &MazePhenotype,
+) -> f64 {
+    let calculation_angle = angle - 90.0;
+    let mut missing_side: f64 = (1.0 - current_y_in_cell) * calculation_angle.to_radians().tan();
+
+    if current_x_in_cell - missing_side > 0.0 {
+        let hypotenuse = ((1.0 - current_y_in_cell).powi(2) + missing_side.powi(2)).sqrt();
+
+        if maze.get_cell_at(current_cell_x, current_cell_y).north_wall {
+            hypotenuse
+        } else {
+            hypotenuse
+                + find_sensor_value_north_west(
+                    angle,
+                    current_x_in_cell - missing_side,
+                    0.0,
+                    current_cell_x,
+                    current_cell_y - 1,
+                    maze,
+                )
+        }
+    } else {
+        missing_side = current_x_in_cell * (90.0 - calculation_angle).to_radians().tan();
+        let hypotenuse = (current_x_in_cell.powi(2) + missing_side.powi(2)).sqrt();
+
+        if maze.get_cell_at(current_cell_x, current_cell_y).west_wall {
+            hypotenuse
+        } else {
+            hypotenuse
+                + find_sensor_value_north_west(
+                    angle,
+                    1.0,
+                    missing_side + current_y_in_cell,
+                    current_cell_x - 1,
+                    current_cell_y,
+                    maze,
+                )
+        }
+    }
+}
+
+pub fn find_sensor_value_south_west(
+    angle: f64,
+    current_x_in_cell: f64,
+    current_y_in_cell: f64,
+    current_cell_x: u32,
+    current_cell_y: u32,
+    maze: &MazePhenotype,
+) -> f64 {
+    let calculation_angle = angle - 180.0;
+    let mut missing_side: f64 = current_x_in_cell * calculation_angle.to_radians().tan();
+
+    if current_y_in_cell - missing_side > 0.0 {
+        let hypotenuse = (current_x_in_cell.powi(2) + missing_side.powi(2)).sqrt();
+
+        if maze.get_cell_at(current_cell_x, current_cell_y).west_wall {
+            hypotenuse
+        } else {
+            hypotenuse
+                + find_sensor_value_south_west(
+                    angle,
+                    1.0,
+                    current_y_in_cell - missing_side,
+                    current_cell_x - 1,
+                    current_cell_y,
+                    maze,
+                )
+        }
+    } else {
+        missing_side = current_y_in_cell * (90.0 - calculation_angle).to_radians().tan();
+        let hypotenuse = (current_y_in_cell.powi(2) + missing_side.powi(2)).sqrt();
+
+        if maze.get_cell_at(current_cell_x, current_cell_y).south_wall {
+            hypotenuse
+        } else {
+            hypotenuse
+                + find_sensor_value_south_west(
+                    angle,
+                    current_x_in_cell - missing_side,
+                    1.0,
+                    current_cell_x,
+                    current_cell_y + 1,
+                    maze,
+                )
+        }
+    }
+}
+
+pub fn find_sensor_value_south_east(
+    angle: f64,
+    current_x_in_cell: f64,
+    current_y_in_cell: f64,
+    current_cell_x: u32,
+    current_cell_y: u32,
+    maze: &MazePhenotype,
+) -> f64 {
+    let calculation_angle = angle - 270.0;
+    let mut missing_side: f64 = current_y_in_cell * calculation_angle.to_radians().tan();
+
+    if current_x_in_cell + missing_side < 1.0 {
+        let hypotenuse = (current_y_in_cell.powi(2) + missing_side.powi(2)).sqrt();
+
+        if maze.get_cell_at(current_cell_x, current_cell_y).south_wall {
+            hypotenuse
+        } else {
+            hypotenuse
+                + find_sensor_value_south_east(
+                    angle,
+                    current_x_in_cell + missing_side,
+                    1.0,
+                    current_cell_x,
+                    current_cell_y + 1,
+                    maze,
+                )
+        }
+    } else {
+        missing_side = (1.0 - current_x_in_cell) * (90.0 - calculation_angle).to_radians().tan();
+        let hypotenuse = ((1.0 - current_x_in_cell).powi(2) + missing_side.powi(2)).sqrt();
+
+        if maze.get_cell_at(current_cell_x, current_cell_y).east_wall {
+            hypotenuse
+        } else {
+            hypotenuse
+                + find_sensor_value_south_east(
+                    angle,
+                    0.0,
+                    current_y_in_cell - missing_side,
+                    current_cell_x + 1,
+                    current_cell_y,
+                    maze,
+                )
+        }
+    }
+}
+
+pub fn get_sensor_value(angle: f64, run_state: &RunState, maze: &MazePhenotype) -> f64 {
+    if angle >= 0.0 && angle < 90.0 {
+        find_sensor_value_north_east(
+            angle,
+            run_state.current_x_in_cell,
+            run_state.current_y_in_cell,
+            run_state.current_cell_x,
+            run_state.current_cell_y,
+            maze,
+        )
+    } else if angle >= 90.0 && angle < 180.0 {
+        find_sensor_value_north_west(
+            angle,
+            run_state.current_x_in_cell,
+            run_state.current_y_in_cell,
+            run_state.current_cell_x,
+            run_state.current_cell_y,
+            maze,
+        )
+    } else if angle >= 180.0 && angle < 270.0 {
+        find_sensor_value_south_west(
+            angle,
+            run_state.current_x_in_cell,
+            run_state.current_y_in_cell,
+            run_state.current_cell_x,
+            run_state.current_cell_y,
+            maze,
+        )
+    } else if angle >= 270.0 && angle < 360.0 {
+        find_sensor_value_south_east(
+            angle,
+            run_state.current_x_in_cell,
+            run_state.current_y_in_cell,
+            run_state.current_cell_x,
+            run_state.current_cell_y,
+            maze,
+        )
     } else {
         1.0
     }
 }
 
-pub fn sensor_will_hit_wall_in_cell(x_in_cell: f32, y_in_cell: f32, angle: f32, maze_cell: &MazeCell) -> bool {
-    false
+pub fn get_all_sensor_values(run_state: &RunState, maze: &MazePhenotype) -> Vec<f64> {
+    let sensor_base_angles: Vec<f64> = vec![0.0, 60.0, 120.0, 180.0, 240.0, 300.0];
+
+    let mut sensor_values: Vec<f64> = Vec::new();
+
+    for angle in sensor_base_angles {
+        let value = get_sensor_value((angle + run_state.rotation_offset) % 360.0, run_state, maze);
+        sensor_values.push(value);
+    }
+    sensor_values
 }
 
-pub fn get_sensor_values_from_position(current_x: u32, current_y: u32, maze: &MazePhenotype) -> [u32; 6] {
-
-
-    // find out where sensors will intersect walls
-    // create line from current position to first wall encounter
-
-    // calculate distance between current position and intersections
-
-    // return list of all values
-    let xs: [u32; 6] = [1, 2, 3, 4, 5, 6];
-    xs
-}
-
-pub fn simulate_navigator_in_maze(navigator: &Navigator, maze: &MazePhenotype) {
-
-    // initiate position
-    //let mut x: u32 = CELL_TO_UNITS * 0.5;
-    //let mut y: u32 = CELL_TO_UNITS * 0.5;
-
-    //repeat
-
-    // find sensor values from position
-    // send values to navigator model
-    // get movement direction
-    // validate movement
-    // update navigator position in maze
-    // check if finished
-    // check if time is up or maze steps have been taken
-
-    let mut steps_left = 100;
+pub fn simulate_navigator_in_maze(agent: &Agent, maze: &MazePhenotype) -> SimulatorResult {
+    let mut steps_left = 1;
     let mut maze_completed = false;
+    let mut run_state = RunState::new();
+
+    let sensor_values = get_all_sensor_values(&run_state, maze);
+    let mut outputs = vec![0.0, 0.0]; // how far to travel, rotation: [-90, 90]
+
+    /*steps_left -= 1;
 
     while steps_left > 0 && !maze_completed {
-        //let sensor_values = get_sensor_values_from_position(x, y, maze);
+        let sensor_values = get_all_sensor_values(&run_state, maze);
+
+        let mut outputs = vec![0.0, 0.0]; // travel distance and rotation
+        agent.activate(&sensor_values, &mut outputs);
+
+        println!("outputs: {:?}", outputs);
 
         /*let movement = navigator.get_movement(sensor_values);
-
         let new_position = get_new_positions(x, y, movement);
 
         x = new_position.x;
@@ -92,5 +303,7 @@ pub fn simulate_navigator_in_maze(navigator: &Navigator, maze: &MazePhenotype) {
 
 
         steps_left -= 1;
-    }
+    }*/
+
+    SimulatorResult::new(maze_completed, 1.0)
 }
