@@ -4,35 +4,34 @@ extern crate envconfig;
 extern crate envconfig_derive;
 extern crate lazy_static;
 
-use std::path::Path;
 use std::{env, thread};
+use std::path::Path;
 
 use elapsed::measure_time;
 use envconfig::Envconfig;
 use lazy_static::*;
 
-use crate::agent::agent::Agent;
-use crate::common::{OpeningLocation, Orientation};
 use crate::maze::maze_genotype::{MazeGenome, PathGene, WallGene};
 use crate::maze::maze_phenotype::MazePhenotype;
-use crate::simulator::{get_sensor_value, simulate_navigator_in_maze};
 
-mod agent;
-mod common;
 mod config;
 mod maze;
 mod mcc;
 mod simulator;
+mod neatns;
+mod network;
+mod generic_neat;
 
 fn main() {
-    let maze = generate_test_maze();
+    let seeds = neatns::generate_seeds();
+    /*let maze = generate_test_maze();
     let agent = Agent::new();
 
     simulate_navigator_in_maze(&agent, &maze);
-    maze.visualize(Path::new("testing/test.png"));
+    maze.visualize(Path::new("testing/test.png"));*/
 }
 
-fn generate_test_maze() -> MazePhenotype {
+/*fn generate_test_maze() -> MazePhenotype {
     let p1 = PathGene::new(4, 3);
     let p2 = PathGene::new(6, 1);
     let p3 = PathGene::new(9, 6);
@@ -67,7 +66,7 @@ fn generate_test_maze() -> MazePhenotype {
     let phenotype = mazey_boi.to_phenotype();
 
     phenotype
-}
+}*/
 
 /*fn test_threading() {
     let amount = 10000;

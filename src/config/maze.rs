@@ -1,7 +1,7 @@
 use envconfig::Envconfig;
 
 #[derive(Envconfig)]
-pub struct MazeConfig {
+pub struct Config {
     #[envconfig(from = "mutate_structure", default = "0.5")]
     pub mutate_structure: f32,
 

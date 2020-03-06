@@ -1,8 +1,8 @@
 extern crate queues;
 
-use crate::common::{OpeningLocation, Orientation, PathDirection};
 use crate::maze::maze_genotype::{PathGene, WallGene};
 use math::round;
+use crate::maze::{PathDirection, OpeningLocation, Orientation};
 
 #[derive(Debug, Clone)]
 pub struct MazeCell {
@@ -621,7 +621,7 @@ impl MazePhenotype {
         wall_gene_index: usize,
         wall_genes: &Vec<WallGene>,
     ) {
-        if subdivision.width == 1 || subdivision.height == 1 {
+        if subdivision.width <= 1 || subdivision.height <= 1 {
             return;
         }
 
@@ -631,18 +631,18 @@ impl MazePhenotype {
         if wall_gene.orientation == Orientation::Horizontal {
             let mut wall_location_y = subdivision.start_y
                 + round::floor(
-                    subdivision.height as f64 * wall_gene.wall_position as f64,
-                    0,
-                ) as u32;
+                subdivision.height as f64 * wall_gene.wall_position as f64,
+                0,
+            ) as u32;
             if wall_location_y >= subdivision.end_y {
-                wall_location_y -= subdivision.end_y - 1
+                wall_location_y = subdivision.end_y - 1
             };
 
             let passage_location_x = subdivision.start_x
                 + round::floor(
-                    subdivision.width as f64 * wall_gene.passage_position as f64,
-                    0,
-                ) as u32;
+                subdivision.width as f64 * wall_gene.passage_position as f64,
+                0,
+            ) as u32;
 
             for x in subdivision.start_x..subdivision.end_x + 1 {
                 if x == passage_location_x as u32 {
@@ -682,9 +682,9 @@ impl MazePhenotype {
 
             let passage_location_y = subdivision.start_y
                 + round::floor(
-                    subdivision.height as f64 * wall_gene.passage_position as f64,
-                    0,
-                ) as u32;
+                subdivision.height as f64 * wall_gene.passage_position as f64,
+                0,
+            ) as u32;
 
             for y in subdivision.start_y..subdivision.end_y + 1 {
                 if y == passage_location_y as u32 {

@@ -1,7 +1,7 @@
 use envconfig::Envconfig;
 
 #[derive(Envconfig)]
-pub struct AgentConfig {
+pub struct Config {
     #[envconfig(from = "mutate_weight", default = "0.001")]
     pub mutate_weight: f32,
 

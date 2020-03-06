@@ -1,19 +1,19 @@
 use envconfig::Envconfig;
 
 #[derive(Envconfig)]
-pub struct MCCConfig {
-    #[envconfig(from = "generations", default = "10")]
-    pub generations: i32,
+pub struct Config {
+    #[envconfig(from = "generations", default = "100")]
+    pub generations: usize,
 
     #[envconfig(from = "maze_population_capacity", default = "250")]
-    pub maze_population_capacity: i32,
+    pub maze_population_capacity: usize,
 
-    #[envconfig(from = "maze_seed_amount", default = "20")]
-    pub maze_seed_amount: i32,
+    #[envconfig(from = "maze_seed_amount", default = "10")]
+    pub maze_seed_amount: usize,
 
-    #[envconfig(from = "navigator_population_capacity", default = "250")]
-    pub navigator_population_capacity: usize,
+    #[envconfig(from = "agent_population_capacity", default = "250")]
+    pub agent_population_capacity: usize,
 
-    #[envconfig(from = "navigator_seed_amount", default = "20")]
-    pub navigator_seed_amount: i32,
+    #[envconfig(from = "agent_seed_amount", default = "20")]
+    pub agent_seed_amount: usize,
 }
