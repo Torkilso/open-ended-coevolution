@@ -4,8 +4,9 @@ use std::path::Path;
 use crate::config;
 use crate::maze::maze_genotype::{generate_random_maze, MazeGenome};
 use crate::neatns::agent::Agent;
+use crate::neatns::population::Population;
 
-mod population;
+pub mod population;
 pub mod agent;
 mod species;
 
@@ -27,27 +28,21 @@ impl Seeds {
 // outputs a set of agents and a set of mazes that fulfill the mc.
 pub fn generate_seeds() -> Seeds {
     let mut mazes_fulfilling_mc: Vec<MazeGenome> = vec![];
-    let agents_fulfilling_mc: Vec<Agent> = vec![];
+    let mut agents_fulfilling_mc: Vec<Agent> = vec![];
 
 
-    /*while mazes_fulfilling_mc.len() < config::MCC.maze_seed_amount {
-        // generate random maze
+    while mazes_fulfilling_mc.len() < config::MCC.maze_seed_amount {
         let maze = generate_random_maze(5, 5);
-
-
-        // initialise population with agents
-        let agent_population = generate_initial_population();
-
         let maze_completed = false;
+        let maze_phenotype = maze.to_phenotype();
+
+        let mut population = Population::new(config::NEAT.population_size, 10, 2);
 
         while !maze_completed {
-            // evolve population
-            // evaluate agents in maze
+            population.evolve();
+            let result  = population.run_simulation_and_update_fitness(&maze_phenotype);
 
-
-            // check if completed
-            // ...
-
+            println!("{}", population);
 
             if maze_completed {
                 mazes_fulfilling_mc.push(maze.clone());
@@ -59,7 +54,7 @@ pub fn generate_seeds() -> Seeds {
         }
     }
 
-    while agents_fulfilling_mc.len() < config::MCC.agent_seed_amount {}*/
+    //while agents_fulfilling_mc.len() < config::MCC.agent_seed_amount {}
 
     Seeds::new(mazes_fulfilling_mc, agents_fulfilling_mc)
 }

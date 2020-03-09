@@ -2,15 +2,18 @@ use crate::maze::maze_phenotype::{MazeCell, MazePhenotype};
 use crate::neatns::agent::Agent;
 use crate::network::neural_network::NeuralNetwork;
 use crate::simulator::sensor::get_all_sensor_values;
+use crate::simulator::radar::get_radar_values;
+use crate::config;
 
 mod sensor;
+pub mod radar;
 
 pub struct RunState {
     current_cell_x: u32,
     current_cell_y: u32,
     current_x_in_cell: f64,
     current_y_in_cell: f64,
-    rotation_offset: f64,
+    direction: f64,
     /* 0 - 359 */
 }
 
@@ -21,32 +24,55 @@ impl RunState {
             current_cell_y: 0,
             current_x_in_cell: 0.5,
             current_y_in_cell: 0.5,
-            rotation_offset: 0.0,
+            direction: config::AGENT.start_offset,
         }
+    }
+
+    pub fn global_x(&self) -> f64 {
+        self.current_cell_x as f64 + self.current_x_in_cell
+    }
+
+    pub fn global_y(&self, maze_height: u32) -> f64 {
+        (maze_height - self.current_cell_y) as f64 - self.current_y_in_cell
     }
 }
 
 pub struct SimulatorResult {
-    completed: bool,
+    agent_reached_end: bool,
     distance_from_goal: f64,
 }
 
 impl SimulatorResult {
-    pub fn new(completed: bool, distance_from_goal: f64) -> SimulatorResult {
+    pub fn new(agent_reached_end: bool, distance_from_goal: f64) -> SimulatorResult {
         SimulatorResult {
-            completed,
+            agent_reached_end,
             distance_from_goal,
         }
+    }
+
+    pub fn agent_reached_end(&self) -> bool {
+        self.agent_reached_end
     }
 }
 
 pub fn simulate_run(agent: &Agent, maze: &MazePhenotype) -> SimulatorResult {
-    let mut steps_left = 1;
+    let mut steps_left = 100;
     let mut maze_completed = false;
     let mut run_state = RunState::new();
 
     let sensor_values = get_all_sensor_values(&run_state, maze);
-    let mut outputs = vec![0.0, 0.0]; // how far to travel, rotation: [-90, 90]
+    let radar_values = get_radar_values(&run_state, maze).to_f64_vector();
+
+    let all_inputs = [&sensor_values[..], &radar_values[..]].concat();
+
+    let mut agent_phenotype = agent.to_phenotype();
+
+    println!("inputs: {:#?}", all_inputs);
+
+    let output = agent_phenotype.activate(&all_inputs);
+
+    println!("outputs: {:#?}", output);
+
 
     /*steps_left -= 1;
 
@@ -70,3 +96,4 @@ pub fn simulate_run(agent: &Agent, maze: &MazePhenotype) -> SimulatorResult {
 
     SimulatorResult::new(maze_completed, 1.0)
 }
+

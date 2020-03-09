@@ -9,7 +9,7 @@ use crate::maze::maze_phenotype::MazePhenotype;
 use crate::maze::PathDirection;
 
 impl MazePhenotype {
-    pub fn visualize(&self, file_path: &Path) {
+    pub fn visualize(&self, file_path: &Path, display_solution: bool) {
         let scale = 20;
         let offset = 10;
         let radius = 2;
@@ -36,38 +36,41 @@ impl MazePhenotype {
                     (y * scale as usize) as f32,
                     scale as f32,
                 );
-                if cell.is_waypoint {
-                    draw_filled_circle_mut(
-                        &mut drawing,
-                        (
-                            (x * scale as usize + offset) as i32,
-                            (y * scale as usize + offset) as i32,
-                        ),
-                        radius,
-                        Rgb([0, 0, 0]),
-                    );
-                }
-                if cell.is_juncture {
-                    draw_filled_circle_mut(
-                        &mut drawing,
-                        (
-                            (x * scale as usize + offset) as i32,
-                            (y * scale as usize + offset) as i32,
-                        ),
-                        radius,
-                        Rgb([0, 0, 0]),
-                    );
-                }
-                if cell.path_direction != PathDirection::None {
-                    draw_filled_circle_mut(
-                        &mut drawing,
-                        (
-                            (x * scale as usize + offset) as i32,
-                            (y * scale as usize + offset) as i32,
-                        ),
-                        radius,
-                        Rgb([0, 0, 0]),
-                    );
+
+                if display_solution {
+                    if cell.is_waypoint {
+                        draw_filled_circle_mut(
+                            &mut drawing,
+                            (
+                                (x * scale as usize + offset) as i32,
+                                (y * scale as usize + offset) as i32,
+                            ),
+                            radius,
+                            Rgb([0, 0, 0]),
+                        );
+                    }
+                    if cell.is_juncture {
+                        draw_filled_circle_mut(
+                            &mut drawing,
+                            (
+                                (x * scale as usize + offset) as i32,
+                                (y * scale as usize + offset) as i32,
+                            ),
+                            radius,
+                            Rgb([0, 0, 0]),
+                        );
+                    }
+                    if cell.path_direction != PathDirection::None {
+                        draw_filled_circle_mut(
+                            &mut drawing,
+                            (
+                                (x * scale as usize + offset) as i32,
+                                (y * scale as usize + offset) as i32,
+                            ),
+                            radius,
+                            Rgb([0, 0, 0]),
+                        );
+                    }
                 }
             }
         }

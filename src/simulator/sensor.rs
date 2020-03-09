@@ -232,12 +232,12 @@ pub fn get_sensor_value(angle: f64, run_state: &RunState, maze: &MazePhenotype) 
 }
 
 pub fn get_all_sensor_values(run_state: &RunState, maze: &MazePhenotype) -> Vec<f64> {
-    let sensor_base_angles: Vec<f64> = vec![0.0, 60.0, 120.0, 180.0, 240.0, 300.0];
+    let sensor_base_angles: Vec<f64> = vec![0.0, 45.0, 90.0, 180.0, 270.0, 315.0];
 
     let mut sensor_values: Vec<f64> = Vec::new();
 
     for angle in sensor_base_angles {
-        let value = get_sensor_value((angle + run_state.rotation_offset) % 360.0, run_state, maze);
+        let value = get_sensor_value((angle + run_state.direction) % 360.0, run_state, maze);
         sensor_values.push(value);
     }
     sensor_values

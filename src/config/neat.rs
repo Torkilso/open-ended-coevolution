@@ -3,7 +3,7 @@ use envconfig::Envconfig;
 
 #[derive(Envconfig)]
 pub struct Config {
-    #[envconfig(from = "POPULATION_SIZE", default = "500")]
+    #[envconfig(from = "POPULATION_SIZE", default = "1")]
     pub population_size: usize,
 
     #[envconfig(from = "ITERATIONS", default = "1000000")]

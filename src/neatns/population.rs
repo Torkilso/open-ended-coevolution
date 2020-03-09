@@ -5,12 +5,16 @@ use rand::Rng;
 use std::fmt;
 use crate::neatns::agent::Agent;
 use crate::neatns::species::Species;
+use crate::maze::maze_genotype::MazeGenome;
+use crate::simulator::{simulate_run, SimulatorResult};
+use crate::maze::maze_phenotype::MazePhenotype;
 
 pub struct Population {
     population_size: usize,
     species: Vec<Species>,
     pub innovation_log: InnovationLog,
     pub global_innovation: InnovationTime,
+    // todo add novelty metric archive
 }
 
 impl Population {
@@ -134,7 +138,7 @@ impl Population {
             species.age();
         }
 
-        // Evolve spiecies
+        // Evolve species
         let mut rng = rand::thread_rng();
         for i in 0..self.species.len() {
             let elites = std::cmp::min(
@@ -261,6 +265,17 @@ impl Population {
     /// Gather best agent
     pub fn best(&self) -> Option<&Agent> {
         self.iter().max_by(|a, b| a.cmp(&b))
+    }
+
+    pub fn run_simulation_and_update_fitness(&self, maze: &MazePhenotype) {
+        for agent in self.iter() {
+            let result = simulate_run(agent, &maze);
+
+            if result.agent_reached_end() {
+                // return agent that completed maze
+
+            }
+        }
     }
 }
 

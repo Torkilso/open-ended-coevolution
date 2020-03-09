@@ -13,4 +13,7 @@ pub struct Config {
 
     #[envconfig(from = "delete_neuron", default = "0.001")]
     pub delete_neuron: f32,
+
+    #[envconfig(from = "delete_neuron", default = "270.0")] // pointing south east
+    pub start_offset: f64,
 }
