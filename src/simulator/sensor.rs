@@ -1,6 +1,6 @@
 use crate::neatns::agent::Agent;
 use crate::maze::maze_phenotype::{MazeCell, MazePhenotype};
-use crate::simulator::RunState;
+use crate::simulator::run_state::RunState;
 
 pub fn find_sensor_value_north_east(
     angle: f64,
@@ -188,59 +188,3 @@ pub fn find_sensor_value_south_east(
         }
     }
 }
-
-pub fn get_sensor_value(angle: f64, run_state: &RunState, maze: &MazePhenotype) -> f64 {
-    if angle >= 0.0 && angle < 90.0 {
-        find_sensor_value_north_east(
-            angle,
-            run_state.current_x_in_cell,
-            run_state.current_y_in_cell,
-            run_state.current_cell_x,
-            run_state.current_cell_y,
-            maze,
-        )
-    } else if angle >= 90.0 && angle < 180.0 {
-        find_sensor_value_north_west(
-            angle,
-            run_state.current_x_in_cell,
-            run_state.current_y_in_cell,
-            run_state.current_cell_x,
-            run_state.current_cell_y,
-            maze,
-        )
-    } else if angle >= 180.0 && angle < 270.0 {
-        find_sensor_value_south_west(
-            angle,
-            run_state.current_x_in_cell,
-            run_state.current_y_in_cell,
-            run_state.current_cell_x,
-            run_state.current_cell_y,
-            maze,
-        )
-    } else if angle >= 270.0 && angle < 360.0 {
-        find_sensor_value_south_east(
-            angle,
-            run_state.current_x_in_cell,
-            run_state.current_y_in_cell,
-            run_state.current_cell_x,
-            run_state.current_cell_y,
-            maze,
-        )
-    } else {
-        1.0
-    }
-}
-
-pub fn get_all_sensor_values(run_state: &RunState, maze: &MazePhenotype) -> Vec<f64> {
-    let sensor_base_angles: Vec<f64> = vec![0.0, 45.0, 90.0, 180.0, 270.0, 315.0];
-
-    let mut sensor_values: Vec<f64> = Vec::new();
-
-    for angle in sensor_base_angles {
-        let value = get_sensor_value((angle + run_state.direction) % 360.0, run_state, maze);
-        sensor_values.push(value);
-    }
-    sensor_values
-}
-
-

@@ -13,7 +13,7 @@ use lazy_static::*;
 use crate::maze::maze_genotype::{generate_random_maze, MazeGenome, PathGene, WallGene};
 use crate::maze::maze_phenotype::MazePhenotype;
 use crate::simulator::radar::get_radar_values;
-use crate::simulator::RunState;
+use crate::visualization::maze::visualize_maze;
 
 mod config;
 mod maze;
@@ -22,12 +22,15 @@ mod simulator;
 mod neatns;
 mod network;
 mod generic_neat;
+mod visualization;
 
 fn main() {
-    /*let run_state = RunState::new();
     let maze = generate_random_maze(5, 5);
+    println!("{}", maze);
     let maze_phenotype = maze.to_phenotype();
-    get_radar_values(&run_state, &maze_phenotype);*/
+    visualize_maze(&maze_phenotype, Path::new("./testing/test.png"), true);
+
+    //let val = get_radar_values(&run_state, &maze_phenotype);
 
     //let seeds = neatns::generate_seeds();
 }

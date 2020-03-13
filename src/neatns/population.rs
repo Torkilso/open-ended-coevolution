@@ -8,6 +8,7 @@ use crate::neatns::species::Species;
 use crate::maze::maze_genotype::MazeGenome;
 use crate::simulator::{simulate_run, SimulatorResult};
 use crate::maze::maze_phenotype::MazePhenotype;
+use std::ptr::null;
 
 pub struct Population {
     population_size: usize,
@@ -267,15 +268,17 @@ impl Population {
         self.iter().max_by(|a, b| a.cmp(&b))
     }
 
-    pub fn run_simulation_and_update_fitness(&self, maze: &MazePhenotype) {
+    pub fn run_simulation_and_update_fitness(&self, maze: &MazePhenotype) -> Option<Agent> {
+        let mut successful_agent: Option<Agent> = None;
+
         for agent in self.iter() {
             let result = simulate_run(agent, &maze);
 
             if result.agent_reached_end() {
-                // return agent that completed maze
-
+                successful_agent = Some(agent.clone());
             }
         }
+        successful_agent
     }
 }
 

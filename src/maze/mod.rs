@@ -1,6 +1,5 @@
 pub mod maze_genotype;
 pub mod maze_phenotype;
-pub mod visualization;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Orientation {

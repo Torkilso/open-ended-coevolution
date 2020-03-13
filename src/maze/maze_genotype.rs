@@ -4,6 +4,8 @@ use rand::Rng;
 
 use crate::maze::maze_phenotype::MazePhenotype;
 use crate::maze::{Orientation, OpeningLocation};
+use std::fmt::Display;
+use core::fmt;
 
 #[derive(Debug, Copy, Clone)]
 pub struct WallGene {
@@ -80,10 +82,16 @@ impl MazeGenome {
             self.width,
             self.height,
             self.first_direction,
-            self.get_path_genes(),
-            self.get_wall_genes(),
+            &self.path_genes,
+            &self.wall_genes,
         );
         phenotype
+    }
+}
+
+impl fmt::Display for MazeGenome {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "MazeGenome: {}x{} \n First direction: {:?} \n Path genes: {:?} \n Wall genes {:?}", self.width, self.height, self.first_direction, self.path_genes, self.wall_genes)
     }
 }
 
@@ -120,14 +128,14 @@ pub fn generate_random_maze(width: u32, height: u32) -> MazeGenome {
     );
 
     if initial_orientation == Orientation::Horizontal {
-        let path_gene = PathGene::new(1 + (rng.gen::<f32>() * (height - 2) as f32) as u32, (rng.gen::<f32>() * width as f32) as u32);
+        let path_gene = PathGene::new(1 + (rng.gen::<f32>() * (width - 2) as f32) as u32, (rng.gen::<f32>() * height as f32) as u32);
 
         let path_genes = vec![path_gene];
         let wall_genes = vec![wall_gene];
 
         MazeGenome::new(width, height, initial_orientation, path_genes, wall_genes)
     } else {
-        let path_gene = PathGene::new((rng.gen::<f32>() * width as f32) as u32, 1 + (rng.gen::<f32>() * (height - 2) as f32) as u32);
+        let path_gene = PathGene::new((rng.gen::<f32>() * width as f32) as u32, height - 1 - (rng.gen::<f32>() * (height - 1) as f32) as u32);
 
         let path_genes = vec![path_gene];
         let wall_genes = vec![wall_gene];

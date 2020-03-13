@@ -14,6 +14,12 @@ pub struct Config {
     #[envconfig(from = "delete_neuron", default = "0.001")]
     pub delete_neuron: f32,
 
-    #[envconfig(from = "delete_neuron", default = "270.0")] // pointing south east
+    #[envconfig(from = "start_offset", default = "315.0")] // pointing south east
     pub start_offset: f64,
+
+    #[envconfig(from = "max_speed", default = "0.03")]
+    pub max_speed: f64,
+
+    #[envconfig(from = "agent_radius", default = "0.08")]
+    pub agent_radius: f64,
 }

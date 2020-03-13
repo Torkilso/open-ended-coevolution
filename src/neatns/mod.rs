@@ -30,27 +30,27 @@ pub fn generate_seeds() -> Seeds {
     let mut mazes_fulfilling_mc: Vec<MazeGenome> = vec![];
     let mut agents_fulfilling_mc: Vec<Agent> = vec![];
 
-
     while mazes_fulfilling_mc.len() < config::MCC.maze_seed_amount {
-        let maze = generate_random_maze(5, 5);
-        let maze_completed = false;
-        let maze_phenotype = maze.to_phenotype();
+        let mut generations = 0;
 
+        let maze = generate_random_maze(5, 5);
+        let maze_phenotype = maze.to_phenotype();
         let mut population = Population::new(config::NEAT.population_size, 10, 2);
 
-        while !maze_completed {
+        mazes_fulfilling_mc.push(maze.clone());
+
+
+        while generations < config::MCC.find_seed_generation_limit {
             population.evolve();
             let result  = population.run_simulation_and_update_fitness(&maze_phenotype);
 
-            println!("{}", population);
 
-            if maze_completed {
+            if result.is_some() {
                 mazes_fulfilling_mc.push(maze.clone());
-            } else {
-                // find novelty metric for each agent
-                // set fitness to novelty metric
-                // population.update_fitness()
             }
+
+            println!("Generation {}", generations);
+            generations += 1;
         }
     }
 
