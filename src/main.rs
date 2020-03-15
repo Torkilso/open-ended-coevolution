@@ -28,7 +28,7 @@ fn main() {
     let maze = generate_random_maze(5, 5);
     println!("{}", maze);
     let maze_phenotype = maze.to_phenotype();
-    visualize_maze(&maze_phenotype, Path::new("./testing/test.png"), true);
+    visualize_maze(&maze_phenotype, Path::new("./test.png"), true);
 
     //let val = get_radar_values(&run_state, &maze_phenotype);
 
