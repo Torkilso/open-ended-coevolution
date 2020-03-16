@@ -8,7 +8,7 @@ pub struct Config {
     #[envconfig(from = "maze_population_capacity", default = "250")]
     pub maze_population_capacity: usize,
 
-    #[envconfig(from = "maze_seed_amount", default = "10")]
+    #[envconfig(from = "maze_seed_amount", default = "1")]
     pub maze_seed_amount: usize,
 
     #[envconfig(from = "agent_population_capacity", default = "250")]

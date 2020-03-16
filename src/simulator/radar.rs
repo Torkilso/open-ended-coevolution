@@ -28,8 +28,8 @@ impl RadarValues {
 pub fn get_radar_values(run_state: &RunState, maze: &MazePhenotype) -> RadarValues {
     let mut radar_values = RadarValues::new();
 
-    let agent_x = run_state.global_x();
-    let agent_y = run_state.global_y();
+    let agent_x = run_state.global_x;
+    let agent_y = run_state.global_y;
 
     let mut angle = 0.0;
 

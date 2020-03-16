@@ -415,8 +415,6 @@ impl MazePhenotype {
             0,
         ) as u32;
 
-
-        // TODO cleanup this
         if wall_gene.opening_location == OpeningLocation::North {
             if north_wall > 0 {
                 for current_x in 0..subdivision.width {
@@ -641,7 +639,10 @@ impl MazePhenotype {
                 0,
             ) as u32;
             if wall_location_y >= subdivision.start_y {
-                wall_location_y = subdivision.start_y - 1
+                //wall_location_y = subdivision.start_y - 1
+            };
+            if wall_location_y <= subdivision.end_y {
+                wall_location_y = subdivision.end_y + 1
             };
 
             let passage_location_x = subdivision.start_x
@@ -658,9 +659,6 @@ impl MazePhenotype {
                 };
             }
 
-            println!("{:#?} {} {}", subdivision, wall_location_y, passage_location_x);
-
-
             let child_1 = MazeSubdivision {
                 start_x: subdivision.start_x,
                 start_y: subdivision.start_y,
@@ -672,7 +670,7 @@ impl MazePhenotype {
 
             let child_2 = MazeSubdivision {
                 start_x: subdivision.start_x,
-                start_y: wall_location_y + 1,
+                start_y: wall_location_y - 1,
                 end_x: subdivision.end_x,
                 end_y: subdivision.end_y,
                 width: subdivision.width,

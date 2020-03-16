@@ -5,10 +5,13 @@ use crate::config;
 use crate::maze::maze_genotype::{generate_random_maze, MazeGenome};
 use crate::neatns::agent::Agent;
 use crate::neatns::population::Population;
+use crate::visualization::maze::visualize_maze;
 
 pub mod population;
 pub mod agent;
 mod species;
+mod novelty_archive;
+mod novelty_item;
 
 pub struct Seeds {
     mazes: Vec<MazeGenome>,
@@ -30,11 +33,29 @@ pub fn generate_seeds() -> Seeds {
     let mut mazes_fulfilling_mc: Vec<MazeGenome> = vec![];
     let mut agents_fulfilling_mc: Vec<Agent> = vec![];
 
+
+    /*let mut population = Population::new(config::NEAT.population_size, 10, 2);
+    population.evolve();
+    population.evolve();
+    population.evolve();
+    population.evolve();
+    let agent = population.random_agent();
+    let maze = generate_random_maze(5, 5);
+    let maze_phenotype = maze.to_phenotype();
+    visualize_maze(&maze_phenotype, Path::new("./test.png"), true);
+    if agent.is_some(){
+        let result = simulate_run(agent.unwrap(), &maze_phenotype);
+    }*/
+
+
+
     while mazes_fulfilling_mc.len() < config::MCC.maze_seed_amount {
         let mut generations = 0;
 
         let maze = generate_random_maze(5, 5);
         let maze_phenotype = maze.to_phenotype();
+        visualize_maze(&maze_phenotype, Path::new("./test.png"), true);
+
         let mut population = Population::new(config::NEAT.population_size, 10, 2);
 
         mazes_fulfilling_mc.push(maze.clone());
@@ -44,9 +65,8 @@ pub fn generate_seeds() -> Seeds {
             population.evolve();
             let result  = population.run_simulation_and_update_fitness(&maze_phenotype);
 
-
             if result.is_some() {
-                mazes_fulfilling_mc.push(maze.clone());
+                //mazes_fulfilling_mc.push(maze.clone());
             }
 
             println!("Generation {}", generations);

@@ -6,7 +6,7 @@ use std::fmt;
 use crate::neatns::agent::Agent;
 use crate::neatns::species::Species;
 use crate::maze::maze_genotype::MazeGenome;
-use crate::simulator::{simulate_run, SimulatorResult};
+use crate::simulator::{simulate_run, SimulatorResult, Point};
 use crate::maze::maze_phenotype::MazePhenotype;
 use std::ptr::null;
 
@@ -192,7 +192,7 @@ impl Population {
     }
 
     /// Get random agent from population
-    fn random_agent(&self) -> Option<&Agent> {
+    pub fn random_agent(&self) -> Option<&Agent> {
         let len = self.iter().count();
 
         if len == 0 {
@@ -271,11 +271,18 @@ impl Population {
     pub fn run_simulation_and_update_fitness(&self, maze: &MazePhenotype) -> Option<Agent> {
         let mut successful_agent: Option<Agent> = None;
 
+        let default = Point::new(-1.0, -1.0);
+
         for agent in self.iter() {
             let result = simulate_run(agent, &maze);
 
+            let final_position = result.final_position().unwrap_or(&default);
+
+            println!("final position: {:?}", final_position);
+
             if result.agent_reached_end() {
                 successful_agent = Some(agent.clone());
+                break;
             }
         }
         successful_agent

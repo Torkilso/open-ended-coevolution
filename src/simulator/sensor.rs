@@ -22,7 +22,7 @@ pub fn find_sensor_value_north_east(
                 + find_sensor_value_north_east(
                 angle,
                 0.0,
-                missing_side + current_y_in_cell,
+                current_y_in_cell + missing_side,
                 current_cell_x + 1,
                 current_cell_y,
                 maze,
@@ -41,7 +41,7 @@ pub fn find_sensor_value_north_east(
                 missing_side + current_x_in_cell,
                 0.0,
                 current_cell_x,
-                current_cell_y - 1,
+                current_cell_y + 1,
                 maze,
             )
         }
@@ -71,7 +71,7 @@ pub fn find_sensor_value_north_west(
                 current_x_in_cell - missing_side,
                 0.0,
                 current_cell_x,
-                current_cell_y - 1,
+                current_cell_y + 1,
                 maze,
             )
         }
@@ -135,7 +135,7 @@ pub fn find_sensor_value_south_west(
                 current_x_in_cell - missing_side,
                 1.0,
                 current_cell_x,
-                current_cell_y + 1,
+                current_cell_y - 1,
                 maze,
             )
         }
@@ -165,7 +165,7 @@ pub fn find_sensor_value_south_east(
                 current_x_in_cell + missing_side,
                 1.0,
                 current_cell_x,
-                current_cell_y + 1,
+                current_cell_y - 1,
                 maze,
             )
         }

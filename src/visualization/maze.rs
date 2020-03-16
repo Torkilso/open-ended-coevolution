@@ -10,7 +10,7 @@ use crate::maze::PathDirection;
 use crate::config;
 
 pub fn visualize_maze(maze: &MazePhenotype, file_path: &Path, display_solution: bool) {
-    let scale_u32 = config::MAZE.cell_dimension;
+    let scale_u32 = config::MAZE.cell_dimension as u32;
     let scale_usize = config::MAZE.cell_dimension as usize;
     let offset = config::MAZE.cell_dimension as usize / 2;
     let radius = 2;

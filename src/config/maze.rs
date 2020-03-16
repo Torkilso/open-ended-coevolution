@@ -17,6 +17,6 @@ pub struct Config {
     #[envconfig(from = "delete_waypoint", default = "0.001")]
     pub delete_waypoint: f32,
 
-    #[envconfig(from = "cell_dimension", default = "32")]
-    pub cell_dimension: u32,
+    #[envconfig(from = "cell_dimension", default = "32.0")]
+    pub cell_dimension: f64,
 }
