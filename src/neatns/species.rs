@@ -55,12 +55,12 @@ impl Species {
     }
 
     /// Iterate agents. Adheres to lock.
-    pub fn iter(&self) -> impl Iterator<Item=&Agent> {
+    pub fn iter(&self) -> impl Iterator<Item = &Agent> {
         self.agents.iter().take(self.len())
     }
 
     /// Iterate mutable agents. Adheres to lock.
-    pub fn iter_mut(&mut self) -> impl Iterator<Item=&mut Agent> {
+    pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut Agent> {
         let len = self.len(); // Must read len before iter_mut
         self.agents.iter_mut().take(len)
     }

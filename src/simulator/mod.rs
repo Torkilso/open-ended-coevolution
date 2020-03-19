@@ -1,34 +1,31 @@
+use crate::config;
 use crate::maze::maze_phenotype::{MazeCell, MazePhenotype};
 use crate::neatns::agent::Agent;
 use crate::network::neural_network::NeuralNetwork;
 use crate::simulator::radar::get_radar_values;
 use crate::simulator::run_state::RunState;
-use crate::config;
 use std::fmt;
 
-mod sensor;
 pub mod radar;
 mod run_state;
+mod sensor;
 
 #[derive(Debug, Clone)]
 pub struct Point {
-    x: f64,
-    y: f64,
+    pub (crate) x: f64,
+    pub (crate) y: f64,
 }
 
 impl Point {
     pub fn new(x: f64, y: f64) -> Point {
-        Point {
-            x,
-            y,
-        }
+        Point { x, y }
     }
 }
 
 #[derive(Debug, Clone)]
 pub struct SimulatorResult {
-    agent_reached_end: bool,
-    agent_path: Vec<Point>,
+    pub (crate) agent_reached_end: bool,
+    pub (crate) agent_path: Vec<Point>,
 }
 
 impl SimulatorResult {
@@ -47,23 +44,27 @@ impl SimulatorResult {
         self.agent_reached_end = value;
     }
 
-    pub fn add_point (&mut self, point: Point) {
+    pub fn add_point(&mut self, point: Point) {
         self.agent_path.push(point);
     }
 
-    pub fn final_position(&self) -> Option<&Point>{
+    pub fn final_position(&self) -> Option<&Point> {
         self.agent_path.last()
     }
 }
 
 impl fmt::Display for SimulatorResult {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Simulator result: \nCompleted: {} \nPath: {:?}", self.agent_reached_end, self.agent_path)
+        write!(
+            f,
+            "Simulator result: \nCompleted: {} \nPath: {:?}",
+            self.agent_reached_end, self.agent_path
+        )
     }
 }
 
 pub fn simulate_run(agent: &Agent, maze: &MazePhenotype) -> SimulatorResult {
-    let mut steps_left = 100;
+    let mut steps_left = 300;
     let mut run_state = RunState::new(maze.height);
 
     let mut agent_phenotype = agent.to_phenotype();
@@ -98,4 +99,3 @@ pub fn simulate_run(agent: &Agent, maze: &MazePhenotype) -> SimulatorResult {
 
     result
 }
-

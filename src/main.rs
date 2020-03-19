@@ -4,8 +4,8 @@ extern crate envconfig;
 extern crate envconfig_derive;
 extern crate lazy_static;
 
-use std::{env, thread};
 use std::path::Path;
+use std::{env, thread};
 
 use elapsed::measure_time;
 use lazy_static::*;
@@ -16,12 +16,12 @@ use crate::simulator::radar::get_radar_values;
 use crate::visualization::maze::visualize_maze;
 
 mod config;
+mod generic_neat;
 mod maze;
 mod mcc;
-mod simulator;
 mod neatns;
 mod network;
-mod generic_neat;
+mod simulator;
 mod visualization;
 
 fn main() {
@@ -32,5 +32,5 @@ fn main() {
 
     //let val = get_radar_values(&run_state, &maze_phenotype);*/
 
-        let seeds = neatns::generate_seeds();
+    let seeds = neatns::generate_seeds();
 }

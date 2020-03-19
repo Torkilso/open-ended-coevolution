@@ -37,9 +37,7 @@ impl NeuralNetwork {
         }
     }*/
 
-    pub fn new(
-        genome: &Genome
-    ) -> NeuralNetwork {
+    pub fn new(genome: &Genome) -> NeuralNetwork {
         let input_length = genome.inputs.len();
         let cumulative_hidden_length = input_length + genome.hidden_nodes.len(); // Length of input and hidden
         let cumulative_output_length = cumulative_hidden_length + genome.outputs.len(); // Length of input, hidden and output

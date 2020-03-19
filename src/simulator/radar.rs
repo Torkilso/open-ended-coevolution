@@ -1,5 +1,5 @@
-use crate::maze::maze_phenotype::MazePhenotype;
 use crate::config;
+use crate::maze::maze_phenotype::MazePhenotype;
 use crate::simulator::run_state::RunState;
 
 #[derive(Debug, Clone)]
@@ -21,7 +21,12 @@ impl RadarValues {
     }
 
     pub fn to_f64_vector(&self) -> Vec<f64> {
-        vec![if self.forward { 1.0 } else { 0.0 }, if self.right { 1.0 } else { 0.0 }, if self.back { 1.0 } else { 0.0 }, if self.left { 1.0 } else { 0.0 }]
+        vec![
+            if self.forward { 1.0 } else { 0.0 },
+            if self.right { 1.0 } else { 0.0 },
+            if self.back { 1.0 } else { 0.0 },
+            if self.left { 1.0 } else { 0.0 },
+        ]
     }
 }
 
@@ -34,14 +39,21 @@ pub fn get_radar_values(run_state: &RunState, maze: &MazePhenotype) -> RadarValu
     let mut angle = 0.0;
 
     if agent_x <= maze.width as f64 - 0.5 && agent_y >= 0.5 {
-        angle = 270f64 + ((maze.width as f64 - 0.5 - agent_x) / (agent_y - 0.5)).atan().to_degrees();
+        angle = 270f64
+            + ((maze.width as f64 - 0.5 - agent_x) / (agent_y - 0.5))
+                .atan()
+                .to_degrees();
     } else if agent_x <= maze.width as f64 - 0.5 && agent_y <= 0.5 {
         // below y goal
-        angle = ((0.5 - agent_y) / (maze.width as f64 - 0.5 - agent_x)).atan().to_degrees();
+        angle = ((0.5 - agent_y) / (maze.width as f64 - 0.5 - agent_x))
+            .atan()
+            .to_degrees();
     } else if agent_x >= maze.width as f64 - 0.5 && agent_y >= 0.5 {
         // right of x goal
-        angle = 270f64 - ((maze.width as f64 - agent_x) / (agent_y - 0.5)).atan().to_degrees();
-
+        angle = 270f64
+            - ((maze.width as f64 - agent_x) / (agent_y - 0.5))
+                .atan()
+                .to_degrees();
     }
     let mut difference = run_state.current_direction - angle;
 
@@ -68,4 +80,3 @@ pub fn get_radar_values(run_state: &RunState, maze: &MazePhenotype) -> RadarValu
 
     radar_values
 }
-

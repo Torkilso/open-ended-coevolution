@@ -1,8 +1,9 @@
 use crate::generic_neat::genome::Genome;
 use crate::generic_neat::innovation::InnovationLog;
 use crate::generic_neat::innovation::InnovationTime;
-use std::cmp;
 use crate::network::neural_network::NeuralNetwork;
+use std::cmp;
+use crate::simulator::Point;
 
 #[derive(Clone)]
 pub struct Agent {
@@ -10,6 +11,7 @@ pub struct Agent {
     pub fitness: f64,
     pub adjusted_fitness: f64,
     pub generation: u64,
+    pub final_position: Option<Point>,
 }
 
 impl Agent {
@@ -19,7 +21,12 @@ impl Agent {
             fitness: 0.0,
             adjusted_fitness: 0.0,
             generation,
+            final_position: Option::None,
         }
+    }
+
+    pub fn set_fitness(&mut self, value: f64) {
+        self.fitness = value;
     }
 
     /// Breed organism with other organism
@@ -31,6 +38,7 @@ impl Agent {
             fitness: 0.0,
             adjusted_fitness: 0.0,
             generation: self.generation + 1,
+            final_position: Option::None,
         }
     }
 
@@ -39,9 +47,7 @@ impl Agent {
         self.fitness.partial_cmp(&other.fitness).unwrap()
     }
 
-    pub fn to_phenotype(
-        &self
-    ) -> NeuralNetwork {
+    pub fn to_phenotype(&self) -> NeuralNetwork {
         NeuralNetwork::new(&self.genome)
     }
 

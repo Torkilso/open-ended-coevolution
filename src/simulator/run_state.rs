@@ -1,8 +1,11 @@
-use crate::maze::maze_phenotype::MazePhenotype;
-use std::f64::consts::PI;
-use crate::simulator::sensor::{find_sensor_value_south_east, find_sensor_value_south_west, find_sensor_value_north_west, find_sensor_value_north_east};
 use crate::config;
+use crate::maze::maze_phenotype::MazePhenotype;
+use crate::simulator::sensor::{
+    find_sensor_value_north_east, find_sensor_value_north_west, find_sensor_value_south_east,
+    find_sensor_value_south_west,
+};
 use crate::simulator::Point;
+use std::f64::consts::PI;
 
 pub struct RunState {
     pub(crate) global_x: f64,
@@ -31,9 +34,13 @@ impl RunState {
         }
     }
 
-    pub fn update_velocities(&mut self, velocity_adjustment: f64, angular_velocity_adjustment: f64) {
-        self.current_velocity += (velocity_adjustment);// - 0.5);
-        self.current_angular_velocity += (angular_velocity_adjustment);// - 0.5);
+    pub fn update_velocities(
+        &mut self,
+        velocity_adjustment: f64,
+        angular_velocity_adjustment: f64,
+    ) {
+        self.current_velocity += (velocity_adjustment); // - 0.5);
+        self.current_angular_velocity += (angular_velocity_adjustment); // - 0.5);
 
         // constraints of speed & angular velocity
         if self.current_velocity > config::AGENT.max_speed {
@@ -52,8 +59,10 @@ impl RunState {
 
     pub fn update_position(&mut self, maze: &MazePhenotype) -> Point {
         // get horizontal and vertical velocity components
-        let vx = ((self.current_direction / 180.0 * PI).cos() * self.current_velocity) / config::MAZE.cell_dimension;
-        let vy = ((self.current_direction / 180.0 * PI).sin() * self.current_velocity) / config::MAZE.cell_dimension;
+        let vx = ((self.current_direction / 180.0 * PI).cos() * self.current_velocity)
+            / config::MAZE.cell_dimension;
+        let vy = ((self.current_direction / 180.0 * PI).sin() * self.current_velocity)
+            / config::MAZE.cell_dimension;
 
         // Update agent heading
         self.current_direction += self.current_angular_velocity;
@@ -95,7 +104,12 @@ impl RunState {
         Point::new(self.global_x, self.global_y)
     }
 
-    fn will_collide_with_wall(&self, new_x_in_cell: f64, new_y_in_cell: f64, maze: &MazePhenotype) -> bool {
+    fn will_collide_with_wall(
+        &self,
+        new_x_in_cell: f64,
+        new_y_in_cell: f64,
+        maze: &MazePhenotype,
+    ) -> bool {
         let cell = maze.get_cell_at(new_x_in_cell.floor() as u32, new_y_in_cell.floor() as u32);
 
         let scaled_x = new_x_in_cell * config::MAZE.cell_dimension;

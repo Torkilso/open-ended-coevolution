@@ -72,9 +72,15 @@ pub struct Config {
     #[envconfig(from = "ELITISM", default = "1")]
     pub elitism: usize,
 
-    #[envconfig(from = "HIDDEN_ACTIVATIONS", default = "None ReLU Sigmoid Normal Sine Square Exp")]
+    #[envconfig(
+        from = "HIDDEN_ACTIVATIONS",
+        default = "None ReLU Sigmoid Normal Sine Square Exp"
+    )]
     pub hidden_activations: activation::Activations,
 
-    #[envconfig(from = "OUTPUT_ACTIVATIONS", default = "None ReLU Sigmoid Normal Sine Square Exp")]
+    #[envconfig(
+        from = "OUTPUT_ACTIVATIONS",
+        default = "None ReLU Sigmoid Normal Sine Square Exp"
+    )]
     pub output_activations: activation::Activations,
 }

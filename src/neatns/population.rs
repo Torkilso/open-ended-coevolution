@@ -1,21 +1,22 @@
 use crate::config;
 use crate::generic_neat::innovation::InnovationLog;
 use crate::generic_neat::innovation::InnovationTime;
-use rand::Rng;
-use std::fmt;
+use crate::maze::maze_genotype::MazeGenome;
+use crate::maze::maze_phenotype::MazePhenotype;
 use crate::neatns::agent::Agent;
 use crate::neatns::species::Species;
-use crate::maze::maze_genotype::MazeGenome;
-use crate::simulator::{simulate_run, SimulatorResult, Point};
-use crate::maze::maze_phenotype::MazePhenotype;
+use crate::simulator::{simulate_run, Point, SimulatorResult};
+use rand::Rng;
+use std::fmt;
 use std::ptr::null;
+use crate::neatns::novelty_archive::NoveltyArchive;
 
 pub struct Population {
     population_size: usize,
     species: Vec<Species>,
     pub innovation_log: InnovationLog,
     pub global_innovation: InnovationTime,
-    // todo add novelty metric archive
+    novelty_archive: NoveltyArchive,
 }
 
 impl Population {
@@ -25,6 +26,7 @@ impl Population {
             species: Vec::new(),
             innovation_log: InnovationLog::new(),
             global_innovation: InnovationTime::new(),
+            novelty_archive: NoveltyArchive::new(),
         };
 
         for _ in 0..population_size {
@@ -70,10 +72,7 @@ impl Population {
         // Subtract 1 from pop size to make allow for potential increase of (up to) 1.0 in best fit species.
         // If not increased by (up to) 1.0, the extra individual will be added to the spicies closest to
         // reproducing an additional child.
-        let avg_fitness: f64 = self
-            .iter()
-            .map(|agent| agent.adjusted_fitness)
-            .sum::<f64>()
+        let avg_fitness: f64 = self.iter().map(|agent| agent.adjusted_fitness).sum::<f64>()
             / (config::NEAT.population_size - 1) as f64;
 
         // Calculate number of new offsprings to produce within each new species
@@ -237,12 +236,12 @@ impl Population {
     }*/
 
     /// Iterate agents
-    fn iter(&self) -> impl Iterator<Item=&Agent> {
+    pub fn iter(&self) -> impl Iterator<Item=&Agent> {
         self.species.iter().map(|species| species.iter()).flatten()
     }
 
     /// Iterate agents
-    fn iter_mut(&mut self) -> impl Iterator<Item=&mut Agent> {
+    pub fn iter_mut(&mut self) -> impl Iterator<Item=&mut Agent> {
         self.species
             .iter_mut()
             .map(|species| species.iter_mut())
@@ -250,7 +249,7 @@ impl Population {
     }
 
     /// Enumerate agents
-    fn enumerate(&self) -> impl Iterator<Item=(usize, usize, &Agent)> {
+    /*fn enumerate(&self) -> impl Iterator<Item = (usize, usize, &Agent)> {
         self.species
             .iter()
             .enumerate()
@@ -265,26 +264,30 @@ impl Population {
 
     /// Gather best agent
     pub fn best(&self) -> Option<&Agent> {
-        self.iter().max_by(|a, b| a.cmp(&b))
-    }
+        self.iter().max_by(|a, b| a.cmp(&b))ø
+    }*/
 
-    pub fn run_simulation_and_update_fitness(&self, maze: &MazePhenotype) -> Option<Agent> {
+    pub fn run_simulation_and_update_fitness(&mut self, maze: &MazePhenotype) -> Option<Agent> {
         let mut successful_agent: Option<Agent> = None;
 
-        let default = Point::new(-1.0, -1.0);
+        let default = Point::new(0.5, maze.height as f64 - 0.5);
 
-        for agent in self.iter() {
+        for agent in self.iter_mut() {
             let result = simulate_run(agent, &maze);
-
-            let final_position = result.final_position().unwrap_or(&default);
-
-            println!("final position: {:?}", final_position);
 
             if result.agent_reached_end() {
                 successful_agent = Some(agent.clone());
                 break;
             }
+
+            let final_position = result.final_position().unwrap_or(&default).clone();
+            agent.fitness = self.novelty_archive.evaluate_position_novelty(&final_position);
+
+            //self.novelty_archive.add_or_discard_position(final_position);
         }
+
+        self.novelty_archive.end_of_generation();
+
         successful_agent
     }
 }

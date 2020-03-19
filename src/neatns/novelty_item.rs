@@ -21,7 +21,6 @@ impl NoveltyItem {
     }
 }
 
-
 /*pub struct ItemsDistance<'s> {
     distance: f64,
     from: &'s NoveltyItem,
@@ -42,14 +41,12 @@ impl ItemDistancesList<'_> {
 
 #[derive(Debug, Clone)]
 pub struct NoveltyItemsByFitness {
-    items: Vec<NoveltyItem>
+    items: Vec<NoveltyItem>,
 }
 
 impl NoveltyItemsByFitness {
     pub fn new() -> NoveltyItemsByFitness {
-        NoveltyItemsByFitness {
-            items: vec![]
-        }
+        NoveltyItemsByFitness { items: vec![] }
     }
 
     pub fn len(&self) -> usize {

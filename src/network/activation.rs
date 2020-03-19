@@ -49,7 +49,7 @@ impl Activation {
 
 #[allow(dead_code)]
 impl Activations {
-    pub fn iter(&self) -> impl Iterator<Item=&Activation> {
+    pub fn iter(&self) -> impl Iterator<Item = &Activation> {
         self.activations.iter()
     }
 
