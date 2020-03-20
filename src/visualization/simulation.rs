@@ -11,7 +11,11 @@ use crate::maze::PathDirection;
 use crate::simulator::SimulatorResult;
 use crate::visualization::maze::{draw_maze, visualize_maze};
 
-pub fn visualize_agent_path(maze: &MazePhenotype, simulator_result: &SimulatorResult, file_path: &Path) {
+pub fn visualize_agent_path(
+    maze: &MazePhenotype,
+    simulator_result: &SimulatorResult,
+    file_path: &Path,
+) {
     let scale_u32 = 4 * config::MAZE.cell_dimension as u32;
     let mut drawing = RgbImage::new(maze.width * scale_u32 + 2, maze.height * scale_u32 + 2);
 
@@ -23,8 +27,7 @@ pub fn visualize_agent_path(maze: &MazePhenotype, simulator_result: &SimulatorRe
 
 pub fn draw_path(drawing: &mut RgbImage, maze: &MazePhenotype, simulator_result: &SimulatorResult) {
     for (i, point) in simulator_result.agent_path.iter().enumerate() {
-        println!("{} {}", point.x * config::MAZE.cell_dimension, point.y * config::MAZE.cell_dimension);
-
+        //println!("{} {}", point.x * config::MAZE.cell_dimension, point.y * config::MAZE.cell_dimension);
 
         draw_filled_circle_mut(
             drawing,

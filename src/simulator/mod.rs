@@ -12,8 +12,8 @@ mod sensor;
 
 #[derive(Debug, Clone)]
 pub struct Point {
-    pub (crate) x: f64,
-    pub (crate) y: f64,
+    pub(crate) x: f64,
+    pub(crate) y: f64,
 }
 
 impl Point {
@@ -22,10 +22,16 @@ impl Point {
     }
 }
 
+impl fmt::Display for Point {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "x: {}, y: {}", self.x, self.y)
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct SimulatorResult {
-    pub (crate) agent_reached_end: bool,
-    pub (crate) agent_path: Vec<Point>,
+    pub(crate) agent_reached_end: bool,
+    pub(crate) agent_path: Vec<Point>,
 }
 
 impl SimulatorResult {
@@ -63,8 +69,8 @@ impl fmt::Display for SimulatorResult {
     }
 }
 
-pub fn simulate_run(agent: &Agent, maze: &MazePhenotype) -> SimulatorResult {
-    let mut steps_left = 300;
+pub fn simulate_run(agent: &Agent, maze: &MazePhenotype, trace_path: bool) -> SimulatorResult {
+    let mut steps_left = 1000;
     let mut run_state = RunState::new(maze.height);
 
     let mut agent_phenotype = agent.to_phenotype();
@@ -76,18 +82,24 @@ pub fn simulate_run(agent: &Agent, maze: &MazePhenotype) -> SimulatorResult {
         let radar_values = get_radar_values(&run_state, maze).to_f64_vector();
         let all_inputs = [&sensor_values[..], &radar_values[..]].concat();
 
+        //println!("inputs: {:?}", all_inputs);
+
         let output = agent_phenotype.activate(&all_inputs);
 
         run_state.update_velocities(output[0], output[1]);
 
-        //println!("velocities: {} {}", output, run_state.current_velocity, run_state.current_angular_velocity);
-        //println!("outputs: {:?}", output);
+        /*println!(
+            "velocities adjustment: {:?} | new: {} {}",
+            output, run_state.current_velocity, run_state.current_angular_velocity
+        );*/
 
         let new_position = run_state.update_position(maze);
 
-        result.add_point(new_position);
+        if trace_path {
+            result.add_point(new_position);
+        }
 
-        //println!("position: {} {}", run_state.global_x, run_state.global_y);
+        println!("position: {} {}", run_state.global_x, run_state.global_y);
 
         if run_state.maze_completed(maze.width) {
             result.set_agent_reached_end(true);

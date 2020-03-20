@@ -2,8 +2,9 @@ use crate::generic_neat::genome::Genome;
 use crate::generic_neat::innovation::InnovationLog;
 use crate::generic_neat::innovation::InnovationTime;
 use crate::network::neural_network::NeuralNetwork;
-use std::cmp;
 use crate::simulator::Point;
+use core::fmt;
+use std::cmp;
 
 #[derive(Clone)]
 pub struct Agent {
@@ -59,5 +60,11 @@ impl Agent {
     /// Genetic distance to other organism
     pub fn distance(&self, other: &Self) -> f64 {
         self.genome.distance(&other.genome)
+    }
+}
+
+impl fmt::Display for Agent {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Agent")
     }
 }

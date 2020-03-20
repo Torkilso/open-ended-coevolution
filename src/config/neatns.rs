@@ -3,6 +3,9 @@ use envconfig::Envconfig;
 
 #[derive(Envconfig)]
 pub struct Config {
+    #[envconfig(from = "POPULATION_SIZE", default = "100")]
+    pub population_size: usize,
+
     #[envconfig(from = "ARCHIVE_SEED_AMOUNT", default = "1")]
     pub archive_seed_amount: usize,
 

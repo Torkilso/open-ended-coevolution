@@ -87,7 +87,13 @@ impl RunState {
         let new_current_x_in_cell = new_global_x % 1.0;
         let new_current_y_in_cell = new_global_y % 1.0;
 
-        if self.will_collide_with_wall(new_current_x_in_cell, new_current_y_in_cell, maze) {
+        if self.will_collide_with_wall(
+            new_global_x.floor() as u32,
+            new_global_y.floor() as u32,
+            new_current_x_in_cell,
+            new_current_y_in_cell,
+            maze,
+        ) {
             return Point::new(self.global_x, self.global_y); // return same position as last time step
         }
 
@@ -106,11 +112,13 @@ impl RunState {
 
     fn will_collide_with_wall(
         &self,
+        new_current_cell_x: u32,
+        new_current_cell_y: u32,
         new_x_in_cell: f64,
         new_y_in_cell: f64,
         maze: &MazePhenotype,
     ) -> bool {
-        let cell = maze.get_cell_at(new_x_in_cell.floor() as u32, new_y_in_cell.floor() as u32);
+        let cell = maze.get_cell_at(new_current_cell_x, new_current_cell_y);
 
         let scaled_x = new_x_in_cell * config::MAZE.cell_dimension;
         let scaled_y = new_y_in_cell * config::MAZE.cell_dimension;

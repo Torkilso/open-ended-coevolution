@@ -5,9 +5,9 @@ use crate::config;
 use crate::maze::maze_genotype::{generate_random_maze, MazeGenome};
 use crate::neatns::agent::Agent;
 use crate::neatns::population::Population;
+use crate::simulator::simulate_run;
 use crate::visualization::maze::visualize_maze;
 use crate::visualization::simulation::visualize_agent_path;
-use crate::simulator::simulate_run;
 
 pub mod agent;
 mod novelty_archive;
@@ -33,7 +33,7 @@ pub fn generate_seeds() -> Seeds {
     let mut agents_fulfilling_mc: Vec<Agent> = vec![];
 
     let mut population = Population::new(config::NEAT.population_size, 10, 2);
-    for _ in 0..100 {
+    for _ in 0..500 {
         population.evolve();
     }
     let agent = population.random_agent();
@@ -41,11 +41,10 @@ pub fn generate_seeds() -> Seeds {
     let maze_phenotype = maze.to_phenotype();
     //visualize_maze(&maze_phenotype, Path::new("./test.png"), true);
     if agent.is_some() {
-        let result = simulate_run(agent.unwrap(), &maze_phenotype);
-        //visualize_agent_path(&maze_phenotype, &result, Path::new("./test.png"));
+        println!("agent: {}", agent.unwrap());
+        let result = simulate_run(agent.unwrap(), &maze_phenotype, true);
+        visualize_agent_path(&maze_phenotype, &result, Path::new("./test.png"));
     }
-
-
 
     /*while mazes_fulfilling_mc.len() < config::MCC.maze_seed_amount {
         let mut generations = 0;
@@ -54,16 +53,18 @@ pub fn generate_seeds() -> Seeds {
         let maze_phenotype = maze.to_phenotype();
         visualize_maze(&maze_phenotype, Path::new("./test.png"), true);
 
-        let mut population = Population::new(config::NEAT.population_size, 10, 2);
+        let mut population = Population::new(config::NEATNS.population_size, 10, 2);
 
-        mazes_fulfilling_mc.push(maze.clone());
+        //mazes_fulfilling_mc.push(maze.clone());
 
         while generations < config::MCC.find_seed_generation_limit {
             population.evolve();
             let result = population.run_simulation_and_update_fitness(&maze_phenotype);
 
             if result.is_some() {
-                //mazes_fulfilling_mc.push(maze.clone());
+                mazes_fulfilling_mc.push(maze.clone());
+                agents_fulfilling_mc.push(result.unwrap());
+                break;
             }
 
             println!("Generation {}", generations);

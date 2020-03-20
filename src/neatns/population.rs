@@ -4,12 +4,13 @@ use crate::generic_neat::innovation::InnovationTime;
 use crate::maze::maze_genotype::MazeGenome;
 use crate::maze::maze_phenotype::MazePhenotype;
 use crate::neatns::agent::Agent;
+use crate::neatns::novelty_archive::NoveltyArchive;
 use crate::neatns::species::Species;
 use crate::simulator::{simulate_run, Point, SimulatorResult};
 use rand::Rng;
+use std::borrow::{Borrow, BorrowMut};
 use std::fmt;
 use std::ptr::null;
-use crate::neatns::novelty_archive::NoveltyArchive;
 
 pub struct Population {
     population_size: usize,
@@ -220,70 +221,31 @@ impl Population {
         return best;
     }
 
-    /// Update fitness of all agents
-    /*pub fn evaluate(&mut self, evaluator: &impl evaluate::Evaluate) {
-        for (species_index, agent_index, fitness) in evaluator
-            .evaluate(
-                self.enumerate()
-                    .map(|(species_index, agent_index, agent)| {
-                        (species_index, agent_index, agent.genome.clone())
-                    }),
-            )
-            .iter()
-        {
-            self.species[*species_index].agents[*agent_index].fitness = *fitness;
-        }
-    }*/
-
     /// Iterate agents
-    pub fn iter(&self) -> impl Iterator<Item=&Agent> {
+    pub fn iter(&self) -> impl Iterator<Item = &Agent> {
         self.species.iter().map(|species| species.iter()).flatten()
     }
-
-    /// Iterate agents
-    pub fn iter_mut(&mut self) -> impl Iterator<Item=&mut Agent> {
-        self.species
-            .iter_mut()
-            .map(|species| species.iter_mut())
-            .flatten()
-    }
-
-    /// Enumerate agents
-    /*fn enumerate(&self) -> impl Iterator<Item = (usize, usize, &Agent)> {
-        self.species
-            .iter()
-            .enumerate()
-            .map(|(species_index, species)| {
-                species
-                    .iter()
-                    .enumerate()
-                    .map(move |(genome_index, genome)| (species_index, genome_index, genome))
-            })
-            .flatten()
-    }
-
-    /// Gather best agent
-    pub fn best(&self) -> Option<&Agent> {
-        self.iter().max_by(|a, b| a.cmp(&b))ø
-    }*/
 
     pub fn run_simulation_and_update_fitness(&mut self, maze: &MazePhenotype) -> Option<Agent> {
         let mut successful_agent: Option<Agent> = None;
 
-        let default = Point::new(0.5, maze.height as f64 - 0.5);
+        for species in self.species.iter_mut() {
+            for agent in species.agents.iter_mut() {
+                let result = simulate_run(agent, &maze, false);
 
-        for agent in self.iter_mut() {
-            let result = simulate_run(agent, &maze);
+                if result.agent_reached_end() {
+                    successful_agent = Some(agent.clone());
+                    break;
+                }
 
-            if result.agent_reached_end() {
-                successful_agent = Some(agent.clone());
-                break;
+                let final_position = result.final_position().unwrap().clone();
+                let fitness = self
+                    .novelty_archive
+                    .evaluate_position_novelty(&final_position);
+                println!("fitness: {} | position: {}", fitness, final_position);
+                agent.fitness = fitness;
+                self.novelty_archive.add_or_discard_position(final_position);
             }
-
-            let final_position = result.final_position().unwrap_or(&default).clone();
-            agent.fitness = self.novelty_archive.evaluate_position_novelty(&final_position);
-
-            //self.novelty_archive.add_or_discard_position(final_position);
         }
 
         self.novelty_archive.end_of_generation();

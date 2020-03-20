@@ -18,10 +18,15 @@ pub fn visualize_maze(maze: &MazePhenotype, file_path: &Path, display_solution: 
     drawing.save(file_path).unwrap();
 }
 
-pub fn draw_maze(maze: &MazePhenotype, drawing: &mut RgbImage, scale_u32: u32,display_solution:bool) {
+pub fn draw_maze(
+    maze: &MazePhenotype,
+    drawing: &mut RgbImage,
+    scale_u32: u32,
+    display_solution: bool,
+) {
     let offset = config::MAZE.cell_dimension as usize / 2;
     let radius = 2;
-    let scale_usize =4* config::MAZE.cell_dimension as usize;
+    let scale_usize = 4 * config::MAZE.cell_dimension as usize;
 
     draw_filled_rect_mut(
         drawing,

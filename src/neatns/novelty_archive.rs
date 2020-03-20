@@ -1,6 +1,6 @@
+use crate::neatns::agent::Agent;
 use crate::neatns::novelty_item::{NoveltyItem, NoveltyItemsByFitness};
 use crate::neatns::population::Population;
-use crate::neatns::agent::Agent;
 
 use crate::config;
 use crate::simulator::Point;
@@ -33,6 +33,10 @@ impl NoveltyArchive {
     pub fn evaluate_position_novelty(&self, position: &Point) -> f64 {
         let mut distances = self.find_distances_to_point(position);
         distances.sort_by(|a, b| a.partial_cmp(b).unwrap());
+
+        if distances.len() < 15 {
+            return 0.0;
+        }
 
         let closest_points = distances[0..config::NEATNS.amount_of_neighbors].to_vec();
         closest_points.iter().sum::<f64>() / closest_points.len() as f64
