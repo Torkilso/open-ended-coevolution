@@ -20,6 +20,6 @@ pub struct Config {
     #[envconfig(from = "max_speed", default = "3.0")]
     pub max_speed: f64,
 
-    #[envconfig(from = "agent_radius", default = "8.0")]
+    #[envconfig(from = "agent_radius", default = "3.0")]
     pub agent_radius: f64,
 }

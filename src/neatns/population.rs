@@ -17,7 +17,7 @@ pub struct Population {
     species: Vec<Species>,
     pub innovation_log: InnovationLog,
     pub global_innovation: InnovationTime,
-    novelty_archive: NoveltyArchive,
+    pub novelty_archive: NoveltyArchive,
 }
 
 impl Population {
@@ -222,7 +222,7 @@ impl Population {
     }
 
     /// Iterate agents
-    pub fn iter(&self) -> impl Iterator<Item = &Agent> {
+    pub fn iter(&self) -> impl Iterator<Item=&Agent> {
         self.species.iter().map(|species| species.iter()).flatten()
     }
 
@@ -234,17 +234,24 @@ impl Population {
                 let result = simulate_run(agent, &maze, false);
 
                 if result.agent_reached_end() {
-                    successful_agent = Some(agent.clone());
-                    break;
+                    let final_position = result.final_position.unwrap();
+
+                    println!("final position: {}", final_position);
+                    self.novelty_archive.add_or_discard_position(final_position);
+
+                    return Some(agent.clone());
                 }
 
-                let final_position = result.final_position().unwrap().clone();
-                let fitness = self
-                    .novelty_archive
-                    .evaluate_position_novelty(&final_position);
-                println!("fitness: {} | position: {}", fitness, final_position);
-                agent.fitness = fitness;
-                self.novelty_archive.add_or_discard_position(final_position);
+                if result.final_position.is_some() {
+                    let final_position = result.final_position.unwrap();
+                    let fitness = self
+                        .novelty_archive
+                        .evaluate_position_novelty(&final_position);
+
+                    //println!("fitness: {} | position: {}", fitness, final_position);
+                    agent.fitness = fitness;
+                    self.novelty_archive.add_or_discard_position(final_position);
+                }
             }
         }
 

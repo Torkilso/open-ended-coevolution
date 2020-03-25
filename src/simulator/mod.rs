@@ -32,6 +32,7 @@ impl fmt::Display for Point {
 pub struct SimulatorResult {
     pub(crate) agent_reached_end: bool,
     pub(crate) agent_path: Vec<Point>,
+    pub(crate) final_position: Option<Point>,
 }
 
 impl SimulatorResult {
@@ -39,6 +40,7 @@ impl SimulatorResult {
         SimulatorResult {
             agent_reached_end: false,
             agent_path: vec![],
+            final_position: Option::None,
         }
     }
 
@@ -96,17 +98,22 @@ pub fn simulate_run(agent: &Agent, maze: &MazePhenotype, trace_path: bool) -> Si
         let new_position = run_state.update_position(maze);
 
         if trace_path {
-            result.add_point(new_position);
+            result.add_point(new_position.clone());
         }
 
-        println!("position: {} {}", run_state.global_x, run_state.global_y);
+        //println!("position: {} {}", run_state.global_x, run_state.global_y);
 
         if run_state.maze_completed(maze.width) {
+            result.final_position = Option::Some(new_position.clone());
             result.set_agent_reached_end(true);
             return result;
         }
 
         steps_left -= 1;
+
+        if steps_left == 0 {
+            result.final_position = Option::Some(new_position.clone());
+        }
     }
 
     result
