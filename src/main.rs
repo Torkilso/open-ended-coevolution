@@ -23,6 +23,7 @@ mod neatns;
 mod network;
 mod simulator;
 mod visualization;
+mod agent;
 
 fn main() {
     mcc::run();

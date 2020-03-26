@@ -1,5 +1,4 @@
 use crate::maze::maze_phenotype::{MazeCell, MazePhenotype};
-use crate::neatns::agent::Agent;
 use crate::simulator::run_state::RunState;
 
 pub fn find_sensor_value_north_east(

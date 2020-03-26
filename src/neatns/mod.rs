@@ -3,14 +3,13 @@ use std::path::Path;
 
 use crate::config;
 use crate::maze::maze_genotype::{generate_random_maze, MazeGenome};
-use crate::neatns::agent::Agent;
 use crate::neatns::population::Population;
 use crate::simulator::simulate_run;
 use crate::visualization::maze::visualize_maze;
 use crate::visualization::simulation::{visualize_agent_path, draw_novelty_archive};
 use rand::seq::IteratorRandom;
+use crate::agent::agent::Agent;
 
-pub mod agent;
 pub(crate) mod novelty_archive;
 mod novelty_item;
 pub mod population;

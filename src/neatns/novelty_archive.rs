@@ -1,4 +1,3 @@
-use crate::neatns::agent::Agent;
 use crate::neatns::novelty_item::{NoveltyItem, NoveltyItemsByFitness};
 use crate::neatns::population::Population;
 

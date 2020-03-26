@@ -2,7 +2,7 @@ use crate::neatns;
 use crate::config;
 
 pub mod mcc;
-pub mod queue;
+mod agent_queue;
 
 pub fn run() {
 

@@ -3,7 +3,6 @@ use crate::generic_neat::innovation::InnovationLog;
 use crate::generic_neat::innovation::InnovationTime;
 use crate::maze::maze_genotype::MazeGenome;
 use crate::maze::maze_phenotype::MazePhenotype;
-use crate::neatns::agent::Agent;
 use crate::neatns::novelty_archive::NoveltyArchive;
 use crate::neatns::species::Species;
 use crate::simulator::{simulate_run, Point, SimulatorResult};
@@ -11,6 +10,7 @@ use rand::Rng;
 use std::borrow::{Borrow, BorrowMut};
 use std::fmt;
 use std::ptr::null;
+use crate::agent::agent::Agent;
 
 pub struct Population {
     population_size: usize,

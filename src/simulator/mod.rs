@@ -1,10 +1,10 @@
 use crate::config;
 use crate::maze::maze_phenotype::{MazeCell, MazePhenotype};
-use crate::neatns::agent::Agent;
 use crate::network::neural_network::NeuralNetwork;
 use crate::simulator::radar::get_radar_values;
 use crate::simulator::run_state::RunState;
 use std::fmt;
+use crate::agent::agent::Agent;
 
 pub mod radar;
 mod run_state;
