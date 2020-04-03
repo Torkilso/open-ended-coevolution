@@ -1,5 +1,5 @@
 use crate::config;
-use crate::network::activation::Activation;
+use crate::neatns::network::activation::Activation;
 use rand::Rng;
 use std::fmt;
 

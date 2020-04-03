@@ -1,4 +1,3 @@
-use crate::network::activation;
 use envconfig::Envconfig;
 
 #[derive(Envconfig)]

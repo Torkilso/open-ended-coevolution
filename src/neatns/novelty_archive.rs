@@ -5,7 +5,7 @@ use crate::config;
 use crate::simulator::Point;
 
 pub struct NoveltyArchive {
-    pub (crate) novelty_items: Vec<Point>,
+    pub(crate) novelty_items: Vec<Point>,
     fittest_items: NoveltyItemsByFitness,
     generation: u32,
     items_added_in_generation: u32,

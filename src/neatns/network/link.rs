@@ -1,4 +1,4 @@
-use crate::generic_neat::node::NodeRef;
+use crate::neatns::network::node::NodeRef;
 
 /// Link between two nodes
 #[derive(Copy, Clone, Debug)]

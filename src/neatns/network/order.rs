@@ -1,4 +1,4 @@
-use crate::network::connection::Connections;
+use crate::neatns::network::connection::Connections;
 use std::collections::HashMap;
 use std::fmt;
 use std::hash::Hash;

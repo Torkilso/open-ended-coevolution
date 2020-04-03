@@ -1,5 +1,5 @@
-use crate::network::connection;
-use crate::network::order;
+use crate::neatns::network::connection;
+use crate::neatns::network::order;
 use std::hash::Hash;
 
 /// Topologically sorted list of actions to perform when evalutating network

@@ -21,24 +21,6 @@ impl NoveltyItem {
     }
 }
 
-/*pub struct ItemsDistance<'s> {
-    distance: f64,
-    from: &'s NoveltyItem,
-    to: &'s NoveltyItem,
-}
-
-pub struct ItemDistancesList<'s> {
-    items: Vec<ItemsDistance<'s>>
-}
-
-impl ItemDistancesList<'_> {
-    pub fn new() -> ItemDistancesList {
-        ItemDistancesList {
-            items: vec![]
-        }
-    }
-}*/
-
 #[derive(Debug, Clone)]
 pub struct NoveltyItemsByFitness {
     items: Vec<NoveltyItem>,

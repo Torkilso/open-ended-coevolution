@@ -8,14 +8,11 @@ use crate::config;
 use crate::maze::maze_phenotype::MazeCell;
 use crate::maze::maze_phenotype::MazePhenotype;
 use crate::maze::PathDirection;
+use crate::neatns::novelty_archive::NoveltyArchive;
 use crate::simulator::SimulatorResult;
 use crate::visualization::maze::{draw_maze, visualize_maze};
-use crate::neatns::novelty_archive::NoveltyArchive;
 
-pub fn visualize_agent_path(
-    maze: &MazePhenotype,
-    simulator_result: &SimulatorResult,
-) {
+pub fn visualize_agent_path(maze: &MazePhenotype, simulator_result: &SimulatorResult) {
     let scale_u32 = 4 * config::MAZE.cell_dimension as u32;
     let mut drawing = RgbImage::new(maze.width * scale_u32 + 2, maze.height * scale_u32 + 2);
 
@@ -61,7 +58,11 @@ pub fn draw_novelty_archive(maze: &MazePhenotype, novelty_archive: &NoveltyArchi
     //drawing.save(file_path).unwrap();
 }
 
-pub fn draw_archive(drawing: &mut RgbImage, maze: &MazePhenotype, novelty_archive: &NoveltyArchive) {
+pub fn draw_archive(
+    drawing: &mut RgbImage,
+    maze: &MazePhenotype,
+    novelty_archive: &NoveltyArchive,
+) {
     for (i, point) in novelty_archive.novelty_items.iter().enumerate() {
         //println!("{} {}", point.x * config::MAZE.cell_dimension, point.y * config::MAZE.cell_dimension);
 
@@ -87,7 +88,9 @@ pub fn draw_archive(drawing: &mut RgbImage, maze: &MazePhenotype, novelty_archiv
             zeros = "0";
         }
 
-        drawing.save(format!("./novelty/{}{}.png", zeros, i)).unwrap();
+        drawing
+            .save(format!("./novelty/{}{}.png", zeros, i))
+            .unwrap();
 
         if i == 9999 {
             break;

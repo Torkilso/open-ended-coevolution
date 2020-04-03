@@ -1,7 +1,7 @@
-use crate::generic_neat::genome::Genome;
-use crate::generic_neat::innovation::InnovationLog;
-use crate::generic_neat::innovation::InnovationTime;
-use crate::network::neural_network::NeuralNetwork;
+use crate::neatns::network::genome::Genome;
+use crate::neatns::network::innovation::InnovationLog;
+use crate::neatns::network::innovation::InnovationTime;
+use crate::neatns::network::neural_network::NeuralNetwork;
 use crate::simulator::Point;
 use core::fmt;
 use std::cmp;

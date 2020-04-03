@@ -13,18 +13,21 @@ use lazy_static::*;
 use crate::maze::maze_genotype::{generate_random_maze, MazeGenome, PathGene, WallGene};
 use crate::maze::maze_phenotype::MazePhenotype;
 use crate::simulator::radar::get_radar_values;
+
 use crate::visualization::maze::visualize_maze;
 
 mod config;
-mod generic_neat;
 mod maze;
 mod mcc;
 mod neatns;
-mod network;
 mod simulator;
 mod visualization;
-mod agent;
 
 fn main() {
-    mcc::run();
+    let mut maze = generate_random_maze(5, 5);
+    visualize_maze(&maze.to_phenotype(), Path::new("before.png"), false);
+    maze.increase_size();
+    visualize_maze(&maze.to_phenotype(), Path::new("after.png"), false);
+
+    //mcc::run_without_speciation();
 }

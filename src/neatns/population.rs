@@ -1,16 +1,18 @@
-use crate::config;
-use crate::generic_neat::innovation::InnovationLog;
-use crate::generic_neat::innovation::InnovationTime;
-use crate::maze::maze_genotype::MazeGenome;
-use crate::maze::maze_phenotype::MazePhenotype;
-use crate::neatns::novelty_archive::NoveltyArchive;
-use crate::neatns::species::Species;
-use crate::simulator::{simulate_run, Point, SimulatorResult};
-use rand::Rng;
 use std::borrow::{Borrow, BorrowMut};
 use std::fmt;
 use std::ptr::null;
-use crate::agent::agent::Agent;
+
+use rand::Rng;
+
+use crate::config;
+use crate::maze::maze_genotype::MazeGenome;
+use crate::maze::maze_phenotype::MazePhenotype;
+use crate::neatns::agent::Agent;
+use crate::neatns::network::innovation::InnovationLog;
+use crate::neatns::network::innovation::InnovationTime;
+use crate::neatns::novelty_archive::NoveltyArchive;
+use crate::neatns::species::Species;
+use crate::simulator::{Point, simulate_single_neatns, SimulatorResult};
 
 pub struct Population {
     population_size: usize,
@@ -222,7 +224,7 @@ impl Population {
     }
 
     /// Iterate agents
-    pub fn iter(&self) -> impl Iterator<Item=&Agent> {
+    pub fn iter(&self) -> impl Iterator<Item = &Agent> {
         self.species.iter().map(|species| species.iter()).flatten()
     }
 
@@ -231,12 +233,12 @@ impl Population {
 
         for species in self.species.iter_mut() {
             for agent in species.agents.iter_mut() {
-                let result = simulate_run(agent, &maze, false);
+                let result = simulate_single_neatns(agent, &maze, false);
 
                 if result.agent_reached_end() {
                     let final_position = result.final_position.unwrap();
 
-                    println!("final position: {}", final_position);
+                    //println!("final position: {}", final_position);
                     self.novelty_archive.add_or_discard_position(final_position);
 
                     return Some(agent.clone());

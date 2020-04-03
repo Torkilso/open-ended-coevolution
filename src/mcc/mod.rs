@@ -1,51 +1,36 @@
-use crate::neatns;
 use crate::config;
+use crate::mcc::agent::agent_queue::AgentQueue;
+use crate::mcc::maze::maze_queue::MazeQueue;
+use crate::neatns;
+use crate::simulator::simulate_many;
 
-pub mod mcc;
-mod agent_queue;
+pub(crate) mod agent;
+mod maze;
 
-pub fn run() {
-
+pub fn run_without_speciation() {
     let seeds = neatns::generate_seeds();
 
-    //let maze queue = seeds.mazes
+    let mut agents = AgentQueue::new(seeds.agents);
+    let mut mazes = MazeQueue::new(seeds.mazes);
 
-    let mut generation = 0;
+    for generation in 0..config::MCC.generations {
+        let mut agent_children = agents.get_children();
+        let mut maze_children = mazes.get_children();
 
-    while generation < config::MCC.generations {
+        simulate_many(&mut agent_children, &mut maze_children);
 
-        // speciate
-        // selection from queue
-        // evolve
-        // evaluate
-        // add viable children to queue
-
-
-
-
-
-        /*speciation::speciate_mazes(&viable_mazes);
-        speciation::speciate_navigators(&viable_navigators);
-
-        let maze_children = genetics::reproduce_mazes(&viable_mazes);
-        let navigator_children = genetics::reproduce_navigators(&viable_navigators);
-
-        let (navigator_survivors, maze_survivors) = simulator::evaluate_navigators(&navigator_children, &maze_children);
-
-        population::enqueue(&viable_mazes, &maze_survivors);
-        population::enqueue(&viable_navigators, &navigator_survivors);
-
-        if viable_navigators.len() > MCC.navigator_population_capacity {
-            let amount_to_remove = viable_navigators.len() - MCC.navigator_population_capacity;
-            population::remove_oldest(&viable_navigators, amount_to_remove)
+        for child in agent_children.iter() {
+            if child.viable {
+                agents.push(child.clone())
+            }
         }
 
-        if viable_mazes.len() > MCC.maze_population_capacity {
-            let amount_to_remove = viable_mazes.len() - options.maze_population_capacity;
-            population::remove_oldest(&viable_mazes, amount_to_remove)
-        }*/
+        for child in maze_children.iter() {
+            if child.viable {
+                mazes.push(child.clone())
+            }
+        }
 
-
-        generation += 1;
+        println!("Generation: {}\tAgents: {}\tMazes: {}", generation, agents.len(), mazes.len());
     }
 }

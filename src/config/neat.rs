@@ -1,4 +1,4 @@
-use crate::network::activation;
+use crate::neatns::network::activation;
 use envconfig::Envconfig;
 
 #[derive(Envconfig)]

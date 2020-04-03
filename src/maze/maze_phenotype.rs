@@ -1,9 +1,8 @@
-extern crate queues;
+use math::round;
 
 use crate::config;
-use crate::maze::maze_genotype::{PathGene, WallGene};
 use crate::maze::{OpeningLocation, Orientation, PathDirection};
-use math::round;
+use crate::maze::maze_genotype::{PathGene, WallGene};
 
 #[derive(Debug, Clone)]
 pub struct MazeCell {
@@ -303,7 +302,7 @@ impl MazePhenotype {
 
                     while end_x < self.width - 1
                         && self.get_cell_at(end_x + 1, start_y).path_direction
-                            == PathDirection::None
+                        == PathDirection::None
                         && !self.get_cell_at(end_x + 1, start_y).in_subdivision
                     {
                         end_x += 1;
@@ -636,9 +635,9 @@ impl MazePhenotype {
         if wall_gene.orientation == Orientation::Horizontal {
             let mut wall_location_y = subdivision.end_y
                 + round::floor(
-                    subdivision.height as f64 * wall_gene.wall_position as f64,
-                    0,
-                ) as u32;
+                subdivision.height as f64 * wall_gene.wall_position as f64,
+                0,
+            ) as u32;
             if wall_location_y >= subdivision.start_y {
                 //wall_location_y = subdivision.start_y - 1
             };
@@ -648,9 +647,9 @@ impl MazePhenotype {
 
             let passage_location_x = subdivision.start_x
                 + round::floor(
-                    subdivision.width as f64 * wall_gene.passage_position as f64,
-                    0,
-                ) as u32;
+                subdivision.width as f64 * wall_gene.passage_position as f64,
+                0,
+            ) as u32;
 
             for x in subdivision.start_x..subdivision.end_x + 1 {
                 if x == passage_location_x as u32 {
@@ -690,9 +689,9 @@ impl MazePhenotype {
 
             let passage_location_y = subdivision.end_y
                 + round::floor(
-                    subdivision.height as f64 * wall_gene.passage_position as f64,
-                    0,
-                ) as u32;
+                subdivision.height as f64 * wall_gene.passage_position as f64,
+                0,
+            ) as u32;
 
             for y in subdivision.end_y..subdivision.start_y + 1 {
                 if y == passage_location_y as u32 {

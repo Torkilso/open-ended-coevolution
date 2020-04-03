@@ -4,16 +4,18 @@ use std::path::Path;
 use crate::config;
 use crate::maze::maze_genotype::{generate_random_maze, MazeGenome};
 use crate::neatns::population::Population;
-use crate::simulator::simulate_run;
+use crate::simulator::simulate_single_neatns;
 use crate::visualization::maze::visualize_maze;
-use crate::visualization::simulation::{visualize_agent_path, draw_novelty_archive};
+use crate::visualization::simulation::{draw_novelty_archive, visualize_agent_path};
 use rand::seq::IteratorRandom;
-use crate::agent::agent::Agent;
+use crate::neatns::agent::Agent;
 
 pub(crate) mod novelty_archive;
 mod novelty_item;
-pub mod population;
+mod population;
 mod species;
+pub(crate) mod agent;
+pub(crate) mod network;
 
 pub struct Seeds {
     pub mazes: Vec<MazeGenome>,
@@ -50,17 +52,24 @@ pub fn generate_seeds() -> Seeds {
                 break;
             }
 
-            println!("Fining mazes and agents, generation: {}", generations);
+            //println!("Fining mazes and agents, generation: {}", generations);
             generations += 1;
         }
 
-        println!("Mazes found: {}, agents found: {}", mazes_fulfilling_mc.len(), agents_fulfilling_mc.len());
+        println!(
+            "Mazes found: {}, agents found: {}",
+            mazes_fulfilling_mc.len(),
+            agents_fulfilling_mc.len()
+        );
     }
 
     while agents_fulfilling_mc.len() < config::MCC.agent_seed_amount {
         let mut generations = 0;
 
-        let maze = mazes_fulfilling_mc.iter().choose(&mut rand::thread_rng()).unwrap();
+        let maze = mazes_fulfilling_mc
+            .iter()
+            .choose(&mut rand::thread_rng())
+            .unwrap();
         let maze_phenotype = maze.to_phenotype();
 
         let mut population = Population::new(config::NEATNS.population_size, 10, 2);
@@ -74,10 +83,14 @@ pub fn generate_seeds() -> Seeds {
                 break;
             }
 
-            println!("Finding agents, generation: {}", generations);
+            //println!("Finding agents, generation: {}", generations);
             generations += 1;
         }
-        println!("Mazes found: {}, agents found: {}", mazes_fulfilling_mc.len(), agents_fulfilling_mc.len());
+        println!(
+            "Mazes found: {}, agents found: {}",
+            mazes_fulfilling_mc.len(),
+            agents_fulfilling_mc.len()
+        );
     }
 
     Seeds::new(mazes_fulfilling_mc, agents_fulfilling_mc)
@@ -93,8 +106,8 @@ pub fn test_single_agent() {
     let maze_phenotype = maze.to_phenotype();
     //visualize_maze(&maze_phenotype, Path::new("./test.png"), true);
     if agent.is_some() {
-        println!("agent: {}", agent.unwrap());
-        let result = simulate_run(agent.unwrap(), &maze_phenotype, true);
+        //println!("agent: {}", agent.unwrap());
+        let result = simulate_single_neatns(agent.unwrap(), &maze_phenotype, true);
         //visualize_agent_path(&maze_phenotype, &result, Path::new("./test.png"));
     }
 }
@@ -114,7 +127,7 @@ pub fn test_with_population() {
         if result.is_some() {
             println!("Found solution!!!!");
 
-            let simulation = simulate_run(&result.unwrap(), &maze_phenotype, true);
+            let simulation = simulate_single_neatns(&result.unwrap(), &maze_phenotype, true);
             visualize_agent_path(&maze_phenotype, &simulation);
 
             break;

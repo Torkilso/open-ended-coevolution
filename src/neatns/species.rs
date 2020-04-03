@@ -1,6 +1,6 @@
+use crate::neatns::agent::Agent;
 use crate::config;
 use rand::Rng;
-use crate::agent::agent::Agent;
 
 /// Collection of similar agents
 // The lock is used to add new agents without affecting the reproduction of the previous generation.

@@ -1,11 +1,14 @@
-extern crate queues;
-
-use rand::Rng;
-
-use crate::maze::maze_phenotype::MazePhenotype;
-use crate::maze::{OpeningLocation, Orientation};
 use core::fmt;
 use std::fmt::Display;
+
+use rand::{Rng, thread_rng};
+use rand::seq::IteratorRandom;
+use rand::seq::SliceRandom;
+
+use crate::config;
+use crate::maze::{OpeningLocation, Orientation, PathDirection};
+use crate::maze::maze_phenotype::MazePhenotype;
+use std::borrow::{BorrowMut, Borrow};
 
 #[derive(Debug, Copy, Clone)]
 pub struct WallGene {
@@ -29,6 +32,14 @@ impl WallGene {
             opening_location,
         }
     }
+
+    pub fn set_wall_position(&mut self, value: f32) {
+        self.wall_position = value;
+    }
+
+    pub fn set_passage_position(&mut self, value: f32) {
+        self.passage_position = value;
+    }
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -45,11 +56,12 @@ impl PathGene {
 
 #[derive(Debug, Clone)]
 pub struct MazeGenome {
-    width: u32,
-    height: u32,
+    pub width: u32,
+    pub height: u32,
     first_direction: Orientation,
     path_genes: Vec<PathGene>,
     wall_genes: Vec<WallGene>,
+    pub(crate) viable: bool,
 }
 
 impl MazeGenome {
@@ -66,6 +78,7 @@ impl MazeGenome {
             first_direction,
             path_genes,
             wall_genes,
+            viable: true,
         }
     }
 
@@ -86,6 +99,126 @@ impl MazeGenome {
             &self.wall_genes,
         );
         phenotype
+    }
+
+    pub fn mutate(&mut self) {
+        let mut rng = rand::thread_rng();
+
+        if rng.gen::<f64>() < config::MAZE.mutate_wall {
+            self.mutate_wall();
+        }
+
+        if rng.gen::<f64>() < config::MAZE.mutate_passage {
+            self.mutate_passage();
+        }
+
+        if rng.gen::<f64>() < config::MAZE.mutate_waypoint {
+            self.mutate_waypoint();
+        }
+
+        if rng.gen::<f64>() < config::MAZE.add_wall {
+            self.add_wall();
+        }
+
+        if rng.gen::<f64>() < config::MAZE.delete_wall {
+            self.delete_wall();
+        }
+
+        if rng.gen::<f64>() < config::MAZE.add_waypoint {
+            self.add_waypoint();
+        }
+
+        if rng.gen::<f64>() < config::MAZE.increase_size {
+            self.increase_size();
+        }
+    }
+
+    pub fn mutate_wall(&mut self) {
+        let mut rng = thread_rng();
+
+        let index = (rng.gen::<f32>() * self.wall_genes.len() as f32) as usize;
+        self.wall_genes[index].set_wall_position(rng.gen::<f32>());
+    }
+
+    pub fn mutate_passage(&mut self) {
+        let mut rng = thread_rng();
+
+        let index = (rng.gen::<f32>() * self.wall_genes.len() as f32) as usize;
+        self.wall_genes[index].set_passage_position(rng.gen::<f32>());
+    }
+
+    pub fn mutate_waypoint(&mut self) {
+        let index = (rng.gen::<f32>() * self.path_genes.len() as f32) as usize;
+        let point_before = if index == 0 {
+            PathGene::new(0, self.height - 1);
+        } else {
+            self.path_genes[index - 1];
+        };
+
+        let point_after = if index == self.path_genes.len() - 1 {
+            PathGene::new(self.width - 1, 0);
+        } else {
+            self.path_genes[index + 1];
+        };
+
+        let available_directions: Vec<PathDirection> = vec!();
+
+        if self.first_direction == Orientation::Vertical {
+
+        } else if self.first_direction == Orientation::Horizontal {
+
+        }
+
+        if available_directions.len() == 0 {
+            return;
+        }
+
+        let direction = available_directions[(rng.gen::<f32>() * self.available_directions.len() as f32) as usize].borrow();
+
+        if direction == PathDirection::North {
+            self.path_genes[index].y += 1;
+        } else if direction == PathDirection::East {
+            self.path_genes[index].x += 1;
+        } else if direction == PathDirection::South {
+            self.path_genes[index].y -= 1;
+        } else if direction == PathDirection::West {
+            self.path_genes[index].x -= 1;
+        }
+    }
+
+    pub fn add_wall(&mut self) {
+        let mut rng = rand::thread_rng();
+
+        self.wall_genes.push(WallGene::new(
+            rng.gen::<f32>(),
+            rng.gen::<f32>(),
+            get_random_orientation(rng.gen::<f32>()),
+            get_random_opening(rng.gen::<f32>()),
+        ));
+    }
+
+    pub fn delete_wall(&mut self) {
+        if self.wall_genes.len() <= 1 {
+            return;
+        }
+        let mut rng = rand::thread_rng();
+
+        let index = (rng.gen::<f32>() * self.wall_genes.len() as f32) as usize;
+        self.wall_genes.remove(index);
+    }
+
+    pub fn add_waypoint(&mut self) {
+        let x = 1 as u32;
+        let y = 1 as u32;
+        self.path_genes.push(PathGene::new(
+            x,
+            y,
+        ));
+    }
+
+    pub fn increase_size(&mut self) {
+        self.height += 1;
+        self.width += 1;
     }
 }
 

@@ -1,4 +1,4 @@
-use crate::generic_neat::node;
+use crate::neatns::network::node;
 use std::collections::HashMap;
 
 pub struct InnovationLog {

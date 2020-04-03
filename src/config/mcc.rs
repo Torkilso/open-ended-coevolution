@@ -19,4 +19,13 @@ pub struct Config {
 
     #[envconfig(from = "find_seed_generation_limit", default = "50")]
     pub find_seed_generation_limit: usize,
+
+    #[envconfig(from = "speciation_threshold", default = "0.85")]
+    pub speciation_threshold: f64,
+
+    #[envconfig(from = "agent_selection_limit", default = "10")]
+    pub agent_selection_limit: usize,
+
+    #[envconfig(from = "agent_selection_limit", default = "10")]
+    pub maze_selection_limit: usize,
 }

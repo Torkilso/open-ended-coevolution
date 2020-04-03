@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
-use crate::generic_neat::genome::Genome;
-use crate::generic_neat::node::NodeRef;
-use crate::network::activation::Activation;
-use crate::network::order;
+use crate::neatns::network::genome::Genome;
+use crate::neatns::network::node::NodeRef;
+use crate::neatns::network::activation::Activation;
+use crate::neatns::network::order;
 
 #[derive(Clone, Debug)]
 pub enum Action {
@@ -20,23 +20,6 @@ pub struct NeuralNetwork {
 }
 
 impl NeuralNetwork {
-    /*pub fn new(
-        length: usize,
-        inputs: Vec<usize>,
-        outputs: Vec<usize>,
-        actions: Vec<Action>,
-    ) -> NeuralNetwork {
-
-
-
-        NeuralNetwork {
-            values: vec![0.0; length],
-            inputs,
-            outputs,
-            actions,
-        }
-    }*/
-
     pub fn new(genome: &Genome) -> NeuralNetwork {
         let input_length = genome.inputs.len();
         let cumulative_hidden_length = input_length + genome.hidden_nodes.len(); // Length of input and hidden
