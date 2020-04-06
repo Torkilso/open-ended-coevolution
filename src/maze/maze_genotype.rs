@@ -1,4 +1,5 @@
 use core::fmt;
+use std::borrow::{Borrow, BorrowMut};
 use std::fmt::Display;
 
 use rand::{Rng, thread_rng};
@@ -8,7 +9,6 @@ use rand::seq::SliceRandom;
 use crate::config;
 use crate::maze::{OpeningLocation, Orientation, PathDirection};
 use crate::maze::maze_phenotype::MazePhenotype;
-use std::borrow::{BorrowMut, Borrow};
 
 #[derive(Debug, Copy, Clone)]
 pub struct WallGene {
@@ -148,32 +148,29 @@ impl MazeGenome {
     }
 
     pub fn mutate_waypoint(&mut self) {
+        let phenotype = self.to_phenotype();
+
         let index = (rng.gen::<f32>() * self.path_genes.len() as f32) as usize;
-        let point_before = if index == 0 {
-            PathGene::new(0, self.height - 1);
-        } else {
-            self.path_genes[index - 1];
-        };
+        let available_directions: Vec<PathDirection> = vec!(PathDirection::North, PathDirection::East, PathDirection::South, PathDirection::West);
 
-        let point_after = if index == self.path_genes.len() - 1 {
-            PathGene::new(self.width - 1, 0);
-        } else {
-            self.path_genes[index + 1];
-        };
+        let mut mutation_is_valid = validate_path_mutation_direction(&phenotype, index);
+        let mut direction_index = (rng.gen::<f32>() * self.available_directions.len() as f32) as usize;
+        let mut direction = available_directions[direction_index].clone();
 
-        let available_directions: Vec<PathDirection> = vec!();
+        for _ in 0..4 {
+            mutation_is_valid = self.validate_path_mutation_direction(&phenotype, index, direction);
 
-        if self.first_direction == Orientation::Vertical {
-
-        } else if self.first_direction == Orientation::Horizontal {
-
+            if mutation_is_valid {
+                break;
+            } else {
+                direction_index = (direction_index + 1) % available_directions.len();
+                direction = available_directions[direction_index].clone();
+            }
         }
 
-        if available_directions.len() == 0 {
+        if !mutation_is_valid {
             return;
         }
-
-        let direction = available_directions[(rng.gen::<f32>() * self.available_directions.len() as f32) as usize].borrow();
 
         if direction == PathDirection::North {
             self.path_genes[index].y += 1;
@@ -184,6 +181,57 @@ impl MazeGenome {
         } else if direction == PathDirection::West {
             self.path_genes[index].x -= 1;
         }
+    }
+
+    pub fn validate_path_mutation_direction(&self, maze: &MazePhenotype, gene_index: usize, direction: PathDirection) -> bool {
+        let gene = &self.path_genes[gene_index];
+        let point_before = if gene_index == 0 {
+            PathGene::new(0, self.height - 1)
+        } else {
+            self.path_genes[gene_index - 1]
+        };
+        check_row_for_collision();
+
+        let point_after = if gene_index == self.path_genes.len() - 1 {
+            PathGene::new(self.width - 1, 0)
+        } else {
+            self.path_genes[gene_index + 1]
+        };
+
+        if self.first_direction == Orientation::Horizontal {
+            if direction == PathDirection::North {
+                if gene.y >= self.height - 1 {
+                    return false;
+                }
+
+                if point_after.y == gene.y + 1 || point_before.y == gene.y + 1 {
+                    return false;
+                }
+
+                return if gene.y >= point_before.y {
+                    if gene.y > point_after.y {
+                        check_row_for_collision(maze, gene.x, point_after.x, gene.y)
+                    } else {
+                        check_row_for_collision(maze, gene.x, point_after.x, gene.y)
+                    }
+                } else {
+                    if gene.y > point_after.y {
+                        check_row_for_collision(maze, gene.x, )
+                    } else {
+                        check_row_for_collision(maze, gene.x, )
+                    }
+                }
+            } else if direction == PathDirection::East {
+
+            } else if direction == PathDirection::South {
+
+            } else if direction == PathDirection::West {
+
+            }
+        } else if self.first_direction == Orientation::Vertical {}
+
+
+        false
     }
 
     pub fn add_wall(&mut self) {
@@ -230,6 +278,21 @@ impl fmt::Display for MazeGenome {
             self.width, self.height, self.first_direction, self.path_genes, self.wall_genes
         )
     }
+}
+
+fn check_row_for_collision(maze: &MazePhenotype, from: u32, to: u32, y: u32) -> bool {
+    if from <= to {
+        for i in from..to {
+
+        }
+    } else {
+
+    }
+    false
+}
+
+fn check_colummn_for_collision(maze: &MazePhenotype, from: usize, to: usize) -> bool {
+
 }
 
 fn get_random_opening(number: f32) -> OpeningLocation {

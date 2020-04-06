@@ -7,7 +7,7 @@ pub enum Orientation {
     Vertical,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Copy)]
 pub enum PathDirection {
     North,
     East,
