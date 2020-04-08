@@ -202,10 +202,10 @@ impl MazeGenome {
         };
 
         /*println!("Gene: {:#?}", gene);
-        println!("self.height: {}", self.height);
-        println!("point_after.y: {}", point_after.y);
-        println!("point_before.y: {}", point_before.y);
-*/
+                println!("self.height: {}", self.height);
+                println!("point_after.y: {}", point_after.y);
+                println!("point_before.y: {}", point_before.y);
+        */
 
         if direction == PathDirection::North {
             //println!("gene.y >= self.height - 1: {}", gene.y >= self.height - 1);
@@ -296,8 +296,6 @@ impl MazeGenome {
         self.wall_genes.remove(index);
     }
 
-
-    // TODO fix bugs in this
     pub fn add_waypoint(&mut self) {
         let mut rng = rand::thread_rng();
 
@@ -306,13 +304,21 @@ impl MazeGenome {
             (rng.gen::<f32>() * self.height as f32) as u32,
         );
 
+        if path_gene.x == self.path_genes[self.path_genes.len() - 1].x
+            || path_gene.y == self.path_genes[self.path_genes.len() - 1].y
+        {
+            return;
+        }
+
         let mut clone = self.clone();
         println!("Maze: {:#?}\n", self);
 
-        let validator = MazeValidator::new(clone.width,
-                                           clone.height,
-                                           clone.first_direction,
-                                           &clone.path_genes);
+        let validator = MazeValidator::new(
+            clone.width,
+            clone.height,
+            clone.first_direction,
+            &clone.path_genes,
+        );
 
         println!("\nnew point: {} {}", path_gene.x, path_gene.y);
 
