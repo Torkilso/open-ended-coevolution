@@ -1,12 +1,10 @@
-use crate::neatns::novelty_item::{NoveltyItem, NoveltyItemsByFitness};
-use crate::neatns::population::Population;
+use crate::neatns::novelty_item::NoveltyItemsByFitness;
 
 use crate::config;
 use crate::simulator::Point;
 
 pub struct NoveltyArchive {
     pub(crate) novelty_items: Vec<Point>,
-    fittest_items: NoveltyItemsByFitness,
     generation: u32,
     items_added_in_generation: u32,
     novelty_threshold: f64,
@@ -17,7 +15,6 @@ impl NoveltyArchive {
     pub fn new() -> NoveltyArchive {
         NoveltyArchive {
             novelty_items: vec![],
-            fittest_items: NoveltyItemsByFitness::new(),
             generation: 0,
             items_added_in_generation: 0,
             novelty_threshold: config::NEATNS.initial_novelty_threshold,

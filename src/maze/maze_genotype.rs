@@ -154,7 +154,7 @@ impl MazeGenome {
         let available_directions: Vec<PathDirection> = vec!(PathDirection::North, PathDirection::East, PathDirection::South, PathDirection::West);
 
         let mut mutation_is_valid = validate_path_mutation_direction(&phenotype, index);
-        let mut direction_index = (rng.gen::<f32>() * self.available_directions.len() as f32) as usize;
+        let mut direction_index = (rng.gen::<f32>() * available_directions.len() as f32) as usize;
         let mut direction = available_directions[direction_index].clone();
 
         for _ in 0..4 {
@@ -190,7 +190,6 @@ impl MazeGenome {
         } else {
             self.path_genes[gene_index - 1]
         };
-        check_row_for_collision();
 
         let point_after = if gene_index == self.path_genes.len() - 1 {
             PathGene::new(self.width - 1, 0)
@@ -216,17 +215,23 @@ impl MazeGenome {
                     }
                 } else {
                     if gene.y > point_after.y {
-                        check_row_for_collision(maze, gene.x, )
+                        check_row_for_collision(maze, gene.x, point_after.x, gene.y)
                     } else {
-                        check_row_for_collision(maze, gene.x, )
+                        check_row_for_collision(maze, gene.x, point_after.x, gene.y)
                     }
                 }
             } else if direction == PathDirection::East {
-
+                if gene.x >= self.width - 1 {
+                    return false;
+                }
             } else if direction == PathDirection::South {
-
+                if gene.y <= 0  {
+                    return false;
+                }
             } else if direction == PathDirection::West {
-
+                if gene.x <= 0 {
+                    return false;
+                }
             }
         } else if self.first_direction == Orientation::Vertical {}
 
@@ -286,13 +291,24 @@ fn check_row_for_collision(maze: &MazePhenotype, from: u32, to: u32, y: u32) -> 
 
         }
     } else {
+        for i in to..from {
 
+        }
     }
     false
 }
 
-fn check_colummn_for_collision(maze: &MazePhenotype, from: usize, to: usize) -> bool {
+fn check_column_for_collision(maze: &MazePhenotype, from: usize, to: usize, x: u32) -> bool {
+    if from <= to {
+        for i in from..to {
 
+        }
+    } else {
+        for i in to..from {
+
+        }
+    }
+    false
 }
 
 fn get_random_opening(number: f32) -> OpeningLocation {

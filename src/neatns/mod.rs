@@ -1,6 +1,3 @@
-use std::borrow::{Borrow, BorrowMut};
-use std::path::Path;
-
 use crate::config;
 use crate::maze::maze_genotype::{generate_random_maze, MazeGenome};
 use crate::neatns::population::Population;
@@ -96,6 +93,7 @@ pub fn generate_seeds() -> Seeds {
     Seeds::new(mazes_fulfilling_mc, agents_fulfilling_mc)
 }
 
+#[allow(dead_code)]
 pub fn test_single_agent() {
     let mut population = Population::new(config::NEAT.population_size, 10, 2);
     for _ in 0..500 {
@@ -104,7 +102,7 @@ pub fn test_single_agent() {
     let agent = population.random_agent();
     let maze = generate_random_maze(5, 5);
     let maze_phenotype = maze.to_phenotype();
-    //visualize_maze(&maze_phenotype, Path::new("./test.png"), true);
+    visualize_maze(&maze_phenotype, Path::new("./test.png"), true);
     if agent.is_some() {
         //println!("agent: {}", agent.unwrap());
         let result = simulate_single_neatns(agent.unwrap(), &maze_phenotype, true);
@@ -112,6 +110,7 @@ pub fn test_single_agent() {
     }
 }
 
+#[allow(dead_code)]
 pub fn test_with_population() {
     let mut generations = 0;
 

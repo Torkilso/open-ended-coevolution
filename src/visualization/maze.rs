@@ -9,6 +9,7 @@ use crate::maze::maze_phenotype::MazeCell;
 use crate::maze::maze_phenotype::MazePhenotype;
 use crate::maze::PathDirection;
 
+#[allow(dead_code)]
 pub fn visualize_maze(maze: &MazePhenotype, file_path: &Path, display_solution: bool) {
     let scale_u32 = 4 * config::MAZE.cell_dimension as u32;
     let mut drawing = RgbImage::new(maze.width * scale_u32 + 1, maze.height * scale_u32 + 1);
@@ -18,6 +19,7 @@ pub fn visualize_maze(maze: &MazePhenotype, file_path: &Path, display_solution: 
     drawing.save(file_path).unwrap();
 }
 
+#[allow(dead_code)]
 pub fn draw_maze(
     maze: &MazePhenotype,
     drawing: &mut RgbImage,
@@ -83,6 +85,7 @@ pub fn draw_maze(
     }
 }
 
+#[allow(dead_code)]
 pub fn draw_cell_borders(drawing: &mut RgbImage, cell: &MazeCell, x: f32, y: f32, scale: f32) {
     if cell.north_wall {
         draw_line_segment_mut(drawing, (x, y), (x + scale, y), Rgb([0, 0, 0]));

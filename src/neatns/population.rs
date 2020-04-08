@@ -1,18 +1,15 @@
-use std::borrow::{Borrow, BorrowMut};
 use std::fmt;
-use std::ptr::null;
 
 use rand::Rng;
 
 use crate::config;
-use crate::maze::maze_genotype::MazeGenome;
 use crate::maze::maze_phenotype::MazePhenotype;
 use crate::neatns::agent::Agent;
 use crate::neatns::network::innovation::InnovationLog;
 use crate::neatns::network::innovation::InnovationTime;
 use crate::neatns::novelty_archive::NoveltyArchive;
 use crate::neatns::species::Species;
-use crate::simulator::{Point, simulate_single_neatns, SimulatorResult};
+use crate::simulator::{Point, simulate_single_neatns};
 
 pub struct Population {
     population_size: usize,

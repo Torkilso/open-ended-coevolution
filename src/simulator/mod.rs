@@ -1,6 +1,5 @@
 use crate::neatns::agent::Agent;
-use crate::config;
-use crate::maze::maze_phenotype::{MazeCell, MazePhenotype};
+use crate::maze::maze_phenotype::{MazePhenotype};
 use crate::simulator::radar::get_radar_values;
 use crate::simulator::run_state::RunState;
 use std::fmt;

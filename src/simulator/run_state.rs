@@ -39,8 +39,8 @@ impl RunState {
         velocity_adjustment: f64,
         angular_velocity_adjustment: f64,
     ) {
-        self.current_velocity += (velocity_adjustment); // - 0.5);
-        self.current_angular_velocity += (angular_velocity_adjustment); // - 0.5);
+        self.current_velocity += velocity_adjustment; // - 0.5);
+        self.current_angular_velocity += angular_velocity_adjustment; // - 0.5);
 
         // constraints of speed & angular velocity
         if self.current_velocity > config::AGENT.max_speed {

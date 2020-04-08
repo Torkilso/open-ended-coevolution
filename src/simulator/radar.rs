@@ -1,4 +1,3 @@
-use crate::config;
 use crate::maze::maze_phenotype::MazePhenotype;
 use crate::simulator::run_state::RunState;
 

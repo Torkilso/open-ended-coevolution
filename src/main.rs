@@ -25,6 +25,7 @@ mod visualization;
 
 fn main() {
     let mut maze = generate_random_maze(5, 5);
+
     visualize_maze(&maze.to_phenotype(), Path::new("before.png"), false);
     maze.increase_size();
     visualize_maze(&maze.to_phenotype(), Path::new("after.png"), false);

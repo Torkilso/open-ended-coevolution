@@ -1,17 +1,13 @@
-use std::path::Path;
-
 use image::{Rgb, RgbImage};
-use imageproc::drawing::{draw_filled_circle_mut, draw_filled_rect_mut, draw_line_segment_mut};
-use imageproc::rect::Rect;
+use imageproc::drawing::{draw_filled_circle_mut};
 
 use crate::config;
-use crate::maze::maze_phenotype::MazeCell;
 use crate::maze::maze_phenotype::MazePhenotype;
-use crate::maze::PathDirection;
 use crate::neatns::novelty_archive::NoveltyArchive;
 use crate::simulator::SimulatorResult;
-use crate::visualization::maze::{draw_maze, visualize_maze};
+use crate::visualization::maze::{draw_maze};
 
+#[allow(dead_code)]
 pub fn visualize_agent_path(maze: &MazePhenotype, simulator_result: &SimulatorResult) {
     let scale_u32 = 4 * config::MAZE.cell_dimension as u32;
     let mut drawing = RgbImage::new(maze.width * scale_u32 + 2, maze.height * scale_u32 + 2);
@@ -20,6 +16,7 @@ pub fn visualize_agent_path(maze: &MazePhenotype, simulator_result: &SimulatorRe
     draw_path(&mut drawing, maze, simulator_result);
 }
 
+#[allow(dead_code)]
 pub fn draw_path(drawing: &mut RgbImage, maze: &MazePhenotype, simulator_result: &SimulatorResult) {
     for (i, point) in simulator_result.agent_path.iter().enumerate() {
         //println!("{} {}", point.x * config::MAZE.cell_dimension, point.y * config::MAZE.cell_dimension);
@@ -48,6 +45,7 @@ pub fn draw_path(drawing: &mut RgbImage, maze: &MazePhenotype, simulator_result:
     }
 }
 
+#[allow(dead_code)]
 pub fn draw_novelty_archive(maze: &MazePhenotype, novelty_archive: &NoveltyArchive) {
     let scale_u32 = 4 * config::MAZE.cell_dimension as u32;
     let mut drawing = RgbImage::new(maze.width * scale_u32 + 2, maze.height * scale_u32 + 2);
@@ -58,6 +56,7 @@ pub fn draw_novelty_archive(maze: &MazePhenotype, novelty_archive: &NoveltyArchi
     //drawing.save(file_path).unwrap();
 }
 
+#[allow(dead_code)]
 pub fn draw_archive(
     drawing: &mut RgbImage,
     maze: &MazePhenotype,

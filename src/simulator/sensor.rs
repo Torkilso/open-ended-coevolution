@@ -1,5 +1,4 @@
-use crate::maze::maze_phenotype::{MazeCell, MazePhenotype};
-use crate::simulator::run_state::RunState;
+use crate::maze::maze_phenotype::{MazePhenotype};
 
 pub fn find_sensor_value_north_east(
     angle: f64,
