@@ -1,9 +1,5 @@
-use crate::mcc::agent::mcc_agent::MCCAgent;
+/*use crate::mcc::agent::mcc_agent::MCCAgent;
 use crate::config;
-
-extern crate queues;
-
-use queues::*;
 
 pub struct AgentSpecies {
     id: u32,
@@ -64,3 +60,4 @@ impl AgentSpecies {
         self.centroid.distance(other) < config::MCC.speciation_threshold
     }
 }
+*/

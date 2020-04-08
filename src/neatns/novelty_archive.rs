@@ -1,5 +1,3 @@
-use crate::neatns::novelty_item::NoveltyItemsByFitness;
-
 use crate::config;
 use crate::simulator::Point;
 

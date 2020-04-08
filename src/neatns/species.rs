@@ -1,5 +1,5 @@
-use crate::neatns::agent::Agent;
 use crate::config;
+use crate::neatns::agent::Agent;
 use rand::Rng;
 
 /// Collection of similar agents
@@ -60,10 +60,10 @@ impl Species {
     }
 
     /// Iterate mutable agents. Adheres to lock.
-    pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut Agent> {
+    /*pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut Agent> {
         let len = self.len(); // Must read len before iter_mut
         self.agents.iter_mut().take(len)
-    }
+    }*/
 
     /// Get a random agent. Adheres to lock.
     pub fn random_agent(&self) -> Option<&Agent> {

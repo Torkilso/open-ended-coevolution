@@ -4,7 +4,6 @@ use crate::neatns::network::innovation::InnovationTime;
 use crate::neatns::network::neural_network::NeuralNetwork;
 use crate::simulator::Point;
 use core::fmt;
-use std::cmp;
 
 #[derive(Clone)]
 pub struct Agent {
@@ -26,10 +25,6 @@ impl Agent {
         }
     }
 
-    pub fn set_fitness(&mut self, value: f64) {
-        self.fitness = value;
-    }
-
     /// Breed organism with other organism
     pub fn crossover(&self, other: &Self) -> Self {
         Agent {
@@ -44,9 +39,9 @@ impl Agent {
     }
 
     /// Compare to other organism based on non-adjusted fitness
-    pub fn cmp(&self, other: &Self) -> cmp::Ordering {
+    /*pub fn cmp(&self, other: &Self) -> cmp::Ordering {
         self.fitness.partial_cmp(&other.fitness).unwrap()
-    }
+    }*/
 
     pub fn to_phenotype(&self) -> NeuralNetwork {
         NeuralNetwork::new(&self.genome)

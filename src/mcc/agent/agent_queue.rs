@@ -1,5 +1,3 @@
-use crate::mcc::agent::agent_species::AgentSpecies;
-
 use crate::config;
 use crate::mcc::agent::mcc_agent::MCCAgent;
 use crate::neatns::agent::Agent;
@@ -12,13 +10,12 @@ pub struct AgentQueue {
 
 impl AgentQueue {
     pub fn new(agents: Vec<Agent>) -> AgentQueue {
-        let mut mcc_agents: Vec<MCCAgent> = vec!();
+        let mut mcc_agents: Vec<MCCAgent> = vec![];
 
         for agent in agents {
             let mcc_agent = MCCAgent::new(agent);
             mcc_agents.push(mcc_agent);
         }
-
 
         AgentQueue {
             agents: mcc_agents,
@@ -51,7 +48,7 @@ impl AgentQueue {
     }
 
     pub fn get_children(&mut self) -> Vec<MCCAgent> {
-        let mut children: Vec<MCCAgent> = vec!();
+        let mut children: Vec<MCCAgent> = vec![];
 
         for _ in 0..config::MCC.agent_selection_limit {
             if self.current_agent_index >= self.agents.len() {

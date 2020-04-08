@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 
-use rand::Rng;
 use rand::seq::SliceRandom;
+use rand::Rng;
 
 use crate::config;
 use crate::neatns::network::genome::Genome;
 use crate::neatns::network::link::Link;
 use crate::neatns::network::node::{Node, NodeRef};
-use crate::neatns::network::{connection, activation, order};
+use crate::neatns::network::{activation, connection, order};
 
 #[derive(Clone)]
 pub struct AgentGenome {
@@ -118,7 +118,8 @@ impl AgentGenome {
         if !self.links.is_empty() {
             let link_index = rng.gen_range(0, self.links.len());
             if let Some(link) = self.links.values_mut().skip(link_index).next() {
-                link.weight += (rng.gen::<f64>() - 0.5) * 2.0 * config::NEAT.mutate_link_weight_size;
+                link.weight +=
+                    (rng.gen::<f64>() - 0.5) * 2.0 * config::NEAT.mutate_link_weight_size;
             }
         }
 
@@ -127,9 +128,7 @@ impl AgentGenome {
         }*/
     }
 
-    fn mutation_add_node(
-        &mut self,
-    ) {
+    fn mutation_add_node(&mut self) {
         // Select random enabled link
         if let Some(index) = self
             .links
@@ -148,9 +147,7 @@ impl AgentGenome {
     }
 
     // TODO: avoid retries
-    fn mutation_add_connection(
-        &mut self,
-    ) {
+    fn mutation_add_connection(&mut self) {
         let mut rng = rand::thread_rng();
 
         // Retry 50 times
@@ -185,7 +182,8 @@ impl AgentGenome {
                         Link::new(
                             from,
                             to,
-                            (rng.gen::<f64>() - 0.5) * 2.0 * config::NEAT.initial_link_weight_size, 0,
+                            (rng.gen::<f64>() - 0.5) * 2.0 * config::NEAT.initial_link_weight_size,
+                            0,
                         ),
                         true,
                     );
@@ -218,7 +216,7 @@ impl AgentGenome {
     }
 
     // Genetic distance between two genomes
-    pub fn distance(&self, other: &Self) -> f64 {
+    /*pub fn distance(&self, other: &Self) -> f64 {
         let mut link_differences: u64 = 0; // Number of links present in only one of the genomes
         let mut link_distance: f64 = 0.0; // Total distance between links present in both genomes
         let mut link_count = self.links.len() as u64; // Number of unique links between the two genomes
@@ -243,7 +241,7 @@ impl AgentGenome {
         } else {
             ((link_differences as f64) + link_distance) / (link_count as f64)
         };
-    }
+    }*/
 
     pub fn get_activation(&self, node_ref: &NodeRef) -> activation::Activation {
         match node_ref {

@@ -1,4 +1,4 @@
-use crate::maze::maze_genotype::MazeGenome;
+/*use crate::maze::maze_genotype::MazeGenome;
 
 pub struct MazeSpecies {
     id: u32,
@@ -28,3 +28,4 @@ impl SpeciatedMazeQueue {
         // add to species if yes, create new species if no
     }
 }
+*/

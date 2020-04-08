@@ -5,15 +5,8 @@ extern crate envconfig_derive;
 extern crate lazy_static;
 
 use std::path::Path;
-use std::{env, thread};
 
-use elapsed::measure_time;
-use lazy_static::*;
-
-use crate::maze::maze_genotype::{generate_random_maze, MazeGenome, PathGene, WallGene};
-use crate::maze::maze_phenotype::MazePhenotype;
-use crate::simulator::radar::get_radar_values;
-
+use crate::maze::maze_genotype::generate_random_maze;
 use crate::visualization::maze::visualize_maze;
 
 mod config;
@@ -27,8 +20,8 @@ fn main() {
     let mut maze = generate_random_maze(5, 5);
 
     visualize_maze(&maze.to_phenotype(), Path::new("before.png"), false);
-    maze.increase_size();
+    maze.add_waypoint();
     visualize_maze(&maze.to_phenotype(), Path::new("after.png"), false);
 
-    //mcc::run_without_speciation();
+    mcc::run_without_speciation();
 }

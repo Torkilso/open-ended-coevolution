@@ -1,18 +1,18 @@
 use crate::config;
 use crate::maze::maze_genotype::{generate_random_maze, MazeGenome};
+use crate::neatns::agent::Agent;
 use crate::neatns::population::Population;
 use crate::simulator::simulate_single_neatns;
 use crate::visualization::maze::visualize_maze;
 use crate::visualization::simulation::{draw_novelty_archive, visualize_agent_path};
 use rand::seq::IteratorRandom;
-use crate::neatns::agent::Agent;
+use std::path::Path;
 
-pub(crate) mod novelty_archive;
-mod novelty_item;
-mod population;
-mod species;
 pub(crate) mod agent;
 pub(crate) mod network;
+pub(crate) mod novelty_archive;
+mod population;
+mod species;
 
 pub struct Seeds {
     pub mazes: Vec<MazeGenome>,
@@ -104,8 +104,8 @@ pub fn test_single_agent() {
     let maze_phenotype = maze.to_phenotype();
     visualize_maze(&maze_phenotype, Path::new("./test.png"), true);
     if agent.is_some() {
-        //println!("agent: {}", agent.unwrap());
-        let result = simulate_single_neatns(agent.unwrap(), &maze_phenotype, true);
+        println!("agent: {}", agent.unwrap());
+        //let result = simulate_single_neatns(agent.unwrap(), &maze_phenotype, true);
         //visualize_agent_path(&maze_phenotype, &result, Path::new("./test.png"));
     }
 }

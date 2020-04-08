@@ -1,10 +1,10 @@
+use crate::maze::maze_genotype::MazeGenome;
+use crate::maze::maze_phenotype::MazePhenotype;
+use crate::mcc::agent::mcc_agent::MCCAgent;
 use crate::neatns::agent::Agent;
-use crate::maze::maze_phenotype::{MazePhenotype};
 use crate::simulator::radar::get_radar_values;
 use crate::simulator::run_state::RunState;
 use std::fmt;
-use crate::maze::maze_genotype::MazeGenome;
-use crate::mcc::agent::mcc_agent::MCCAgent;
 
 pub mod radar;
 mod run_state;
@@ -56,9 +56,9 @@ impl SimulatorResult {
         self.agent_path.push(point);
     }
 
-    pub fn final_position(&self) -> Option<&Point> {
-        self.agent_path.last()
-    }
+    //pub fn final_position(&self) -> Option<&Point> {
+    //    self.agent_path.last()
+    //}
 }
 
 impl fmt::Display for SimulatorResult {
@@ -71,7 +71,11 @@ impl fmt::Display for SimulatorResult {
     }
 }
 
-pub fn simulate_single_neatns(agent: &Agent, maze: &MazePhenotype, trace_path: bool) -> SimulatorResult {
+pub fn simulate_single_neatns(
+    agent: &Agent,
+    maze: &MazePhenotype,
+    trace_path: bool,
+) -> SimulatorResult {
     let mut steps_left = 1000;
     let mut run_state = RunState::new(maze.height);
 
@@ -119,8 +123,11 @@ pub fn simulate_single_neatns(agent: &Agent, maze: &MazePhenotype, trace_path: b
     result
 }
 
-
-pub fn simulate_single_mcc(agent: &mut MCCAgent, maze: &MazePhenotype, trace_path: bool) -> SimulatorResult {
+pub fn simulate_single_mcc(
+    agent: &mut MCCAgent,
+    maze: &MazePhenotype,
+    trace_path: bool,
+) -> SimulatorResult {
     let mut steps_left = 1000;
     let mut run_state = RunState::new(maze.height);
 

@@ -1,9 +1,9 @@
 pub mod activation;
 pub mod basic_order;
 pub mod connection;
-pub mod neural_network;
-pub mod order;
 pub mod genome;
 pub mod innovation;
-pub mod node;
 pub mod link;
+pub mod neural_network;
+pub mod node;
+pub mod order;

@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
+use crate::neatns::network::activation::Activation;
 use crate::neatns::network::genome::Genome;
 use crate::neatns::network::node::NodeRef;
-use crate::neatns::network::activation::Activation;
 use crate::neatns::network::order;
 
 #[derive(Clone, Debug)]

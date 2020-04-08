@@ -4,12 +4,16 @@ use crate::maze::maze_genotype::MazeGenome;
 pub struct MazeQueue {
     mazes: Vec<MazeGenome>,
     current_maze_index: usize,
-    max_items_limit: usize
+    max_items_limit: usize,
 }
 
 impl MazeQueue {
     pub fn new(mazes: Vec<MazeGenome>) -> MazeQueue {
-        MazeQueue { mazes, current_maze_index: 0, max_items_limit: config::MCC.maze_population_capacity }
+        MazeQueue {
+            mazes,
+            current_maze_index: 0,
+            max_items_limit: config::MCC.maze_population_capacity,
+        }
     }
 
     pub fn len(&self) -> usize {
@@ -36,10 +40,9 @@ impl MazeQueue {
     }
 
     pub fn get_children(&mut self) -> Vec<MazeGenome> {
-        let mut children: Vec<MazeGenome> = vec!();
+        let mut children: Vec<MazeGenome> = vec![];
 
         for _ in 0..config::MCC.maze_selection_limit {
-
             if self.current_maze_index >= self.mazes.len() {
                 self.current_maze_index = 0;
             }

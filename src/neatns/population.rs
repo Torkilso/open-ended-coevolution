@@ -9,7 +9,7 @@ use crate::neatns::network::innovation::InnovationLog;
 use crate::neatns::network::innovation::InnovationTime;
 use crate::neatns::novelty_archive::NoveltyArchive;
 use crate::neatns::species::Species;
-use crate::simulator::{Point, simulate_single_neatns};
+use crate::simulator::simulate_single_neatns;
 
 pub struct Population {
     population_size: usize,
@@ -226,8 +226,6 @@ impl Population {
     }
 
     pub fn run_simulation_and_update_fitness(&mut self, maze: &MazePhenotype) -> Option<Agent> {
-        let mut successful_agent: Option<Agent> = None;
-
         for species in self.species.iter_mut() {
             for agent in species.agents.iter_mut() {
                 let result = simulate_single_neatns(agent, &maze, false);
@@ -256,7 +254,7 @@ impl Population {
 
         self.novelty_archive.end_of_generation();
 
-        successful_agent
+        Option::None
     }
 }
 

@@ -1,10 +1,9 @@
 use core::fmt;
-use std::cmp;
 
-use crate::simulator::Point;
 use crate::mcc::agent::agent_genome::AgentGenome;
 use crate::mcc::agent::neural_network::NeuralNetwork;
 use crate::neatns::agent::Agent;
+use crate::simulator::Point;
 
 #[derive(Clone)]
 pub struct MCCAgent {
@@ -20,7 +19,7 @@ impl MCCAgent {
             genome: AgentGenome::new(agent.genome),
             final_position: Option::None,
             mcc_species_id: Option::None,
-            viable: true
+            viable: true,
         }
     }
 
@@ -33,10 +32,12 @@ impl MCCAgent {
         self.genome.mutate();
     }
 
-    /// Genetic distance to other organism
+    /*
     pub fn distance(&self, other: &Self) -> f64 {
         self.genome.distance(&other.genome)
     }
+
+    */
 }
 
 impl fmt::Display for MCCAgent {

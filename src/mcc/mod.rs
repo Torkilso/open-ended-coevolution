@@ -8,6 +8,7 @@ pub(crate) mod agent;
 mod maze;
 
 pub fn run_without_speciation() {
+    return;
     let seeds = neatns::generate_seeds();
 
     let mut agents = AgentQueue::new(seeds.agents);
@@ -31,6 +32,11 @@ pub fn run_without_speciation() {
             }
         }
 
-        println!("Generation: {}\tAgents: {}\tMazes: {}", generation, agents.len(), mazes.len());
+        println!(
+            "Generation: {}\tAgents: {}\tMazes: {}",
+            generation,
+            agents.len(),
+            mazes.len()
+        );
     }
 }

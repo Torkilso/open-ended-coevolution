@@ -1,11 +1,11 @@
 use crate::config;
+use crate::neatns::network::activation;
+use crate::neatns::network::connection;
 use crate::neatns::network::innovation::InnovationLog;
 use crate::neatns::network::innovation::InnovationTime;
 use crate::neatns::network::link::Link;
 use crate::neatns::network::node::Node;
 use crate::neatns::network::node::NodeRef;
-use crate::neatns::network::activation;
-use crate::neatns::network::connection;
 use crate::neatns::network::order;
 use rand::seq::SliceRandom;
 use rand::Rng;
