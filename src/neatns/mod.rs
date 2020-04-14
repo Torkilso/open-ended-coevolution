@@ -34,7 +34,7 @@ pub fn generate_seeds() -> Seeds {
     while mazes_fulfilling_mc.len() < config::MCC.maze_seed_amount {
         let mut generations = 0;
 
-        let maze = generate_random_maze(5, 5);
+        let maze = generate_random_maze(10, 10);
         let maze_phenotype = maze.to_phenotype();
 
         let mut population = Population::new(config::NEATNS.population_size, 10, 2);

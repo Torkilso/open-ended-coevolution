@@ -1,61 +1,80 @@
-/*use crate::mcc::agent::mcc_agent::MCCAgent;
+use crate::mcc::agent::mcc_agent::MCCAgent;
 use crate::mcc::agent::agent_species::AgentSpecies;
+use crate::neatns::agent::Agent;
+use crate::config;
 
 pub struct SpeciatedAgentQueue {
     species: Vec<AgentSpecies>,
-    species_counter: u32,
 }
 
 impl SpeciatedAgentQueue {
-    pub fn new(agents: Vec<MCCAgent>) -> SpeciatedAgentQueue {
-        let mut queue = SpeciatedAgentQueue {
-            species: vec![],
-            species_counter: 0,
-        };
+    pub fn new(agents: Vec<Agent>) -> SpeciatedAgentQueue {
+        let mut mcc_agents: Vec<MCCAgent> = vec![];
 
         for agent in agents {
-            let mut species = AgentSpecies::new(queue.species_counter, agent);
+            let mcc_agent = MCCAgent::new(agent);
+            mcc_agents.push(mcc_agent);
+        }
+
+        let mut queue = SpeciatedAgentQueue {
+            species: vec![],
+        };
+
+        let species_max_agents_limit: usize = config::MCC.agent_population_capacity / mcc_agents.len();
+
+        for agent in mcc_agents {
+            let species = AgentSpecies::new(agent, species_max_agents_limit);
             queue.species.push(species);
-            queue.species_counter += 1;
         }
 
         queue
     }
 
-    pub fn add_agent(&mut self, agent: MCCAgent) {
-        if let Some(species) = self.compatible_species(&agent) {
-            species.add_agent(agent);
-        } else {
-            let mut species = AgentSpecies::new(self.species_counter, agent);
-            self.species.push(species);
-            self.species_counter += 1;
-        }
+    pub fn len(&self) -> usize {
+        self.species.len()
     }
 
-    fn compatible_species(&mut self, agent: &MCCAgent) -> Option<&mut AgentSpecies> {
-        for species in self.species.iter_mut() {
-            if species.is_compatible(&agent) {
-                return Some(species);
+    // Looks for suitable species to put new agent in
+    // If none are found, a new species is made
+    pub fn push(&mut self, agent: MCCAgent) {
+        let mut distances: Vec<f64> = vec!();
+
+        for species in self.species.iter() {
+            distances.push(species.distance(&agent));
+        }
+
+        let mut highest = 0.0;
+        let mut index: usize = 0;
+
+        for (i, value) in distances.iter().enumerate() {
+            if *value > highest {
+                highest = *value;
+                index = i;
             }
         }
 
-        None
+        self.species[index].push(agent);
     }
 
-    pub fn select_next_batch_in_line(&mut self) -> Vec<MCCAgent> {
-        let mut batch: Vec<MCCAgent> = vec!();
+    // Generates children from the next parents in line
+    // Picks parents from all species
+    // The parents are only mutated, no crossover is performed
+    pub fn get_children(&mut self) -> Vec<MCCAgent> {
+        let mut children: Vec<MCCAgent> = vec![];
+
+        let amount: usize = config::MCC.agent_selection_limit / self.species.len();
 
         for species in self.species.iter_mut() {
-            let species_agents = species.get_next_agent();
-            //batch.append(species_agents)
+            for child in species.get_children(amount) {
+                children.push(child);
+            }
         }
 
-        batch
+        for child in children.iter_mut() {
+            child.mutate();
+            child.viable = false;
+        }
 
-        /*let test = self.species
-            .iter_mut()
-            .map(|species| species.get_next_batch_in_line())
-            .flatten();*/
+        children
     }
 }
-*/

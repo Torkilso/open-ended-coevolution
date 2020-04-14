@@ -1,3 +1,4 @@
+use crate::config;
 use crate::maze::maze_genotype::MazeGenome;
 use crate::maze::maze_phenotype::MazePhenotype;
 use crate::mcc::agent::mcc_agent::MCCAgent;
@@ -126,9 +127,10 @@ pub fn simulate_single_neatns(
 pub fn simulate_single_mcc(
     agent: &mut MCCAgent,
     maze: &MazePhenotype,
+    length: u32,
     trace_path: bool,
 ) -> SimulatorResult {
-    let mut steps_left = 1000;
+    let mut steps_left = length * config::MAZE.cell_dimension as u32;
     let mut run_state = RunState::new(maze.height);
 
     let mut agent_phenotype = agent.to_phenotype();
@@ -140,24 +142,14 @@ pub fn simulate_single_mcc(
         let radar_values = get_radar_values(&run_state, maze).to_f64_vector();
         let all_inputs = [&sensor_values[..], &radar_values[..]].concat();
 
-        //println!("inputs: {:?}", all_inputs);
-
         let output = agent_phenotype.activate(&all_inputs);
-
         run_state.update_velocities(output[0], output[1]);
-
-        /*println!(
-            "velocities adjustment: {:?} | new: {} {}",
-            output, run_state.current_velocity, run_state.current_angular_velocity
-        );*/
 
         let new_position = run_state.update_position(maze);
 
         if trace_path {
             result.add_point(new_position.clone());
         }
-
-        //println!("position: {} {}", run_state.global_x, run_state.global_y);
 
         if run_state.maze_completed(maze.width) {
             result.final_position = Option::Some(new_position.clone());
@@ -180,7 +172,12 @@ pub fn simulate_many(agents: &mut Vec<MCCAgent>, mazes: &mut Vec<MazeGenome>) {
     for maze in mazes.iter_mut() {
         let maze_phenotype = maze.to_phenotype();
         for agent in agents.iter_mut() {
-            let simulator_result = simulate_single_mcc(agent, &maze_phenotype, false);
+            let simulator_result = simulate_single_mcc(
+                agent,
+                &maze_phenotype,
+                maze.get_solution_path_cell_length(),
+                false,
+            );
 
             if simulator_result.agent_reached_end {
                 agent.viable = true;

@@ -1,6 +1,4 @@
-use crate::config;
 use crate::mcc::agent::mcc_agent::MCCAgent;
-use crate::neatns::agent::Agent;
 
 pub struct AgentQueue {
     agents: Vec<MCCAgent>,
@@ -8,19 +6,13 @@ pub struct AgentQueue {
     max_items_limit: usize,
 }
 
+
 impl AgentQueue {
-    pub fn new(agents: Vec<Agent>) -> AgentQueue {
-        let mut mcc_agents: Vec<MCCAgent> = vec![];
-
-        for agent in agents {
-            let mcc_agent = MCCAgent::new(agent);
-            mcc_agents.push(mcc_agent);
-        }
-
+    pub fn new(mcc_agents: Vec<MCCAgent>, max_items_limit: usize) -> AgentQueue {
         AgentQueue {
             agents: mcc_agents,
             current_agent_index: 0,
-            max_items_limit: config::MCC.agent_population_capacity,
+            max_items_limit,
         }
     }
 
@@ -29,11 +21,11 @@ impl AgentQueue {
     }
 
     pub fn push(&mut self, agent: MCCAgent) {
+        self.agents.push(agent);
+
         if self.agents.len() >= self.max_items_limit {
             self.remove_oldest(self.agents.len() - self.max_items_limit);
         }
-
-        self.agents.push(agent);
     }
 
     fn remove_oldest(&mut self, amount: usize) {
@@ -47,10 +39,10 @@ impl AgentQueue {
         }
     }
 
-    pub fn get_children(&mut self) -> Vec<MCCAgent> {
+    pub fn get_children(&mut self, amount: usize) -> Vec<MCCAgent> {
         let mut children: Vec<MCCAgent> = vec![];
 
-        for _ in 0..config::MCC.agent_selection_limit {
+        for _ in 0..amount {
             if self.current_agent_index >= self.agents.len() {
                 self.current_agent_index = 0;
             }

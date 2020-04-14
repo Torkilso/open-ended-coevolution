@@ -1,4 +1,3 @@
-use crate::config;
 use crate::maze::maze_genotype::MazeGenome;
 
 pub struct MazeQueue {
@@ -8,12 +7,16 @@ pub struct MazeQueue {
 }
 
 impl MazeQueue {
-    pub fn new(mazes: Vec<MazeGenome>) -> MazeQueue {
+    pub fn new(mazes: Vec<MazeGenome>, max_items_limit: usize) -> MazeQueue {
         MazeQueue {
             mazes,
             current_maze_index: 0,
-            max_items_limit: config::MCC.maze_population_capacity,
+            max_items_limit,
         }
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item=&MazeGenome> {
+        self.mazes.iter()
     }
 
     pub fn len(&self) -> usize {
@@ -21,11 +24,11 @@ impl MazeQueue {
     }
 
     pub fn push(&mut self, maze: MazeGenome) {
+        self.mazes.push(maze);
+
         if self.mazes.len() >= self.max_items_limit {
             self.remove_oldest(self.mazes.len() - self.max_items_limit);
         }
-
-        self.mazes.push(maze);
     }
 
     fn remove_oldest(&mut self, amount: usize) {
@@ -39,10 +42,10 @@ impl MazeQueue {
         }
     }
 
-    pub fn get_children(&mut self) -> Vec<MazeGenome> {
+    pub fn get_children(&mut self, amount: usize) -> Vec<MazeGenome> {
         let mut children: Vec<MazeGenome> = vec![];
 
-        for _ in 0..config::MCC.maze_selection_limit {
+        for _ in 0..amount {
             if self.current_maze_index >= self.mazes.len() {
                 self.current_maze_index = 0;
             }
@@ -56,5 +59,20 @@ impl MazeQueue {
         }
 
         children
+    }
+
+    pub fn get_largest(&self) -> MazeGenome {
+        let max = self.mazes.iter().max_by_key(|p| p.width);
+
+        return max.unwrap().clone();
+    }
+
+    pub fn get_average_size(&self) -> f64 {
+        let mut size_sum = 0;
+        for maze in self.mazes.iter() {
+            size_sum += maze.width;
+        }
+
+        size_sum as f64 / self.mazes.len() as f64
     }
 }

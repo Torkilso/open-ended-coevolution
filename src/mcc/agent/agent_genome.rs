@@ -129,6 +129,7 @@ impl AgentGenome {
     }
 
     fn mutation_add_node(&mut self) {
+
         // Select random enabled link
         if let Some(index) = self
             .links
@@ -138,11 +139,16 @@ impl AgentGenome {
             .collect::<Vec<(NodeRef, NodeRef)>>()
             .choose(&mut rand::thread_rng())
         {
-            assert!(self.order.contains(&order::Action::Link(index.0, index.1)));
+            if self.order.contains(&order::Action::Link(index.0, index.1)) {
+                if let Some(&link) = self.links.get(index) {
+                    self.split_link(link, self.hidden_nodes.len() as u64);
+                }
+            }
+            /*assert!(self.order.contains(&order::Action::Link(index.0, index.1)));
 
             if let Some(&link) = self.links.get(index) {
                 self.split_link(link, self.hidden_nodes.len() as u64);
-            }
+            }*/
         }
     }
 
@@ -216,7 +222,7 @@ impl AgentGenome {
     }
 
     // Genetic distance between two genomes
-    /*pub fn distance(&self, other: &Self) -> f64 {
+    pub fn distance(&self, other: &Self) -> f64 {
         let mut link_differences: u64 = 0; // Number of links present in only one of the genomes
         let mut link_distance: f64 = 0.0; // Total distance between links present in both genomes
         let mut link_count = self.links.len() as u64; // Number of unique links between the two genomes
@@ -241,7 +247,7 @@ impl AgentGenome {
         } else {
             ((link_differences as f64) + link_distance) / (link_count as f64)
         };
-    }*/
+    }
 
     pub fn get_activation(&self, node_ref: &NodeRef) -> activation::Activation {
         match node_ref {

@@ -84,9 +84,6 @@ impl MazeValidator {
     pub fn add_waypoint(&mut self, current_point: &PathGene, target_point: &PathGene) -> bool {
         self.update_cell_is_waypoint(target_point.x, target_point.y, true);
 
-        //println!("current point {} {}", current_point.x, current_point.y);
-        //println!("target point {} {}", target_point.x, target_point.y);
-
         if self.first_direction == Orientation::Vertical {
             if !self.add_vertical_path_segment(current_point.x, current_point.y, target_point.y) {
                 return false;
@@ -112,22 +109,11 @@ impl MazeValidator {
     }
 
     pub fn add_vertical_path_segment(&mut self, from_x: u32, from_y: u32, to_y: u32) -> bool {
-        println!(
-            "\nAdding vertical path from ({}, {}) to ({}, {})\n",
-            from_x, from_y, from_x, to_y
-        );
-
         if from_y <= to_y {
             for y in from_y..to_y + 1 {
                 if y == to_y {
                     continue;
                 }
-                println!(
-                    "{} {} cell path direction {:#?} -> North",
-                    from_x,
-                    y,
-                    self.get_cell_at(from_x, y).path_direction,
-                );
 
                 if self.get_cell_at(from_x, y).path_direction != PathDirection::None {
                     return false;
@@ -139,12 +125,6 @@ impl MazeValidator {
                 if y == to_y {
                     continue;
                 }
-                println!(
-                    "{} {} cell path direction {:#?} -> South",
-                    from_x,
-                    y,
-                    self.get_cell_at(from_x, y).path_direction
-                );
 
                 if self.get_cell_at(from_x, y).path_direction != PathDirection::None {
                     return false;
@@ -156,23 +136,11 @@ impl MazeValidator {
     }
 
     pub fn add_horizontal_path_segment(&mut self, from_y: u32, from_x: u32, to_x: u32) -> bool {
-        println!(
-            "\nAdding horizontal path from ({}, {}) to ({}, {})\n",
-            from_x, from_y, to_x, from_y
-        );
-
         if from_x <= to_x {
             for x in from_x..to_x + 1 {
                 if x == to_x {
                     continue;
                 }
-
-                println!(
-                    "{} {} cell path direction {:#?} -> East",
-                    x,
-                    from_y,
-                    self.get_cell_at(x, from_y).path_direction
-                );
 
                 if self.get_cell_at(x, from_y).path_direction != PathDirection::None {
                     return false;
@@ -184,13 +152,6 @@ impl MazeValidator {
                 if x == to_x {
                     continue;
                 }
-
-                println!(
-                    "{} {} cell path direction {:#?} -> West",
-                    x,
-                    from_y,
-                    self.get_cell_at(x, from_y).path_direction
-                );
 
                 if self.get_cell_at(x, from_y).path_direction != PathDirection::None {
                     return false;

@@ -63,7 +63,7 @@ impl<T: Hash + Eq + Copy> Order<T> {
         self.hiddens.push(node);
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = &Action<T>> {
+    pub fn iter(&self) -> impl Iterator<Item=&Action<T>> {
         self.actions.iter()
     }
 
@@ -118,9 +118,11 @@ impl<T: Hash + Eq + Copy> Order<T> {
         let index = self
             .actions
             .iter()
-            .position(|x| *x == Action::Link(from, to))
-            .expect("Link action does not exist");
-        self.actions.remove(index);
+            .position(|x| *x == Action::Link(from, to));
+        //.expect("Link action does not exist");
+        if index.is_some() {
+            self.actions.remove(index.unwrap());
+        }
     }
 
     /// Determine order of nodes and links to actiave in forward pass

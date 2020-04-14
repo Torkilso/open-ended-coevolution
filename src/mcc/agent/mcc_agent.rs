@@ -32,12 +32,9 @@ impl MCCAgent {
         self.genome.mutate();
     }
 
-    /*
     pub fn distance(&self, other: &Self) -> f64 {
         self.genome.distance(&other.genome)
     }
-
-    */
 }
 
 impl fmt::Display for MCCAgent {

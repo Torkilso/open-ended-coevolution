@@ -1,4 +1,5 @@
 use core::fmt;
+use std::i32;
 
 use rand::{thread_rng, Rng};
 
@@ -77,6 +78,30 @@ impl MazeGenome {
             wall_genes,
             viable: true,
         }
+    }
+
+    pub fn distance(&self, other: &Self) -> f64 {
+        0.0
+    }
+
+    pub fn get_solution_path_cell_length(&self) -> u32 {
+        let mut length: u32 = 0;
+
+        let mut current_x: i32 = 0;
+        let mut current_y: i32 = self.height as i32 - 1;
+
+        for path_gene in self.path_genes.iter() {
+            length += (path_gene.x as i32 - current_x).abs() as u32;
+            length += (path_gene.y as i32 - current_y).abs() as u32;
+
+            current_x = path_gene.x as i32;
+            current_y = path_gene.y as i32;
+        }
+
+        length += ((self.width - 1) as i32 - current_x).abs() as u32;
+        length += (0 as i32 - current_y).abs() as u32;
+
+        length
     }
 
     pub fn to_phenotype(&self) -> MazePhenotype {
@@ -169,7 +194,6 @@ impl MazeGenome {
         if !self.valid_phenotype_after_waypoint_mutation(index, direction) {
             return;
         }
-        //println!("self.path_genes: {:#?}", self.path_genes);
 
         if direction == PathDirection::North {
             self.path_genes[index].y += 1;
@@ -180,7 +204,6 @@ impl MazeGenome {
         } else if direction == PathDirection::West {
             self.path_genes[index].x -= 1;
         }
-        //println!("self.path_genes: {:#?}", self.path_genes);
     }
 
     pub fn validate_path_mutation_direction(
@@ -201,30 +224,18 @@ impl MazeGenome {
             self.path_genes[gene_index + 1]
         };
 
-        /*println!("Gene: {:#?}", gene);
-                println!("self.height: {}", self.height);
-                println!("point_after.y: {}", point_after.y);
-                println!("point_before.y: {}", point_before.y);
-        */
-
         if direction == PathDirection::North {
-            //println!("gene.y >= self.height - 1: {}", gene.y >= self.height - 1);
-
             if gene.y >= self.height - 1 {
                 return false;
             }
-            //println!("point_after.y == gene.y + 1 || point_before.y == gene.y + 1: {}", point_after.y == gene.y + 1 || point_before.y == gene.y + 1);
 
             if point_after.y == gene.y + 1 || point_before.y == gene.y + 1 {
                 return false;
             }
         } else if direction == PathDirection::East {
-            //println!("gene.x >= self.width - 1: {}", gene.x >= self.width - 1);
-
             if gene.x >= self.width - 1 {
                 return false;
             }
-            //println!("point_after.x == gene.x + 1 || point_before.x == gene.x + 1: {}", point_after.x == gene.x + 1 || point_before.x == gene.x + 1);
 
             if point_after.x == gene.x + 1 || point_before.x == gene.x + 1 {
                 return false;
@@ -311,7 +322,6 @@ impl MazeGenome {
         }
 
         let mut clone = self.clone();
-        println!("Maze: {:#?}\n", self);
 
         let validator = MazeValidator::new(
             clone.width,
@@ -320,14 +330,10 @@ impl MazeGenome {
             &clone.path_genes,
         );
 
-        println!("\nnew point: {} {}", path_gene.x, path_gene.y);
-
         let cell = validator.get_cell_at(path_gene.x, path_gene.y);
-        println!("cell path: {:#?}\n", cell.path_direction);
 
         if cell.path_direction == PathDirection::None {
             clone.path_genes.push(path_gene);
-            println!("\npath genes in clone: {:#?}\n", clone.path_genes);
 
             if MazeValidator::validate_new_path(
                 clone.width,
@@ -335,14 +341,10 @@ impl MazeGenome {
                 clone.first_direction,
                 &clone.path_genes,
             ) {
-                println!("\nadding gene");
                 self.path_genes.push(path_gene);
             } else {
-                println!("\nnot adding gene");
             }
         }
-
-        println!("\npath genes in maze: {:#?}", self.path_genes);
     }
 
     pub fn increase_size(&mut self) {
