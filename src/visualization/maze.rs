@@ -10,13 +10,15 @@ use crate::maze::maze_phenotype::MazePhenotype;
 use crate::maze::PathDirection;
 
 #[allow(dead_code)]
-pub fn visualize_maze(maze: &MazePhenotype, file_path: &Path, display_solution: bool) {
+pub fn visualize_maze(maze: &MazePhenotype, file_path: String, display_solution: bool) {
     let scale_u32 = 4 * config::MAZE.cell_dimension as u32;
     let mut drawing = RgbImage::new(maze.width * scale_u32 + 1, maze.height * scale_u32 + 1);
 
     draw_maze(maze, &mut drawing, scale_u32, display_solution);
 
-    drawing.save(file_path).unwrap();
+    let path = Path::new(&file_path);
+
+    drawing.save(path).unwrap();
 }
 
 #[allow(dead_code)]

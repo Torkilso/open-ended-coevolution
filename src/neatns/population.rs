@@ -17,6 +17,7 @@ pub struct Population {
     pub innovation_log: InnovationLog,
     pub global_innovation: InnovationTime,
     pub novelty_archive: NoveltyArchive,
+    total_individuals_added: u32,
 }
 
 impl Population {
@@ -27,10 +28,12 @@ impl Population {
             innovation_log: InnovationLog::new(),
             global_innovation: InnovationTime::new(),
             novelty_archive: NoveltyArchive::new(),
+            total_individuals_added: 0,
         };
 
         for _ in 0..population_size {
-            population.push(Agent::new(0, inputs, outputs), false);
+            population.push(Agent::new(0, inputs, outputs, population.total_individuals_added), false);
+            population.total_individuals_added += 1;
         }
 
         return population;
@@ -168,9 +171,10 @@ impl Population {
                 };
                 let mother = self.species[i].random_agent().expect(error);
 
-                let mut child = mother.crossover(father);
+                let mut child = mother.crossover(father, self.total_individuals_added);
                 child.mutate(&mut self.innovation_log, &mut self.global_innovation);
                 self.push(child, true);
+                self.total_individuals_added += 1;
             }
         }
 
@@ -221,7 +225,7 @@ impl Population {
     }
 
     /// Iterate agents
-    pub fn iter(&self) -> impl Iterator<Item = &Agent> {
+    pub fn iter(&self) -> impl Iterator<Item=&Agent> {
         self.species.iter().map(|species| species.iter()).flatten()
     }
 

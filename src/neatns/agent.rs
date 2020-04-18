@@ -7,6 +7,7 @@ use core::fmt;
 
 #[derive(Clone)]
 pub struct Agent {
+    pub id: u32,
     pub genome: Genome,
     pub fitness: f64,
     pub adjusted_fitness: f64,
@@ -15,8 +16,9 @@ pub struct Agent {
 }
 
 impl Agent {
-    pub fn new(generation: u64, inputs: usize, outputs: usize) -> Agent {
+    pub fn new(generation: u64, inputs: usize, outputs: usize, id: u32) -> Agent {
         Agent {
+            id,
             genome: Genome::new(inputs, outputs),
             fitness: 0.0,
             adjusted_fitness: 0.0,
@@ -26,8 +28,9 @@ impl Agent {
     }
 
     /// Breed organism with other organism
-    pub fn crossover(&self, other: &Self) -> Self {
+    pub fn crossover(&self, other: &Self, id: u32) -> Self {
         Agent {
+            id,
             genome: self
                 .genome
                 .crossover(&other.genome, self.fitness > other.fitness),

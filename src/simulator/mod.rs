@@ -89,24 +89,13 @@ pub fn simulate_single_neatns(
         let radar_values = get_radar_values(&run_state, maze).to_f64_vector();
         let all_inputs = [&sensor_values[..], &radar_values[..]].concat();
 
-        //println!("inputs: {:?}", all_inputs);
-
         let output = agent_phenotype.activate(&all_inputs);
-
         run_state.update_velocities(output[0], output[1]);
-
-        /*println!(
-            "velocities adjustment: {:?} | new: {} {}",
-            output, run_state.current_velocity, run_state.current_angular_velocity
-        );*/
-
         let new_position = run_state.update_position(maze);
 
         if trace_path {
             result.add_point(new_position.clone());
         }
-
-        //println!("position: {} {}", run_state.global_x, run_state.global_y);
 
         if run_state.maze_completed(maze.width) {
             result.final_position = Option::Some(new_position.clone());

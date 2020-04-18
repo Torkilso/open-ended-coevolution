@@ -9,12 +9,17 @@ use crate::simulator::simulate_many;
 use crate::visualization::maze::visualize_maze;
 use std::path::Path;
 use crate::mcc::agent::ReplacementStrategy;
+use crate::analytics::Analyzer;
 
 pub(crate) mod agent;
 mod maze;
 
-pub fn run_regular_mcc() {
+pub fn run_regular_mcc(analyzer: Analyzer) {
     let seeds = neatns::generate_seeds();
+
+    analyzer.visualize_seeds(&seeds);
+
+    return;
 
     let mcc_agents: Vec<MCCAgent> = seeds
         .agents
@@ -58,12 +63,14 @@ pub fn run_regular_mcc() {
 
     let max = mazes.get_largest();
     println!("Maze dimensions: {}x{}", max.width, max.height);
-
-    visualize_maze(&max.to_phenotype(), Path::new("max.png"), false)
 }
 
-pub fn run_regular_speciated_mcc() {
+pub fn run_regular_speciated_mcc(analyzer: Analyzer) {
     let seeds = neatns::generate_seeds();
+
+    analyzer.visualize_seeds(&seeds);
+
+    return;
 
     let mut agents = SpeciatedAgentQueue::new(seeds.agents, false, ReplacementStrategy::None);
     let mut mazes = SpeciatedMazeQueue::new(seeds.mazes);
@@ -100,6 +107,4 @@ pub fn run_regular_speciated_mcc() {
 
     //let max = mazes.get_largest();
     //println!("Maze dimensions: {}x{}", max.width, max.height);
-
-    //visualize_maze(&max.to_phenotype(), Path::new("max.png"), false)
 }

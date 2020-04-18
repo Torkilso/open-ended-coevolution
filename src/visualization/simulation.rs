@@ -6,21 +6,23 @@ use crate::maze::maze_phenotype::MazePhenotype;
 use crate::neatns::novelty_archive::NoveltyArchive;
 use crate::simulator::SimulatorResult;
 use crate::visualization::maze::draw_maze;
+use std::path::Path;
 
 #[allow(dead_code)]
-pub fn visualize_agent_path(maze: &MazePhenotype, simulator_result: &SimulatorResult) {
+pub fn visualize_agent_path(maze: &MazePhenotype, simulator_result: &SimulatorResult, file_path: String) {
     let scale_u32 = 4 * config::MAZE.cell_dimension as u32;
     let mut drawing = RgbImage::new(maze.width * scale_u32 + 2, maze.height * scale_u32 + 2);
 
     draw_maze(maze, &mut drawing, scale_u32, false);
     draw_path(&mut drawing, maze, simulator_result);
+
+    let path = Path::new(&file_path);
+    drawing.save(path).unwrap();
 }
 
 #[allow(dead_code)]
 pub fn draw_path(drawing: &mut RgbImage, maze: &MazePhenotype, simulator_result: &SimulatorResult) {
     for (i, point) in simulator_result.agent_path.iter().enumerate() {
-        //println!("{} {}", point.x * config::MAZE.cell_dimension, point.y * config::MAZE.cell_dimension);
-
         draw_filled_circle_mut(
             drawing,
             (
@@ -30,18 +32,6 @@ pub fn draw_path(drawing: &mut RgbImage, maze: &MazePhenotype, simulator_result:
             2,
             Rgb([255, 0, 0]),
         );
-
-        let mut zeros = "0000";
-
-        if i < 10 {
-            zeros = "000";
-        } else if i < 100 {
-            zeros = "00";
-        } else if i < 1000 {
-            zeros = "0";
-        }
-
-        drawing.save(format!("./agent/{}{}.png", zeros, i)).unwrap();
     }
 }
 
