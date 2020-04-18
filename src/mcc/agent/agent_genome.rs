@@ -129,7 +129,6 @@ impl AgentGenome {
     }
 
     fn mutation_add_node(&mut self) {
-
         // Select random enabled link
         if let Some(index) = self
             .links

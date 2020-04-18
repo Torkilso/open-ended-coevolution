@@ -403,13 +403,13 @@ impl MazePhenotype {
         }
 
         let x = round::floor(
-            (subdivision.start_x as f32 + subdivision.width as f32 * wall_gene.passage_position)
+            (subdivision.start_x as f64 + subdivision.width as f64 * wall_gene.passage_position)
                 as f64,
             0,
         ) as u32;
 
         let y = round::floor(
-            (subdivision.end_y as f32 + subdivision.height as f32 * wall_gene.passage_position)
+            (subdivision.end_y as f64 + subdivision.height as f64 * wall_gene.passage_position)
                 as f64,
             0,
         ) as u32;

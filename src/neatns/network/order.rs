@@ -63,7 +63,7 @@ impl<T: Hash + Eq + Copy> Order<T> {
         self.hiddens.push(node);
     }
 
-    pub fn iter(&self) -> impl Iterator<Item=&Action<T>> {
+    pub fn iter(&self) -> impl Iterator<Item = &Action<T>> {
         self.actions.iter()
     }
 

@@ -6,7 +6,6 @@ pub struct AgentQueue {
     max_items_limit: usize,
 }
 
-
 impl AgentQueue {
     pub fn new(mcc_agents: Vec<MCCAgent>, max_items_limit: usize) -> AgentQueue {
         AgentQueue {
@@ -14,6 +13,10 @@ impl AgentQueue {
             current_agent_index: 0,
             max_items_limit,
         }
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = &MCCAgent> {
+        self.agents.iter()
     }
 
     pub fn len(&self) -> usize {

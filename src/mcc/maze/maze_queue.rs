@@ -20,6 +20,8 @@ impl MazeQueue {
     }
 
     pub fn len(&self) -> usize {
+        println!("queue length: {}/{}", self.mazes.len(), self.max_items_limit);
+
         self.mazes.len()
     }
 

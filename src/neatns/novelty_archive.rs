@@ -74,5 +74,5 @@ impl NoveltyArchive {
 }
 
 pub fn euclidean_distance(point_a: &Point, point_b: &Point) -> f64 {
-    ((point_b.x - point_a.x).powi(2) + (point_b.x - point_a.x).powi(2)).sqrt()
+    ((point_b.x - point_a.x).powi(2) + (point_b.y - point_a.y).powi(2)).sqrt()
 }

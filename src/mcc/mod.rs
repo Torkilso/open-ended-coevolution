@@ -1,21 +1,26 @@
 use crate::config;
 use crate::mcc::agent::agent_queue::AgentQueue;
+use crate::mcc::agent::mcc_agent::MCCAgent;
+use crate::mcc::agent::speciated_agent_queue::SpeciatedAgentQueue;
 use crate::mcc::maze::maze_queue::MazeQueue;
+use crate::mcc::maze::speciated_maze_queue::SpeciatedMazeQueue;
 use crate::neatns;
 use crate::simulator::simulate_many;
 use crate::visualization::maze::visualize_maze;
 use std::path::Path;
-use crate::mcc::agent::speciated_agent_queue::SpeciatedAgentQueue;
-use crate::mcc::maze::speciated_maze_queue::SpeciatedMazeQueue;
-use crate::mcc::agent::mcc_agent::MCCAgent;
+use crate::mcc::agent::ReplacementStrategy;
 
 pub(crate) mod agent;
 mod maze;
 
-pub fn run_without_speciation() {
+pub fn run_regular_mcc() {
     let seeds = neatns::generate_seeds();
 
-    let mcc_agents: Vec<MCCAgent> = seeds.agents.iter().map(|a| MCCAgent::new(a.clone())).collect();
+    let mcc_agents: Vec<MCCAgent> = seeds
+        .agents
+        .iter()
+        .map(|a| MCCAgent::new(a.clone()))
+        .collect();
 
     let mut agents = AgentQueue::new(mcc_agents, config::MCC.agent_population_capacity);
     let mut mazes = MazeQueue::new(seeds.mazes, config::MCC.maze_population_capacity);
@@ -57,10 +62,10 @@ pub fn run_without_speciation() {
     visualize_maze(&max.to_phenotype(), Path::new("max.png"), false)
 }
 
-pub fn run_with_speciation() {
+pub fn run_regular_speciated_mcc() {
     let seeds = neatns::generate_seeds();
 
-    let mut agents = SpeciatedAgentQueue::new(seeds.agents);
+    let mut agents = SpeciatedAgentQueue::new(seeds.agents, false, ReplacementStrategy::None);
     let mut mazes = SpeciatedMazeQueue::new(seeds.mazes);
 
     for generation in 0..config::MCC.generations {

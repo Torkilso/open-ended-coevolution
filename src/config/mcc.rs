@@ -17,7 +17,7 @@ pub struct Config {
     #[envconfig(from = "agent_seed_amount", default = "20")]
     pub agent_seed_amount: usize,
 
-    #[envconfig(from = "find_seed_generation_limit", default = "50")]
+    #[envconfig(from = "find_seed_generation_limit", default = "200")]
     pub find_seed_generation_limit: usize,
 
     #[envconfig(from = "speciation_threshold", default = "0.85")]

@@ -1,6 +1,6 @@
+use crate::config;
 use crate::maze::maze_genotype::MazeGenome;
 use crate::mcc::maze::maze_species::MazeSpecies;
-use crate::config;
 
 pub struct SpeciatedMazeQueue {
     species: Vec<MazeSpecies>,
@@ -8,9 +8,7 @@ pub struct SpeciatedMazeQueue {
 
 impl SpeciatedMazeQueue {
     pub fn new(mazes: Vec<MazeGenome>) -> SpeciatedMazeQueue {
-        let mut queue = SpeciatedMazeQueue {
-            species: vec!(),
-        };
+        let mut queue = SpeciatedMazeQueue { species: vec![] };
 
         let species_max_mazes_limit: usize = config::MCC.maze_population_capacity / mazes.len();
 
@@ -23,15 +21,21 @@ impl SpeciatedMazeQueue {
     }
 
     pub fn len(&self) -> usize {
-        self.species.len()
+        let mut length = 0;
+
+        for species in self.species.iter() {
+            length += species.len();
+        }
+
+        length
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = &MazeGenome> {
+    pub fn iter(&self) -> impl Iterator<Item=&MazeGenome> {
         self.species.iter().map(|species| species.iter()).flatten()
     }
 
     pub fn push(&mut self, maze: MazeGenome) {
-        let mut distances: Vec<f64> = vec!();
+        let mut distances: Vec<f64> = vec![];
 
         for species in self.species.iter() {
             distances.push(species.distance(&maze));
