@@ -11,6 +11,7 @@ pub struct MCCAgent {
     pub final_position: Option<Point>,
     pub mcc_species_id: Option<u32>,
     pub viable: bool,
+    pub id: u32,
 }
 
 impl MCCAgent {
@@ -20,6 +21,7 @@ impl MCCAgent {
             final_position: Option::None,
             mcc_species_id: Option::None,
             viable: true,
+            id: agent.id,
         }
     }
 

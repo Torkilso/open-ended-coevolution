@@ -9,7 +9,11 @@ use crate::visualization::maze::draw_maze;
 use std::path::Path;
 
 #[allow(dead_code)]
-pub fn visualize_agent_path(maze: &MazePhenotype, simulator_result: &SimulatorResult, file_path: String) {
+pub fn visualize_agent_path(
+    maze: &MazePhenotype,
+    simulator_result: &SimulatorResult,
+    file_path: String,
+) {
     let scale_u32 = 4 * config::MAZE.cell_dimension as u32;
     let mut drawing = RgbImage::new(maze.width * scale_u32 + 2, maze.height * scale_u32 + 2);
 

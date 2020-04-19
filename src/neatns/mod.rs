@@ -6,8 +6,8 @@ use crate::simulator::simulate_single_neatns;
 use crate::visualization::maze::visualize_maze;
 use crate::visualization::simulation::{draw_novelty_archive, visualize_agent_path};
 use rand::seq::IteratorRandom;
-use std::path::Path;
 use std::borrow::Borrow;
+use std::path::Path;
 
 pub(crate) mod agent;
 pub(crate) mod network;
@@ -36,14 +36,17 @@ pub fn generate_seeds() -> Seeds {
     for i in 0..config::MCC.maze_seed_amount {
         let mut generations = 0;
 
-        let mut maze = generate_random_maze(5, 5, i as u32);
+        let mut maze = generate_random_maze(10, 10, i as u32);
         let maze_phenotype = maze.to_phenotype();
 
         let mut population = Population::new(config::NEATNS.population_size, 10, 2);
 
         while generations < config::MCC.find_seed_generation_limit {
             population.evolve();
-            let result = population.run_simulation_and_update_fitness(&maze_phenotype);
+            let result = population.run_simulation_and_update_fitness(
+                &maze_phenotype,
+                maze.get_solution_path_cell_length(),
+            );
 
             if result.is_some() {
                 let successful_agent = result.unwrap();
@@ -74,7 +77,10 @@ pub fn generate_seeds() -> Seeds {
         // TODO fix that it always find solution
         while generations < config::MCC.find_seed_generation_limit {
             population.evolve();
-            let result = population.run_simulation_and_update_fitness(&maze_phenotype);
+            let result = population.run_simulation_and_update_fitness(
+                &maze_phenotype,
+                maze.get_solution_path_cell_length(),
+            );
 
             if result.is_some() {
                 agents_fulfilling_mc.push(result.unwrap().clone());

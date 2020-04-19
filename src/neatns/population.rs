@@ -32,7 +32,10 @@ impl Population {
         };
 
         for _ in 0..population_size {
-            population.push(Agent::new(0, inputs, outputs, population.total_individuals_added), false);
+            population.push(
+                Agent::new(0, inputs, outputs, population.total_individuals_added),
+                false,
+            );
             population.total_individuals_added += 1;
         }
 
@@ -225,14 +228,18 @@ impl Population {
     }
 
     /// Iterate agents
-    pub fn iter(&self) -> impl Iterator<Item=&Agent> {
+    pub fn iter(&self) -> impl Iterator<Item = &Agent> {
         self.species.iter().map(|species| species.iter()).flatten()
     }
 
-    pub fn run_simulation_and_update_fitness(&mut self, maze: &MazePhenotype) -> Option<Agent> {
+    pub fn run_simulation_and_update_fitness(
+        &mut self,
+        maze: &MazePhenotype,
+        path_length: u32,
+    ) -> Option<Agent> {
         for species in self.species.iter_mut() {
             for agent in species.agents.iter_mut() {
-                let result = simulate_single_neatns(agent, &maze, false);
+                let result = simulate_single_neatns(agent, &maze, path_length, false);
 
                 if result.agent_reached_end() {
                     let final_position = result.final_position.unwrap();

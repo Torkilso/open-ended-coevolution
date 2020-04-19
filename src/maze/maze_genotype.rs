@@ -8,8 +8,8 @@ use crate::maze::maze_phenotype::MazePhenotype;
 use crate::maze::maze_validator::MazeValidator;
 use crate::maze::{OpeningLocation, Orientation, PathDirection};
 use crate::neatns::novelty_archive::euclidean_distance;
-use std::cmp::max;
 use crate::utils::n_euclidean;
+use std::cmp::max;
 
 #[derive(Debug, Copy, Clone)]
 pub struct WallGene {
@@ -63,7 +63,7 @@ pub struct MazeGenome {
     path_genes: Vec<PathGene>,
     wall_genes: Vec<WallGene>,
     pub(crate) viable: bool,
-    id: u32,
+    pub(crate) id: u32,
     pub successful_agent_id: Option<u32>,
 }
 
@@ -105,7 +105,9 @@ impl MazeGenome {
                 other_value = other.path_genes[index].clone();
             }
 
-            distance += ((other_value.x as f64 - self_value.x as f64).powi(2) as f64 + (other_value.y as f64 - self_value.y as f64).powi(2) as f64).sqrt();
+            distance += ((other_value.x as f64 - self_value.x as f64).powi(2) as f64
+                + (other_value.y as f64 - self_value.y as f64).powi(2) as f64)
+                .sqrt();
 
             index += 1;
 
@@ -125,10 +127,13 @@ impl MazeGenome {
     }
 
     fn wall_gene_scalar_padded(&self) -> Vec<f64> {
-        let mut scalar: Vec<f64> = vec!();
+        let mut scalar: Vec<f64> = vec![];
 
         for w in self.wall_genes.iter() {
-            let value: f64 = 0.5 * (w.wall_position + w.passage_position) * (w.wall_position + w.passage_position + 1.0) + w.passage_position;
+            let value: f64 = 0.5
+                * (w.wall_position + w.passage_position)
+                * (w.wall_position + w.passage_position + 1.0)
+                + w.passage_position;
             scalar.push(value);
         }
 
@@ -393,7 +398,8 @@ impl MazeGenome {
                 &clone.path_genes,
             ) {
                 self.path_genes.push(path_gene);
-            } else {}
+            } else {
+            }
         }
     }
 
@@ -453,7 +459,14 @@ pub fn generate_random_maze(width: u32, height: u32, id: u32) -> MazeGenome {
         let path_genes = vec![path_gene];
         let wall_genes = vec![wall_gene];
 
-        MazeGenome::new(width, height, initial_orientation, path_genes, wall_genes, id)
+        MazeGenome::new(
+            width,
+            height,
+            initial_orientation,
+            path_genes,
+            wall_genes,
+            id,
+        )
     } else {
         let path_gene = PathGene::new(
             (rng.gen::<f32>() * width as f32) as u32,
@@ -463,6 +476,13 @@ pub fn generate_random_maze(width: u32, height: u32, id: u32) -> MazeGenome {
         let path_genes = vec![path_gene];
         let wall_genes = vec![wall_gene];
 
-        MazeGenome::new(width, height, initial_orientation, path_genes, wall_genes, id)
+        MazeGenome::new(
+            width,
+            height,
+            initial_orientation,
+            path_genes,
+            wall_genes,
+            id,
+        )
     }
 }

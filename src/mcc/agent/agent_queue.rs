@@ -4,18 +4,21 @@ pub struct AgentQueue {
     agents: Vec<MCCAgent>,
     current_agent_index: usize,
     max_items_limit: usize,
+    total_individuals_added: u32,
 }
 
 impl AgentQueue {
     pub fn new(mcc_agents: Vec<MCCAgent>, max_items_limit: usize) -> AgentQueue {
+        let total_individuals_added = mcc_agents.len() as u32;
         AgentQueue {
             agents: mcc_agents,
             current_agent_index: 0,
             max_items_limit,
+            total_individuals_added,
         }
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = &MCCAgent> {
+    pub fn iter(&self) -> impl Iterator<Item=&MCCAgent> {
         self.agents.iter()
     }
 
@@ -23,8 +26,10 @@ impl AgentQueue {
         self.agents.len()
     }
 
-    pub fn push(&mut self, agent: MCCAgent) {
+    pub fn push(&mut self, mut agent: MCCAgent) {
+        agent.id = self.total_individuals_added;
         self.agents.push(agent);
+        self.total_individuals_added += 1;
 
         if self.agents.len() >= self.max_items_limit {
             self.remove_oldest(self.agents.len() - self.max_items_limit);
@@ -55,6 +60,9 @@ impl AgentQueue {
         }
 
         for child in children.iter_mut() {
+            child.id = self.total_individuals_added;
+            self.total_individuals_added += 1;
+
             child.mutate();
             child.viable = false;
         }

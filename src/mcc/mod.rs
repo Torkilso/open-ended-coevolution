@@ -1,25 +1,23 @@
+use crate::analytics::Analyzer;
 use crate::config;
 use crate::mcc::agent::agent_queue::AgentQueue;
 use crate::mcc::agent::mcc_agent::MCCAgent;
 use crate::mcc::agent::speciated_agent_queue::SpeciatedAgentQueue;
+use crate::mcc::agent::ReplacementStrategy;
 use crate::mcc::maze::maze_queue::MazeQueue;
 use crate::mcc::maze::speciated_maze_queue::SpeciatedMazeQueue;
 use crate::neatns;
 use crate::simulator::simulate_many;
 use crate::visualization::maze::visualize_maze;
 use std::path::Path;
-use crate::mcc::agent::ReplacementStrategy;
-use crate::analytics::Analyzer;
 
 pub(crate) mod agent;
-mod maze;
+pub mod maze;
 
 pub fn run_regular_mcc(analyzer: Analyzer) {
     let seeds = neatns::generate_seeds();
 
     analyzer.visualize_seeds(&seeds);
-
-    return;
 
     let mcc_agents: Vec<MCCAgent> = seeds
         .agents
@@ -57,12 +55,18 @@ pub fn run_regular_mcc(analyzer: Analyzer) {
         );
     }
 
-    for maze in mazes.iter() {
+    println!(
+        "Generating visualisations"
+    );
+    analyzer.visualise_regular_mcc_results(&mazes, &agents);
+
+
+    /*for maze in mazes.iter() {
         println!("Maze dimensions: {}x{}", maze.width, maze.height)
     }
 
-    let max = mazes.get_largest();
-    println!("Maze dimensions: {}x{}", max.width, max.height);
+    let max = mazes.get_largest();*/
+    //println!("Maze dimensions: {}x{}", max.width, max.height);
 }
 
 pub fn run_regular_speciated_mcc(analyzer: Analyzer) {

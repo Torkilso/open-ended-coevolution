@@ -14,6 +14,7 @@ pub fn visualize_maze(maze: &MazePhenotype, file_path: String, display_solution:
     let scale_u32 = 4 * config::MAZE.cell_dimension as u32;
     let mut drawing = RgbImage::new(maze.width * scale_u32 + 1, maze.height * scale_u32 + 1);
 
+
     draw_maze(maze, &mut drawing, scale_u32, display_solution);
 
     let path = Path::new(&file_path);
@@ -90,25 +91,53 @@ pub fn draw_maze(
 #[allow(dead_code)]
 pub fn draw_cell_borders(drawing: &mut RgbImage, cell: &MazeCell, x: f32, y: f32, scale: f32) {
     if cell.north_wall {
+        draw_line_segment_mut(drawing, (x, y - 1.0), (x + scale, y - 1.0), Rgb([0, 0, 0]));
         draw_line_segment_mut(drawing, (x, y), (x + scale, y), Rgb([0, 0, 0]));
+        draw_line_segment_mut(drawing, (x, y + 1.0), (x + scale, y + 1.0), Rgb([0, 0, 0]));
     }
     if cell.east_wall {
+        draw_line_segment_mut(
+            drawing,
+            (x - 1.0 + scale, y),
+            (x - 1.0 + scale, y + scale),
+            Rgb([0, 0, 0]),
+        );
         draw_line_segment_mut(
             drawing,
             (x + scale, y),
             (x + scale, y + scale),
             Rgb([0, 0, 0]),
         );
+        draw_line_segment_mut(
+            drawing,
+            (x + 1.0 + scale, y),
+            (x + 1.0 + scale, y + scale),
+            Rgb([0, 0, 0]),
+        );
     }
     if cell.south_wall {
+        draw_line_segment_mut(
+            drawing,
+            (x, y + scale - 1.0),
+            (x + scale, y + scale - 1.0),
+            Rgb([0, 0, 0]),
+        );
         draw_line_segment_mut(
             drawing,
             (x, y + scale),
             (x + scale, y + scale),
             Rgb([0, 0, 0]),
         );
+        draw_line_segment_mut(
+            drawing,
+            (x, y + scale + 1.0),
+            (x + scale, y + scale + 1.0),
+            Rgb([0, 0, 0]),
+        );
     }
     if cell.west_wall {
+        draw_line_segment_mut(drawing, (x - 1.0, y), (x - 1.0, y + scale), Rgb([0, 0, 0]));
         draw_line_segment_mut(drawing, (x, y), (x, y + scale), Rgb([0, 0, 0]));
+        draw_line_segment_mut(drawing, (x + 1.0, y), (x + 1.0, y + scale), Rgb([0, 0, 0]));
     }
 }

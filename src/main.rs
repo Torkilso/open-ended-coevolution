@@ -15,18 +15,17 @@ mod maze;
 mod mcc;
 mod neatns;
 mod simulator;
-mod visualization;
 mod utils;
+mod visualization;
 
 fn main() {
+    // TODO DONE add visualisation of seeds
+    // TODO add visualisation of 10 random mazes at end
+    // TODO add visualisation of largest maze at end
+    // TODO add visualisation of most complex maze at end
+    // TODO add visualisation of longest route at end
 
-    // TODO add visualisation of seeds
-    // TODO add visualisation of 10 random mazes
-    // TODO add visualisation of largest maze
-    // TODO add visualisation of most complex maze
-    // TODO add visualisation of longest route
-
-    // TODO add automatic generation of video of longest route
+    // TODO add automatic generation of video of longest route at end
 
     // TODO add automatic generation of graphs over key numbers after run
     // TODO OR automatic generation of file with quantitative results aka numbers for each generation

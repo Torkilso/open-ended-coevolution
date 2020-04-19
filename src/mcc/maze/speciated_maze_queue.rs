@@ -30,7 +30,7 @@ impl SpeciatedMazeQueue {
         length
     }
 
-    pub fn iter(&self) -> impl Iterator<Item=&MazeGenome> {
+    pub fn iter(&self) -> impl Iterator<Item = &MazeGenome> {
         self.species.iter().map(|species| species.iter()).flatten()
     }
 

@@ -75,9 +75,10 @@ impl fmt::Display for SimulatorResult {
 pub fn simulate_single_neatns(
     agent: &Agent,
     maze: &MazePhenotype,
+    length: u32,
     trace_path: bool,
 ) -> SimulatorResult {
-    let mut steps_left = 1000;
+    let mut steps_left = length * config::MAZE.cell_dimension as u32;
     let mut run_state = RunState::new(maze.height);
 
     let mut agent_phenotype = agent.to_phenotype();
@@ -114,7 +115,7 @@ pub fn simulate_single_neatns(
 }
 
 pub fn simulate_single_mcc(
-    agent: &mut MCCAgent,
+    agent: &MCCAgent,
     maze: &MazePhenotype,
     length: u32,
     trace_path: bool,
@@ -171,6 +172,7 @@ pub fn simulate_many(agents: &mut Vec<MCCAgent>, mazes: &mut Vec<MazeGenome>) {
             if simulator_result.agent_reached_end {
                 agent.viable = true;
                 maze.viable = true;
+                maze.successful_agent_id = Some(agent.id)
             }
         }
     }

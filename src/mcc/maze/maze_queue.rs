@@ -1,17 +1,21 @@
 use crate::maze::maze_genotype::MazeGenome;
 
 pub struct MazeQueue {
-    mazes: Vec<MazeGenome>,
+    pub mazes: Vec<MazeGenome>,
     current_maze_index: usize,
     max_items_limit: usize,
+    total_individuals_added: u32,
 }
 
 impl MazeQueue {
     pub fn new(mazes: Vec<MazeGenome>, max_items_limit: usize) -> MazeQueue {
+        let total_individuals_added = mazes.len() as u32;
+
         MazeQueue {
             mazes,
             current_maze_index: 0,
             max_items_limit,
+            total_individuals_added,
         }
     }
 
@@ -20,13 +24,14 @@ impl MazeQueue {
     }
 
     pub fn len(&self) -> usize {
-        println!("queue length: {}/{}", self.mazes.len(), self.max_items_limit);
-
         self.mazes.len()
     }
 
-    pub fn push(&mut self, maze: MazeGenome) {
+    pub fn push(&mut self, mut maze: MazeGenome) {
+        maze.id = self.total_individuals_added;
+
         self.mazes.push(maze);
+        self.total_individuals_added += 1;
 
         if self.mazes.len() >= self.max_items_limit {
             self.remove_oldest(self.mazes.len() - self.max_items_limit);
@@ -57,6 +62,9 @@ impl MazeQueue {
         }
 
         for child in children.iter_mut() {
+            child.successful_agent_id = None;
+            child.id = self.total_individuals_added;
+            self.total_individuals_added += 1;
             child.mutate();
         }
 

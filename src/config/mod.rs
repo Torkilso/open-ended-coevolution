@@ -3,9 +3,9 @@ use envconfig::Envconfig;
 use lazy_static::lazy_static;
 
 mod agent;
+mod experiments;
 mod maze;
 mod mcc;
-mod experiments;
 mod neat;
 mod neatns;
 
