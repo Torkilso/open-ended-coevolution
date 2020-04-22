@@ -27,8 +27,8 @@ impl Analyzer {
         Analyzer { write_base_path }
     }
 
-    pub fn visualize_seeds(&self, seeds: &Seeds) {
-        let seeds_folder_path = format!("{}/seeds", self.write_base_path);
+    pub fn visualize_seeds(&self, seeds: &Seeds, experiment_name: &str) {
+        let seeds_folder_path = format!("{}/{}/seeds", self.write_base_path, experiment_name);
 
         let result = create_directory(seeds_folder_path.clone());
 
@@ -40,49 +40,35 @@ impl Analyzer {
         self.visualise_mazes_with_agent_path(&seeds.mazes, &seeds.agents, &seeds_folder_path);
     }
 
-    pub fn visualise_regular_mcc_results(&self, mazes: &MazeQueue, agents: &AgentQueue) {
-        let text_path = format!("{}/end_result.txt", self.write_base_path);
+    pub fn visualise_regular_mcc_results(&self, mazes: &MazeQueue, agents: &AgentQueue, experiment_name: &str) {
+        let text_path = format!("{}/{}/end_result.txt", self.write_base_path, experiment_name);
         let text: String = format!(
-            "End results\n\nAverage maze size: {}\nLargest maze: {}",
+            "End results\n\nAverage maze size: {}\nLargest maze: {}x{}",
             mazes.get_average_size(),
-            mazes.get_largest()
+            mazes.get_largest().width, mazes.get_largest().width
         );
 
         write_text_to_file(text_path, text);
 
-        let end_result_folder_path = format!("{}/end_result", self.write_base_path);
+        let end_result_folder_path = format!("{}/{}/end_result", self.write_base_path, experiment_name);
         let result = create_directory(end_result_folder_path.clone());
 
         if result.is_err() {
             panic!("Could not create end results directory!");
         }
 
-        for (i, maze) in mazes.iter().enumerate().take(10) {
-            let maze_path = format!("{}/maze_{}.png", end_result_folder_path, i);
-            let maze_phenotype = maze.to_phenotype();
+        for (i, maze) in mazes.iter().enumerate() {
+            if maze.successful_agent_id.is_some() {
+                let agent = agents.iter().find(|agent| agent.id == maze.successful_agent_id.unwrap());
 
-            visualize_maze(&maze_phenotype, maze_path, false);
-
-            let maze_solution_path = format!("{}/maze_solution_{}.png", end_result_folder_path, i);
-
-            self.visualise_maze_with_agent_path(
-                maze,
-                agents,
-                maze_solution_path,
-            )
+                if agent.is_some() {
+                    let maze_solution_path = format!("{}/maze_solution_{}.png", end_result_folder_path, i);
+                    self.visualise_maze_with_agent_path(maze, &agent.unwrap(), maze_solution_path)
+                }
+            }
         }
 
-        let largest_maze_path = format!("{}/largest_maze.png", end_result_folder_path);
 
-        self.visualise_maze(&mazes.get_largest(), &largest_maze_path);
-
-        let largest_maze_solution_path =
-            format!("{}/largest_maze_solution.png", end_result_folder_path);
-        self.visualise_maze_with_agent_path(
-            &mazes.get_largest(),
-            agents,
-            largest_maze_solution_path,
-        )
     }
 
     pub fn visualise_mazes(&self, mazes: &Vec<MazeGenome>, path: &String) {
@@ -139,31 +125,17 @@ impl Analyzer {
     pub fn visualise_maze_with_agent_path(
         &self,
         maze: &MazeGenome,
-        agents: &AgentQueue,
+        agent: &MCCAgent,
         path: String,
     ) {
         let maze_phenotype = maze.to_phenotype();
-
-        let mut successful_agent: Option<&MCCAgent> = None;
-
-        for agent in agents.iter() {
-            if maze.successful_agent_id.is_some() && agent.id == maze.successful_agent_id.unwrap() {
-                successful_agent = Some(agent);
-                break;
-            }
-        }
-
-        if successful_agent.is_some() {
-            let simulator_result = simulate_single_mcc(
-                successful_agent.unwrap(),
-                &maze_phenotype,
-                maze.get_solution_path_cell_length(),
-                true,
-            );
-            visualize_agent_path(&maze_phenotype, &simulator_result, path);
-        } else {
-            println!("Could not generate visualisation: {}", path)
-        }
+        let simulator_result = simulate_single_mcc(
+            agent,
+            &maze_phenotype,
+            maze.get_solution_path_cell_length(),
+            true,
+        );
+        visualize_agent_path(&maze_phenotype, &simulator_result, path);
     }
 }
 

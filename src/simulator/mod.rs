@@ -5,7 +5,7 @@ use crate::mcc::agent::mcc_agent::MCCAgent;
 use crate::neatns::agent::Agent;
 use crate::simulator::radar::get_radar_values;
 use crate::simulator::run_state::RunState;
-use std::fmt;
+use std::{fmt, thread};
 
 pub mod radar;
 mod run_state;
@@ -171,6 +171,7 @@ pub fn simulate_many(agents: &mut Vec<MCCAgent>, mazes: &mut Vec<MazeGenome>) {
 
             if simulator_result.agent_reached_end {
                 agent.viable = true;
+                agent.completed_maze_id = Some(maze.id);
                 maze.viable = true;
                 maze.successful_agent_id = Some(agent.id)
             }

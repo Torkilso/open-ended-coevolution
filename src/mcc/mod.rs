@@ -14,10 +14,10 @@ use std::path::Path;
 pub(crate) mod agent;
 pub mod maze;
 
-pub fn run_regular_mcc(analyzer: Analyzer) {
+pub fn run_regular_mcc(analyzer: &Analyzer) {
     let seeds = neatns::generate_seeds();
 
-    analyzer.visualize_seeds(&seeds);
+    analyzer.visualize_seeds(&seeds, "regular_mcc");
 
     let mcc_agents: Vec<MCCAgent> = seeds
         .agents
@@ -55,26 +55,14 @@ pub fn run_regular_mcc(analyzer: Analyzer) {
         );
     }
 
-    println!(
-        "Generating visualisations"
-    );
-    analyzer.visualise_regular_mcc_results(&mazes, &agents);
-
-
-    /*for maze in mazes.iter() {
-        println!("Maze dimensions: {}x{}", maze.width, maze.height)
-    }
-
-    let max = mazes.get_largest();*/
-    //println!("Maze dimensions: {}x{}", max.width, max.height);
+    println!("Generating visualisations");
+    analyzer.visualise_regular_mcc_results(&mazes, &agents, "regular_mcc");
 }
 
-pub fn run_regular_speciated_mcc(analyzer: Analyzer) {
+pub fn run_regular_speciated_mcc(analyzer: &Analyzer) {
     let seeds = neatns::generate_seeds();
 
-    analyzer.visualize_seeds(&seeds);
-
-    return;
+    analyzer.visualize_seeds(&seeds, "regular_speciated_mcc");
 
     let mut agents = SpeciatedAgentQueue::new(seeds.agents, false, ReplacementStrategy::None);
     let mut mazes = SpeciatedMazeQueue::new(seeds.mazes);

@@ -2,7 +2,7 @@ use envconfig::Envconfig;
 
 #[derive(Envconfig)]
 pub struct Config {
-    #[envconfig(from = "generations", default = "10")]
+    #[envconfig(from = "generations", default = "500")]
     pub generations: usize,
 
     #[envconfig(from = "maze_population_capacity", default = "250")]
@@ -26,6 +26,6 @@ pub struct Config {
     #[envconfig(from = "agent_selection_limit", default = "40")]
     pub agent_selection_limit: usize,
 
-    #[envconfig(from = "maze_selection_limit", default = "40")]
+    #[envconfig(from = "maze_selection_limit", default = "10")]
     pub maze_selection_limit: usize,
 }

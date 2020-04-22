@@ -14,7 +14,6 @@ pub fn visualize_maze(maze: &MazePhenotype, file_path: String, display_solution:
     let scale_u32 = 4 * config::MAZE.cell_dimension as u32;
     let mut drawing = RgbImage::new(maze.width * scale_u32 + 1, maze.height * scale_u32 + 1);
 
-
     draw_maze(maze, &mut drawing, scale_u32, display_solution);
 
     let path = Path::new(&file_path);

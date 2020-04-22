@@ -18,7 +18,7 @@ impl AgentQueue {
         }
     }
 
-    pub fn iter(&self) -> impl Iterator<Item=&MCCAgent> {
+    pub fn iter(&self) -> impl Iterator<Item = &MCCAgent> {
         self.agents.iter()
     }
 
@@ -27,9 +27,7 @@ impl AgentQueue {
     }
 
     pub fn push(&mut self, mut agent: MCCAgent) {
-        agent.id = self.total_individuals_added;
         self.agents.push(agent);
-        self.total_individuals_added += 1;
 
         if self.agents.len() >= self.max_items_limit {
             self.remove_oldest(self.agents.len() - self.max_items_limit);

@@ -20,7 +20,7 @@ mod visualization;
 
 fn main() {
     // TODO DONE add visualisation of seeds
-    // TODO add visualisation of 10 random mazes at end
+    // TODO DONE add visualisation of 10 random mazes at end
     // TODO add visualisation of largest maze at end
     // TODO add visualisation of most complex maze at end
     // TODO add visualisation of longest route at end
@@ -36,11 +36,11 @@ fn main() {
     let analyzer = Analyzer::new(results_base_path);
 
     if config::EXPERIMENTS.run_regular_mcc {
-        mcc::run_regular_mcc(analyzer.clone());
+        mcc::run_regular_mcc(&analyzer);
     }
 
     if config::EXPERIMENTS.run_regular_speciated_mcc {
-        mcc::run_regular_speciated_mcc(analyzer.clone())
+        mcc::run_regular_speciated_mcc(&analyzer)
     }
 
     // TODO add option to run with varied size and prioritzing in species
