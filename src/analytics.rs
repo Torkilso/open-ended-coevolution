@@ -10,6 +10,7 @@ use crate::neatns::Seeds;
 use crate::simulator::{simulate_single_mcc, simulate_single_neatns};
 use crate::visualization::maze::visualize_maze;
 use crate::visualization::simulation::visualize_agent_path;
+use crate::visualization::VisualizationOptions;
 
 #[derive(Debug, Clone)]
 pub struct Analyzer {
@@ -40,17 +41,28 @@ impl Analyzer {
         self.visualise_mazes_with_agent_path(&seeds.mazes, &seeds.agents, &seeds_folder_path);
     }
 
-    pub fn visualise_regular_mcc_results(&self, mazes: &MazeQueue, agents: &AgentQueue, experiment_name: &str) {
-        let text_path = format!("{}/{}/end_result.txt", self.write_base_path, experiment_name);
+    pub fn visualise_regular_mcc_results(
+        &self,
+        mazes: &MazeQueue,
+        agents: &AgentQueue,
+        experiment_name: &str,
+    ) {
+        let text_path = format!(
+            "{}/{}/end_result.txt",
+            self.write_base_path, experiment_name
+        );
+
         let text: String = format!(
             "End results\n\nAverage maze size: {}\nLargest maze: {}x{}",
             mazes.get_average_size(),
-            mazes.get_largest().width, mazes.get_largest().width
+            mazes.get_largest().width,
+            mazes.get_largest().width
         );
 
         write_text_to_file(text_path, text);
 
-        let end_result_folder_path = format!("{}/{}/end_result", self.write_base_path, experiment_name);
+        let end_result_folder_path =
+            format!("{}/{}/end_result", self.write_base_path, experiment_name);
         let result = create_directory(end_result_folder_path.clone());
 
         if result.is_err() {
@@ -59,16 +71,21 @@ impl Analyzer {
 
         for (i, maze) in mazes.iter().enumerate() {
             if maze.successful_agent_id.is_some() {
-                let agent = agents.iter().find(|agent| agent.id == maze.successful_agent_id.unwrap());
+                let agent = agents
+                    .iter()
+                    .find(|agent| agent.id == maze.successful_agent_id.unwrap());
 
                 if agent.is_some() {
-                    let maze_solution_path = format!("{}/maze_solution_{}.png", end_result_folder_path, i);
-                    self.visualise_maze_with_agent_path(maze, &agent.unwrap(), maze_solution_path)
+                    let maze_file_name = format!("maze_solution_{}.png", i);
+                    self.visualise_maze_with_agent_path(
+                        maze,
+                        &agent.unwrap(),
+                        end_result_folder_path.clone(),
+                        maze_file_name,
+                    )
                 }
             }
         }
-
-
     }
 
     pub fn visualise_mazes(&self, mazes: &Vec<MazeGenome>, path: &String) {
@@ -91,10 +108,10 @@ impl Analyzer {
         &self,
         mazes: &Vec<MazeGenome>,
         agents: &Vec<Agent>,
-        seeds_folder_path: &String,
+        folder_path: &String,
     ) {
         for (i, maze) in mazes.iter().enumerate() {
-            let maze_seed_solution_path = format!("{}/maze_{}_solution.png", seeds_folder_path, i);
+            let file_name = format!("maze_{}_solution.png", i);
             let maze_phenotype = maze.to_phenotype();
 
             let mut agent_index: Option<u32> = None;
@@ -117,7 +134,15 @@ impl Analyzer {
                     true,
                 );
 
-                visualize_agent_path(&maze_phenotype, &simulator_result, maze_seed_solution_path);
+                visualize_agent_path(
+                    &maze_phenotype,
+                    &simulator_result,
+                    VisualizationOptions {
+                        file_name,
+                        folder_path: folder_path.clone(),
+                        save_all_steps: false,
+                    },
+                );
             }
         }
     }
@@ -126,7 +151,8 @@ impl Analyzer {
         &self,
         maze: &MazeGenome,
         agent: &MCCAgent,
-        path: String,
+        folder_path: String,
+        file_name: String,
     ) {
         let maze_phenotype = maze.to_phenotype();
         let simulator_result = simulate_single_mcc(
@@ -135,7 +161,15 @@ impl Analyzer {
             maze.get_solution_path_cell_length(),
             true,
         );
-        visualize_agent_path(&maze_phenotype, &simulator_result, path);
+        visualize_agent_path(
+            &maze_phenotype,
+            &simulator_result,
+            VisualizationOptions {
+                file_name,
+                folder_path,
+                save_all_steps: false,
+            },
+        );
     }
 }
 

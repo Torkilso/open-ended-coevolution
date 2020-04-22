@@ -4,7 +4,6 @@ use crate::neatns::agent::Agent;
 use crate::neatns::population::Population;
 use crate::simulator::simulate_single_neatns;
 use crate::visualization::maze::visualize_maze;
-use crate::visualization::simulation::{draw_novelty_archive, visualize_agent_path};
 use rand::seq::IteratorRandom;
 use std::any::Any;
 use std::borrow::Borrow;
@@ -58,7 +57,7 @@ pub fn generate_seeds() -> Seeds {
                     let successful_agent = result.unwrap();
                     maze.successful_agent_id = Some(successful_agent.id);
 
-                    println!("Found pair!",);
+                    println!("Found pair!", );
 
                     return Some((maze, successful_agent));
                 }
@@ -99,7 +98,7 @@ pub fn generate_seeds() -> Seeds {
 
                 if result.is_some() {
                     let successful_agent = result.unwrap();
-                    println!("Found agent!",);
+                    println!("Found agent!", );
                     return Some(successful_agent);
                 }
 

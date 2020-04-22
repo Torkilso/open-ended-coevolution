@@ -19,7 +19,7 @@ impl MazeQueue {
         }
     }
 
-    pub fn iter(&self) -> impl Iterator<Item=&MazeGenome> {
+    pub fn iter(&self) -> impl Iterator<Item = &MazeGenome> {
         self.mazes.iter()
     }
 
