@@ -11,6 +11,10 @@ use crate::simulator::{simulate_single_mcc, simulate_single_neatns};
 use crate::visualization::maze::visualize_maze;
 use crate::visualization::simulation::visualize_agent_path;
 use crate::visualization::VisualizationOptions;
+use crate::analytics::text::write_text_to_file;
+
+mod image;
+mod text;
 
 #[derive(Debug, Clone)]
 pub struct Analyzer {
@@ -52,12 +56,12 @@ impl Analyzer {
             self.write_base_path, experiment_name
         );
 
-        let text: String = format!(
+        let text = format!(
             "End results\n\nAverage maze size: {}\nLargest maze: {}x{}",
             mazes.get_average_size(),
             mazes.get_largest().width,
             mazes.get_largest().width
-        );
+        ).as_bytes();
 
         write_text_to_file(text_path, text);
 
@@ -69,7 +73,7 @@ impl Analyzer {
             panic!("Could not create end results directory!");
         }
 
-        for (i, maze) in mazes.iter().enumerate() {
+        /*for (i, maze) in mazes.iter().enumerate() {
             if maze.successful_agent_id.is_some() {
                 let agent = agents
                     .iter()
@@ -82,101 +86,39 @@ impl Analyzer {
                         &agent.unwrap(),
                         end_result_folder_path.clone(),
                         maze_file_name,
+                        false
                     )
                 }
             }
-        }
-    }
+        }*/
 
-    pub fn visualise_mazes(&self, mazes: &Vec<MazeGenome>, path: &String) {
-        for (i, maze) in mazes.iter().enumerate() {
-            let maze_seed_path = format!("{}/maze_{}.png", path, i);
-            let maze_phenotype = maze.to_phenotype();
+        let complex_maze = mazes.get_maze_with_most_wall_genes();
 
-            visualize_maze(&maze_phenotype, maze_seed_path, false);
-        }
-    }
+        if complex_maze.successful_agent_id.is_some() {
+            let agent = agents
+                .iter()
+                .find(|agent| agent.id == complex_maze.successful_agent_id.unwrap());
 
-    pub fn visualise_maze(&self, maze: &MazeGenome, path: &String) {
-        let maze_seed_path = format!("{}", path);
-        let maze_phenotype = maze.to_phenotype();
+            if agent.is_some() {
+                println!("generating video series");
 
-        visualize_maze(&maze_phenotype, maze_seed_path, false);
-    }
-
-    pub fn visualise_mazes_with_agent_path(
-        &self,
-        mazes: &Vec<MazeGenome>,
-        agents: &Vec<Agent>,
-        folder_path: &String,
-    ) {
-        for (i, maze) in mazes.iter().enumerate() {
-            let file_name = format!("maze_{}_solution.png", i);
-            let maze_phenotype = maze.to_phenotype();
-
-            let mut agent_index: Option<u32> = None;
-
-            for (j, agent) in agents.iter().enumerate() {
-                if maze.successful_agent_id.is_some()
-                    && agent.id == maze.successful_agent_id.unwrap()
-                {
-                    agent_index = Some(j as u32);
-                    break;
+                let maze_file_name = format!("");
+                let folder_path = format!("{}/video", end_result_folder_path);
+                let result = create_directory(folder_path.clone());
+                if result.is_err() {
+                    panic!("Could not create video directory!");
                 }
-            }
 
-            if agent_index.is_some() {
-                let agent = &agents[agent_index.unwrap() as usize];
-                let simulator_result = simulate_single_neatns(
-                    &agent,
-                    &maze_phenotype,
-                    maze.get_solution_path_cell_length(),
+                self.visualise_maze_with_agent_path(
+                    &complex_maze,
+                    &agent.unwrap(),
+                    folder_path,
+                    maze_file_name,
                     true,
-                );
-
-                visualize_agent_path(
-                    &maze_phenotype,
-                    &simulator_result,
-                    VisualizationOptions {
-                        file_name,
-                        folder_path: folder_path.clone(),
-                        save_all_steps: false,
-                    },
-                );
+                )
             }
         }
     }
-
-    pub fn visualise_maze_with_agent_path(
-        &self,
-        maze: &MazeGenome,
-        agent: &MCCAgent,
-        folder_path: String,
-        file_name: String,
-    ) {
-        let maze_phenotype = maze.to_phenotype();
-        let simulator_result = simulate_single_mcc(
-            agent,
-            &maze_phenotype,
-            maze.get_solution_path_cell_length(),
-            true,
-        );
-        visualize_agent_path(
-            &maze_phenotype,
-            &simulator_result,
-            VisualizationOptions {
-                file_name,
-                folder_path,
-                save_all_steps: false,
-            },
-        );
-    }
-}
-
-fn write_text_to_file(path: String, text: String) -> std::io::Result<()> {
-    let mut file = fs::File::create(path)?;
-    file.write_all(text.as_bytes())?;
-    Ok(())
 }
 
 fn create_directory(path: String) -> std::io::Result<()> {

@@ -8,8 +8,6 @@ pub struct AgentSpecies {
 
 impl AgentSpecies {
     pub fn new(mut agent: MCCAgent, max_items_limit: usize) -> AgentSpecies {
-        agent.mcc_species_id = Option::Some(0);
-
         AgentSpecies {
             agent_queue: AgentQueue::new(vec![agent.clone()], max_items_limit),
             centroid: agent.clone(),

@@ -10,6 +10,7 @@ use crate::neatns;
 use crate::simulator::simulate_many;
 use crate::visualization::maze::visualize_maze;
 use std::path::Path;
+use std::time::Instant;
 
 pub(crate) mod agent;
 pub mod maze;
@@ -17,7 +18,11 @@ pub mod maze;
 pub fn run_regular_mcc(analyzer: &Analyzer) {
     let seeds = neatns::generate_seeds();
 
+    let seeds_start = Instant::now();
+
     analyzer.visualize_seeds(&seeds, "regular_mcc");
+
+    println!("Generation: {}", seeds_start.elapsed().as_secs());
 
     let mcc_agents: Vec<MCCAgent> = seeds
         .agents
@@ -28,7 +33,11 @@ pub fn run_regular_mcc(analyzer: &Analyzer) {
     let mut agents = AgentQueue::new(mcc_agents, config::MCC.agent_population_capacity);
     let mut mazes = MazeQueue::new(seeds.mazes, config::MCC.maze_population_capacity);
 
+    let global_start = Instant::now();
+
     for generation in 0..config::MCC.generations {
+        let start = Instant::now();
+
         let mut agent_children = agents.get_children(config::MCC.agent_selection_limit);
         let mut maze_children = mazes.get_children(config::MCC.maze_selection_limit);
 
@@ -47,11 +56,12 @@ pub fn run_regular_mcc(analyzer: &Analyzer) {
         }
 
         println!(
-            "Generation: {}\tAgents: {}\tMazes: {} \tAverage size {}",
+            "Generation: {}\t\tAvg size: {}\t\tLargest: {} \t\tTime: {} \t\tTotal time: {}",
             generation,
-            agents.len(),
-            mazes.len(),
-            mazes.get_average_size()
+            mazes.get_average_size(),
+            mazes.get_largest().width,
+            start.elapsed().as_millis(),
+            global_start.elapsed(). as_secs()
         );
     }
 

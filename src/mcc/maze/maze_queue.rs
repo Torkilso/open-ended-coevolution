@@ -75,6 +75,12 @@ impl MazeQueue {
         return max.unwrap().clone();
     }
 
+    pub fn get_maze_with_most_wall_genes(&self) -> MazeGenome {
+        let max = self.mazes.iter().max_by_key(|p| p.path_genes.len());
+
+        return max.unwrap().clone();
+    }
+
     pub fn get_average_size(&self) -> f64 {
         let mut size_sum = 0;
         for maze in self.mazes.iter() {

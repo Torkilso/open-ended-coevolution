@@ -8,8 +8,6 @@ use crate::simulator::Point;
 #[derive(Clone)]
 pub struct MCCAgent {
     pub genome: AgentGenome,
-    pub final_position: Option<Point>,
-    pub mcc_species_id: Option<u32>,
     pub viable: bool,
     pub id: u32,
     pub completed_maze_id: Option<u32>,
@@ -19,8 +17,6 @@ impl MCCAgent {
     pub fn new(agent: Agent) -> MCCAgent {
         MCCAgent {
             genome: AgentGenome::new(agent.genome),
-            final_position: Option::None,
-            mcc_species_id: Option::None,
             viable: true,
             id: agent.id,
             completed_maze_id: Option::None,

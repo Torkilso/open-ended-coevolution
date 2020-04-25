@@ -21,11 +21,8 @@ mod visualization;
 fn main() {
     // TODO DONE add visualisation of seeds
     // TODO DONE add visualisation of 10 random mazes at end
-    // TODO add visualisation of largest maze at end
-    // TODO add visualisation of most complex maze at end
-    // TODO add visualisation of longest route at end
 
-    // TODO add automatic generation of video of longest route at end
+    // TODO DONE add automatic generation of video of longest route at end
 
     // TODO add automatic generation of graphs over key numbers after run
     // TODO OR automatic generation of file with quantitative results aka numbers for each generation

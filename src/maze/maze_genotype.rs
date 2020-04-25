@@ -60,7 +60,7 @@ pub struct MazeGenome {
     pub width: u32,
     pub height: u32,
     first_direction: Orientation,
-    path_genes: Vec<PathGene>,
+    pub path_genes: Vec<PathGene>,
     wall_genes: Vec<WallGene>,
     pub(crate) viable: bool,
     pub(crate) id: u32,
@@ -459,14 +459,18 @@ pub fn generate_random_maze(width: u32, height: u32, id: u32) -> MazeGenome {
         let path_genes = vec![path_gene];
         let wall_genes = vec![wall_gene];
 
-        MazeGenome::new(
+        let mut new_maze = MazeGenome::new(
             width,
             height,
             initial_orientation,
             path_genes,
             wall_genes,
             id,
-        )
+        );
+        new_maze.add_waypoint();
+        new_maze.add_waypoint();
+
+        new_maze
     } else {
         let path_gene = PathGene::new(
             (rng.gen::<f32>() * width as f32) as u32,
@@ -476,13 +480,17 @@ pub fn generate_random_maze(width: u32, height: u32, id: u32) -> MazeGenome {
         let path_genes = vec![path_gene];
         let wall_genes = vec![wall_gene];
 
-        MazeGenome::new(
+        let mut new_maze = MazeGenome::new(
             width,
             height,
             initial_orientation,
             path_genes,
             wall_genes,
             id,
-        )
+        );
+        new_maze.add_waypoint();
+        new_maze.add_waypoint();
+
+        new_maze
     }
 }

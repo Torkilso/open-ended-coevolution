@@ -57,7 +57,7 @@ pub fn generate_seeds() -> Seeds {
                     let successful_agent = result.unwrap();
                     maze.successful_agent_id = Some(successful_agent.id);
 
-                    println!("Found pair!", );
+                    println!("Found pair!",);
 
                     return Some((maze, successful_agent));
                 }
@@ -98,7 +98,7 @@ pub fn generate_seeds() -> Seeds {
 
                 if result.is_some() {
                     let successful_agent = result.unwrap();
-                    println!("Found agent!", );
+                    println!("Found agent!",);
                     return Some(successful_agent);
                 }
 

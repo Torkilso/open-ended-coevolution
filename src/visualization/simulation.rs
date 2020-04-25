@@ -22,8 +22,10 @@ pub fn visualize_agent_path(
 
     let file_path = format!("{}/{}", options.folder_path, options.file_name);
 
-    let path = Path::new(&file_path);
-    drawing.save(path).unwrap();
+    if !options.save_all_steps {
+        let path = Path::new(&file_path);
+        drawing.save(path).unwrap();
+    }
 }
 
 pub fn draw_path(
@@ -32,7 +34,7 @@ pub fn draw_path(
     simulator_result: &SimulatorResult,
     options: &VisualizationOptions,
 ) {
-    for (_, point) in simulator_result.agent_path.iter().enumerate() {
+    for (i, point) in simulator_result.agent_path.iter().enumerate() {
         draw_filled_circle_mut(
             drawing,
             (
@@ -43,26 +45,28 @@ pub fn draw_path(
             Rgb([255, 0, 0]),
         );
 
-        /*let mut zeros = "000000";
+        if options.save_all_steps {
+            let mut zeros = "000000";
 
-        if i < 10 {
-            zeros = "00000";
-        } else if i < 100 {
-            zeros = "0000";
-        } else if i < 1000 {
-            zeros = "000";
-        } else if i < 10000 {
-            zeros = "00";
-        } else if i < 100000 {
-            zeros = "0";
+            if i < 10 {
+                zeros = "00000";
+            } else if i < 100 {
+                zeros = "0000";
+            } else if i < 1000 {
+                zeros = "000";
+            } else if i < 10000 {
+                zeros = "00";
+            } else if i < 100000 {
+                zeros = "0";
+            }
+
+            drawing
+                .save(format!("{}/{}{}.png", options.folder_path, zeros, i))
+                .unwrap();
+
+            if i == 99999 {
+                break;
+            }
         }
-
-        drawing
-            .save(format!("./novelty/{}{}.png", zeros, i))
-            .unwrap();
-
-        if i == 99999 {
-            break;
-        }*/
     }
 }
