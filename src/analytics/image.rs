@@ -1,3 +1,12 @@
+use crate::analytics::create_directory;
+use crate::maze::maze_genotype::MazeGenome;
+use crate::mcc::agent::mcc_agent::MCCAgent;
+use crate::neatns::agent::Agent;
+use crate::simulator::{simulate_single_mcc, simulate_single_neatns};
+use crate::visualization::maze::visualize_maze;
+use crate::visualization::simulation::visualize_agent_path;
+use crate::visualization::VisualizationOptions;
+
 pub fn visualise_mazes(mazes: &Vec<MazeGenome>, path: &String) {
     for (i, maze) in mazes.iter().enumerate() {
         let maze_seed_path = format!("{}/maze_{}.png", path, i);
@@ -14,7 +23,7 @@ pub fn visualise_maze(maze: &MazeGenome, path: &String) {
     visualize_maze(&maze_phenotype, maze_seed_path, false);
 }
 
-pub fn visualise_mazes_with_agent_path(
+pub fn visualise_seeds_agent_path(
     mazes: &Vec<MazeGenome>,
     agents: &Vec<Agent>,
     folder_path: &String,
@@ -26,9 +35,7 @@ pub fn visualise_mazes_with_agent_path(
         let mut agent_index: Option<u32> = None;
 
         for (j, agent) in agents.iter().enumerate() {
-            if maze.successful_agent_id.is_some()
-                && agent.id == maze.successful_agent_id.unwrap()
-            {
+            if maze.successful_agent_id.is_some() && agent.id == maze.successful_agent_id.unwrap() {
                 agent_index = Some(j as u32);
                 break;
             }
@@ -56,27 +63,45 @@ pub fn visualise_mazes_with_agent_path(
     }
 }
 
-pub fn visualise_maze_with_agent_path(
-    maze: &MazeGenome,
-    agent: &MCCAgent,
+pub fn visualise_mazes_with_agent_path(
+    mazes: &Vec<MazeGenome>,
+    agents: &Vec<MCCAgent>,
     folder_path: String,
-    file_name: String,
-    save_all_steps: bool,
 ) {
-    let maze_phenotype = maze.to_phenotype();
-    let simulator_result = simulate_single_mcc(
-        agent,
-        &maze_phenotype,
-        maze.get_solution_path_cell_length(),
-        true,
-    );
-    visualize_agent_path(
-        &maze_phenotype,
-        &simulator_result,
-        VisualizationOptions {
-            file_name,
-            folder_path,
-            save_all_steps,
-        },
-    );
+    let result = create_directory(folder_path.clone());
+
+    if result.is_err() {
+        panic!("Could not create directory in visualise_mazes_with_agent_path!");
+    }
+
+    for (i, maze) in mazes.iter().enumerate() {
+        if maze.successful_agent_id.is_some() {
+            let agent = agents
+                .iter()
+                .find(|agent| agent.id == maze.successful_agent_id.unwrap());
+
+            if agent.is_some() {
+                let file_name = format!("maze_solution_{}.png", i);
+
+                let maze_phenotype = maze.to_phenotype();
+
+                let simulator_result = simulate_single_mcc(
+                    &agent.unwrap(),
+                    &maze_phenotype,
+                    maze.get_solution_path_cell_length(),
+                    true,
+                );
+
+                visualize_agent_path(
+                    &maze_phenotype,
+                    &simulator_result,
+                    VisualizationOptions {
+                        file_name,
+                        folder_path: folder_path.clone(),
+                        save_all_steps: false,
+                    },
+                );
+            }
+        }
+    }
 }

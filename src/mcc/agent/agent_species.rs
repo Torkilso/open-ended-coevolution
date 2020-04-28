@@ -3,7 +3,7 @@ use crate::mcc::agent::mcc_agent::MCCAgent;
 
 pub struct AgentSpecies {
     centroid: MCCAgent,
-    agent_queue: AgentQueue,
+    pub agent_queue: AgentQueue,
 }
 
 impl AgentSpecies {

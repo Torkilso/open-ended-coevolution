@@ -40,7 +40,7 @@ impl SpeciatedAgentQueue {
         queue
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = &MCCAgent> {
+    pub fn iter(&self) -> impl Iterator<Item=&MCCAgent> {
         self.species.iter().map(|species| species.iter()).flatten()
     }
 
@@ -96,5 +96,26 @@ impl SpeciatedAgentQueue {
         }
 
         children
+    }
+
+    pub fn get_largest_size(&self) -> u32 {
+        let max = self.species.iter().max_by_key(|s| s.agent_queue.get_largest_size());
+        max.unwrap().agent_queue.get_largest_size()
+    }
+
+    pub fn get_smallest_size(&self) -> u32 {
+        let min = self.species.iter().min_by_key(|s| s.agent_queue.get_smallest_size());
+        min.unwrap().agent_queue.get_smallest_size()
+    }
+
+    pub fn get_average_size(&self) -> f64 {
+        let mut sum = 0;
+        for s in self.species.iter() {
+            for a in s.agent_queue.iter() {
+                sum += a.genome.links.len();
+            }
+        }
+
+        sum as f64 / self.len() as f64
     }
 }

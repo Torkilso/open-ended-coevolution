@@ -71,14 +71,17 @@ impl MazeQueue {
 
     pub fn get_largest(&self) -> MazeGenome {
         let max = self.mazes.iter().max_by_key(|p| p.width);
-
         return max.unwrap().clone();
     }
 
-    pub fn get_maze_with_most_wall_genes(&self) -> MazeGenome {
-        let max = self.mazes.iter().max_by_key(|p| p.path_genes.len());
+    pub fn get_largest_size(&self) -> u32 {
+        let max = self.mazes.iter().max_by_key(|p| p.width);
+        return max.unwrap().width;
+    }
 
-        return max.unwrap().clone();
+    pub fn get_smallest_size(&self) -> u32 {
+        let max = self.mazes.iter().min_by_key(|p| p.width);
+        return max.unwrap().width;
     }
 
     pub fn get_average_size(&self) -> f64 {
@@ -88,5 +91,26 @@ impl MazeQueue {
         }
 
         size_sum as f64 / self.mazes.len() as f64
+    }
+
+    pub fn get_largest_path_size(&self) -> u32 {
+        let max = self.mazes.iter().max_by_key(|p| p.path_genes.len());
+
+        max.unwrap().path_genes.len() as u32
+    }
+
+    pub fn get_smallest_path_size(&self) -> u32 {
+        let max = self.mazes.iter().min_by_key(|p| p.path_genes.len());
+
+        max.unwrap().path_genes.len() as u32
+    }
+
+    pub fn get_average_path_size(&self) -> f64 {
+        let mut sum = 0;
+        for maze in self.mazes.iter() {
+            sum += maze.path_genes.len();
+        }
+
+        sum as f64 / self.mazes.len() as f64
     }
 }

@@ -3,7 +3,7 @@ use crate::mcc::maze::maze_queue::MazeQueue;
 
 pub struct MazeSpecies {
     centroid: MazeGenome,
-    maze_queue: MazeQueue,
+    pub maze_queue: MazeQueue,
 }
 
 impl MazeSpecies {

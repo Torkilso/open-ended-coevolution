@@ -67,4 +67,23 @@ impl AgentQueue {
 
         children
     }
+
+    pub fn get_largest_size(&self) -> u32 {
+        let max = self.agents.iter().max_by_key(|a| a.genome.links.len());
+        return max.unwrap().genome.links.len() as u32;
+    }
+
+    pub fn get_smallest_size(&self) -> u32 {
+        let min = self.agents.iter().min_by_key(|a| a.genome.links.len());
+        return min.unwrap().genome.links.len() as u32;
+    }
+
+    pub fn get_average_size(&self) -> f64 {
+        let mut sum = 0;
+        for a in self.agents.iter() {
+            sum += a.genome.links.len();
+        }
+
+        sum as f64 / self.agents.len() as f64
+    }
 }
