@@ -40,7 +40,7 @@ impl SpeciatedAgentQueue {
         queue
     }
 
-    pub fn iter(&self) -> impl Iterator<Item=&MCCAgent> {
+    pub fn iter(&self) -> impl Iterator<Item = &MCCAgent> {
         self.species.iter().map(|species| species.iter()).flatten()
     }
 
@@ -99,12 +99,18 @@ impl SpeciatedAgentQueue {
     }
 
     pub fn get_largest_size(&self) -> u32 {
-        let max = self.species.iter().max_by_key(|s| s.agent_queue.get_largest_size());
+        let max = self
+            .species
+            .iter()
+            .max_by_key(|s| s.agent_queue.get_largest_size());
         max.unwrap().agent_queue.get_largest_size()
     }
 
     pub fn get_smallest_size(&self) -> u32 {
-        let min = self.species.iter().min_by_key(|s| s.agent_queue.get_smallest_size());
+        let min = self
+            .species
+            .iter()
+            .min_by_key(|s| s.agent_queue.get_smallest_size());
         min.unwrap().agent_queue.get_smallest_size()
     }
 

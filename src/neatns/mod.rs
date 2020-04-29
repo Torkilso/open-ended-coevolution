@@ -30,7 +30,6 @@ impl Seeds {
 
 // generate seeds for mcc with neatns.
 // outputs a set of agents and a set of mazes that fulfill the mc.
-// TODO add threading
 pub fn generate_seeds() -> Seeds {
     let mut mazes_fulfilling_mc: Vec<MazeGenome> = vec![];
     let mut agents_fulfilling_mc: Vec<Agent> = vec![];
@@ -39,30 +38,33 @@ pub fn generate_seeds() -> Seeds {
 
     for i in 0..config::MCC.maze_seed_amount {
         threads.push(thread::spawn(move || {
-            let mut generations = 0;
+            loop {
+                let mut generations = 0;
 
-            let mut maze = generate_random_maze(10, 10, i as u32);
-            let maze_phenotype = maze.to_phenotype();
+                let mut maze = generate_random_maze(10, 10, i as u32);
+                let maze_phenotype = maze.to_phenotype();
 
-            let mut population = Population::new(config::NEATNS.population_size, 10, 2);
+                let mut population = Population::new(config::NEATNS.population_size, 10, 2);
 
-            while generations < config::MCC.find_seed_generation_limit {
-                population.evolve();
-                let result = population.run_simulation_and_update_fitness(
-                    &maze_phenotype,
-                    maze.get_solution_path_cell_length(),
-                );
+                while generations < config::MCC.find_seed_generation_limit {
+                    population.evolve();
+                    let result = population.run_simulation_and_update_fitness(
+                        &maze_phenotype,
+                        maze.get_solution_path_cell_length(),
+                    );
 
-                if result.is_some() {
-                    let successful_agent = result.unwrap();
-                    maze.successful_agent_id = Some(successful_agent.id);
+                    if result.is_some() {
+                        let successful_agent = result.unwrap();
+                        maze.successful_agent_id = Some(successful_agent.id);
 
-                    println!("Found pair!",);
+                        println!("Found agent maze pair!");
 
-                    return Some((maze, successful_agent));
+                        return Some((maze, successful_agent));
+                    }
+
+                    generations += 1;
                 }
-
-                generations += 1;
+                println!("Did not find any within generation limit! Generating new maze.");
             }
             None
         }));
@@ -83,26 +85,29 @@ pub fn generate_seeds() -> Seeds {
 
     for maze in mazes_fulfilling_mc.clone() {
         agent_threads.push(thread::spawn(move || -> Option<Agent> {
-            let mut generations = 0;
+            loop {
+                let mut generations = 0;
 
-            let maze_phenotype = maze.to_phenotype();
+                let maze_phenotype = maze.to_phenotype();
 
-            let mut population = Population::new(config::NEATNS.population_size, 10, 2);
+                let mut population = Population::new(config::NEATNS.population_size, 10, 2);
 
-            while generations < config::MCC.find_seed_generation_limit {
-                population.evolve();
-                let result = population.run_simulation_and_update_fitness(
-                    &maze_phenotype,
-                    maze.get_solution_path_cell_length(),
-                );
+                while generations < config::MCC.find_seed_generation_limit {
+                    population.evolve();
+                    let result = population.run_simulation_and_update_fitness(
+                        &maze_phenotype,
+                        maze.get_solution_path_cell_length(),
+                    );
 
-                if result.is_some() {
-                    let successful_agent = result.unwrap();
-                    println!("Found agent!",);
-                    return Some(successful_agent);
+                    if result.is_some() {
+                        let successful_agent = result.unwrap();
+                        println!("Found agent!",);
+                        return Some(successful_agent);
+                    }
+
+                    generations += 1;
                 }
-
-                generations += 1;
+                println!("Did not find any within generation limit! Resetting.");
             }
             None
         }));

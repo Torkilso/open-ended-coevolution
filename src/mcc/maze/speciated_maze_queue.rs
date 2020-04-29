@@ -30,7 +30,7 @@ impl SpeciatedMazeQueue {
         length
     }
 
-    pub fn iter(&self) -> impl Iterator<Item=&MazeGenome> {
+    pub fn iter(&self) -> impl Iterator<Item = &MazeGenome> {
         self.species.iter().map(|species| species.iter()).flatten()
     }
 
@@ -74,12 +74,18 @@ impl SpeciatedMazeQueue {
     }
 
     pub fn get_largest_size(&self) -> u32 {
-        let max = self.species.iter().max_by_key(|p| p.maze_queue.get_largest_size());
+        let max = self
+            .species
+            .iter()
+            .max_by_key(|p| p.maze_queue.get_largest_size());
         max.unwrap().maze_queue.get_largest_size()
     }
 
     pub fn get_smallest_size(&self) -> u32 {
-        let min = self.species.iter().min_by_key(|p| p.maze_queue.get_smallest_size());
+        let min = self
+            .species
+            .iter()
+            .min_by_key(|p| p.maze_queue.get_smallest_size());
         min.unwrap().maze_queue.get_smallest_size()
     }
 
@@ -95,12 +101,18 @@ impl SpeciatedMazeQueue {
     }
 
     pub fn get_largest_path_size(&self) -> u32 {
-        let max = self.species.iter().max_by_key(|p| p.maze_queue.get_largest_path_size());
+        let max = self
+            .species
+            .iter()
+            .max_by_key(|p| p.maze_queue.get_largest_path_size());
         max.unwrap().maze_queue.get_largest_path_size() as u32
     }
 
     pub fn get_smallest_path_size(&self) -> u32 {
-        let min = self.species.iter().min_by_key(|p| p.maze_queue.get_smallest_path_size());
+        let min = self
+            .species
+            .iter()
+            .min_by_key(|p| p.maze_queue.get_smallest_path_size());
         min.unwrap().maze_queue.get_smallest_path_size() as u32
     }
 

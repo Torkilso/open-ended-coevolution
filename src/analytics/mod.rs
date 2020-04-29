@@ -12,8 +12,8 @@ use crate::simulator::{simulate_single_mcc, simulate_single_neatns};
 use crate::visualization::maze::visualize_maze;
 use crate::visualization::simulation::visualize_agent_path;
 use crate::visualization::VisualizationOptions;
-use std::fs::OpenOptions;
 use std::borrow::Borrow;
+use std::fs::OpenOptions;
 use std::path::Path;
 
 mod image;

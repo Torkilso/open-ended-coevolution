@@ -22,18 +22,24 @@ fn main() {
     let now = Utc::now().format("%m%d%H%M%S%f").to_string();
     let results_base_path = format!("./results/{}", now);
 
-    if config::EXPERIMENTS.run_regular_mcc {
-        let results_path = format!("{}/regular_mcc", results_base_path);
-        let mut analyzer = Analyzer::new(results_path);
-        mcc::run_regular_mcc(&mut analyzer);
-        analyzer.generate_results_files()
-    }
+    for i in 1..config::EXPERIMENTS.batches + 1 {
+        println!("Running batch {}", i, );
 
-    if config::EXPERIMENTS.run_regular_speciated_mcc {
-        let results_path = format!("{}/regular_speciated_mcc", results_base_path);
-        let mut analyzer = Analyzer::new(results_path);
-        mcc::run_regular_speciated_mcc(&mut analyzer);
-        analyzer.generate_results_files()
+
+
+        if config::EXPERIMENTS.run_regular_mcc {
+            let results_path = format!("{}/regular_mcc", results_base_path);
+            let mut analyzer = Analyzer::new(results_path);
+            mcc::run_regular_mcc(&mut analyzer);
+            analyzer.generate_results_files()
+        }
+
+        if config::EXPERIMENTS.run_regular_speciated_mcc {
+            let results_path = format!("{}/regular_speciated_mcc", results_base_path);
+            let mut analyzer = Analyzer::new(results_path);
+            mcc::run_regular_speciated_mcc(&mut analyzer);
+            analyzer.generate_results_files()
+        }
     }
 
     // TODO add option to run with varied size and prioritzing in species

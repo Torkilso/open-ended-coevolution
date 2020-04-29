@@ -5,8 +5,8 @@ use crate::analytics::{Analyzer, GenerationStatistics};
 use crate::config;
 use crate::mcc::agent::agent_queue::AgentQueue;
 use crate::mcc::agent::mcc_agent::MCCAgent;
-use crate::mcc::agent::ReplacementStrategy;
 use crate::mcc::agent::speciated_agent_queue::SpeciatedAgentQueue;
+use crate::mcc::agent::ReplacementStrategy;
 use crate::mcc::maze::maze_queue::MazeQueue;
 use crate::mcc::maze::speciated_maze_queue::SpeciatedMazeQueue;
 use crate::neatns;
@@ -17,10 +17,9 @@ pub(crate) mod agent;
 pub mod maze;
 
 pub fn run_regular_mcc(analyzer: &mut Analyzer) {
-    let seeds = neatns::generate_seeds();
-    let seeds_start = Instant::now();
+    println!("Running regular MCC with no speciation");
 
-    println!("Seeds found after: {}s", seeds_start.elapsed().as_secs());
+    let seeds = neatns::generate_seeds();
 
     let mcc_agents: Vec<MCCAgent> = seeds
         .agents
@@ -97,7 +96,11 @@ pub fn run_regular_speciated_mcc(analyzer: &mut Analyzer) {
     }
 }
 
-fn generate_generation_stats(generation: u32, agents: &AgentQueue, mazes: &MazeQueue) -> GenerationStatistics {
+fn generate_generation_stats(
+    generation: u32,
+    agents: &AgentQueue,
+    mazes: &MazeQueue,
+) -> GenerationStatistics {
     GenerationStatistics::new(
         generation,
         mazes.get_average_size(),
@@ -112,8 +115,11 @@ fn generate_generation_stats(generation: u32, agents: &AgentQueue, mazes: &MazeQ
     )
 }
 
-
-fn generate_generation_stats_s(generation: u32, agents: &SpeciatedAgentQueue, mazes: &SpeciatedMazeQueue) -> GenerationStatistics {
+fn generate_generation_stats_s(
+    generation: u32,
+    agents: &SpeciatedAgentQueue,
+    mazes: &SpeciatedMazeQueue,
+) -> GenerationStatistics {
     GenerationStatistics::new(
         generation,
         mazes.get_average_size(),

@@ -56,10 +56,6 @@ impl SimulatorResult {
     pub fn add_point(&mut self, point: Point) {
         self.agent_path.push(point);
     }
-
-    //pub fn final_position(&self) -> Option<&Point> {
-    //    self.agent_path.last()
-    //}
 }
 
 impl fmt::Display for SimulatorResult {

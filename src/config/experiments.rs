@@ -16,4 +16,7 @@ pub struct Config {
 
     #[envconfig(from = "run_sudden_replacement_experiment", default = "false")]
     pub run_sudden_replacement_experiment: bool,
+
+    #[envconfig(from = "run_sudden_replacement_experiment", default = "1")]
+    pub batches: u32,
 }
