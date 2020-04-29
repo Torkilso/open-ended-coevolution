@@ -30,9 +30,9 @@ impl SpeciatedMazeQueue {
         length
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = &MazeGenome> {
+    /*pub fn iter(&self) -> impl Iterator<Item = &MazeGenome> {
         self.species.iter().map(|species| species.iter()).flatten()
-    }
+    }*/
 
     pub fn push(&mut self, maze: MazeGenome) {
         let mut distances: Vec<f64> = vec![];

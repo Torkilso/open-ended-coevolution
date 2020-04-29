@@ -3,7 +3,6 @@ use core::fmt;
 use crate::mcc::agent::agent_genome::AgentGenome;
 use crate::mcc::agent::neural_network::NeuralNetwork;
 use crate::neatns::agent::Agent;
-use crate::simulator::Point;
 
 #[derive(Clone)]
 pub struct MCCAgent {

@@ -26,7 +26,7 @@ impl AgentQueue {
         self.agents.len()
     }
 
-    pub fn push(&mut self, mut agent: MCCAgent) {
+    pub fn push(&mut self, agent: MCCAgent) {
         self.agents.push(agent);
 
         if self.agents.len() >= self.max_items_limit {

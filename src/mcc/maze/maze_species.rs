@@ -14,9 +14,9 @@ impl MazeSpecies {
         }
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = &MazeGenome> {
+    /*pub fn iter(&self) -> impl Iterator<Item = &MazeGenome> {
         self.maze_queue.iter()
-    }
+    }*/
 
     pub fn len(&self) -> usize {
         self.maze_queue.len()
@@ -32,15 +32,5 @@ impl MazeSpecies {
 
     pub fn distance(&self, other: &MazeGenome) -> f64 {
         self.centroid.distance(other)
-    }
-
-    pub fn get_average_size(&self) -> f64 {
-        let mut size_sum = 0;
-
-        for maze in self.maze_queue.iter() {
-            size_sum += maze.width;
-        }
-
-        size_sum as f64 / self.maze_queue.len() as f64
     }
 }

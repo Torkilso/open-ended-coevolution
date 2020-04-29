@@ -1,15 +1,9 @@
+use std::thread;
+
 use crate::config;
 use crate::maze::maze_genotype::{generate_random_maze, MazeGenome};
 use crate::neatns::agent::Agent;
 use crate::neatns::population::Population;
-use crate::simulator::simulate_single_neatns;
-use crate::visualization::maze::visualize_maze;
-use rand::seq::IteratorRandom;
-use std::any::Any;
-use std::borrow::Borrow;
-use std::path::Path;
-use std::thread;
-use std::time::Duration;
 
 pub(crate) mod agent;
 pub(crate) mod network;
@@ -30,6 +24,7 @@ impl Seeds {
 
 // generate seeds for mcc with neatns.
 // outputs a set of agents and a set of mazes that fulfill the mc.
+#[allow(unreachable_code)]
 pub fn generate_seeds() -> Seeds {
     let mut mazes_fulfilling_mc: Vec<MazeGenome> = vec![];
     let mut agents_fulfilling_mc: Vec<Agent> = vec![];
@@ -122,6 +117,5 @@ pub fn generate_seeds() -> Seeds {
             agents_fulfilling_mc.push(agent.clone());
         }
     }
-
     Seeds::new(mazes_fulfilling_mc, agents_fulfilling_mc)
 }

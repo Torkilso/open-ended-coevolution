@@ -3,12 +3,13 @@ use imageproc::drawing::draw_filled_circle_mut;
 
 use crate::config;
 use crate::maze::maze_phenotype::MazePhenotype;
-use crate::neatns::novelty_archive::NoveltyArchive;
+
 use crate::simulator::SimulatorResult;
 use crate::visualization::maze::draw_maze;
 use crate::visualization::VisualizationOptions;
 use std::path::Path;
 
+#[allow(dead_code)]
 pub fn visualize_agent_path(
     maze: &MazePhenotype,
     simulator_result: &SimulatorResult,
@@ -28,6 +29,7 @@ pub fn visualize_agent_path(
     }
 }
 
+#[allow(dead_code)]
 pub fn draw_path(
     drawing: &mut RgbImage,
     maze: &MazePhenotype,

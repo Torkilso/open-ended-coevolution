@@ -27,7 +27,7 @@ impl MazeQueue {
         self.mazes.len()
     }
 
-    pub fn push(&mut self, mut maze: MazeGenome) {
+    pub fn push(&mut self, maze: MazeGenome) {
         self.mazes.push(maze);
 
         if self.mazes.len() >= self.max_items_limit {
@@ -67,11 +67,6 @@ impl MazeQueue {
         }
 
         children
-    }
-
-    pub fn get_largest(&self) -> MazeGenome {
-        let max = self.mazes.iter().max_by_key(|p| p.width);
-        return max.unwrap().clone();
     }
 
     pub fn get_largest_size(&self) -> u32 {

@@ -1,18 +1,6 @@
 use std::fs;
 use std::io::prelude::*;
 
-use crate::analytics::text::write_text_to_file;
-use crate::maze::maze_genotype::MazeGenome;
-use crate::mcc::agent::agent_queue::AgentQueue;
-use crate::mcc::agent::mcc_agent::MCCAgent;
-use crate::mcc::maze::maze_queue::MazeQueue;
-use crate::neatns::agent::Agent;
-use crate::neatns::Seeds;
-use crate::simulator::{simulate_single_mcc, simulate_single_neatns};
-use crate::visualization::maze::visualize_maze;
-use crate::visualization::simulation::visualize_agent_path;
-use crate::visualization::VisualizationOptions;
-use std::borrow::Borrow;
 use std::fs::OpenOptions;
 use std::path::Path;
 
@@ -82,23 +70,27 @@ impl GenerationStatistics {
 pub struct Analyzer {
     results_path: String,
     generation_stats: Vec<GenerationStatistics>,
+    batch_number: u32,
 }
 
 impl Analyzer {
-    pub fn new(results_path: String) -> Analyzer {
+    pub fn new(results_path: String, batch_number: u32) -> Analyzer {
         let result = create_directory(results_path.clone());
 
         if result.is_err() {
             panic!("Could not create base result directory!");
         }
 
-        let file = OpenOptions::new()
-            .create(true)
-            .open(format!("{}/result.txt", results_path.clone()));
+        let _file = OpenOptions::new().create(true).open(format!(
+            "{}/result_{}.txt",
+            results_path.clone(),
+            batch_number.clone()
+        ));
 
         Analyzer {
             results_path,
             generation_stats: vec![],
+            batch_number,
         }
     }
 
@@ -118,7 +110,7 @@ impl Analyzer {
     }
 
     pub fn generate_results_files(&self) {
-        let path_string = format!("{}/result.txt", self.results_path);
+        let path_string = format!("{}/result_{}.txt", self.results_path, self.batch_number);
         let path = Path::new(&path_string);
 
         let mut file = OpenOptions::new()

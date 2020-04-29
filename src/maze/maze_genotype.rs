@@ -1,15 +1,13 @@
 use core::fmt;
+use std::cmp::max;
 use std::i32;
 
-use rand::{thread_rng, Rng};
+use rand::{Rng, thread_rng};
 
 use crate::config;
+use crate::maze::{OpeningLocation, Orientation, PathDirection};
 use crate::maze::maze_phenotype::MazePhenotype;
 use crate::maze::maze_validator::MazeValidator;
-use crate::maze::{OpeningLocation, Orientation, PathDirection};
-use crate::neatns::novelty_archive::euclidean_distance;
-use crate::utils::n_euclidean;
-use std::cmp::max;
 
 #[derive(Debug, Copy, Clone)]
 pub struct WallGene {
@@ -116,10 +114,10 @@ impl MazeGenome {
             }
         }
 
-        let wall_gene_scalar_length = max(self.wall_genes.len(), other.wall_genes.len());
+        let _wall_gene_scalar_length = max(self.wall_genes.len(), other.wall_genes.len());
 
-        let mut self_scalar: Vec<f64> = self.wall_gene_scalar_padded();
-        let mut other_scalar: Vec<f64> = other.wall_gene_scalar_padded();
+        let self_scalar: Vec<f64> = self.wall_gene_scalar_padded();
+        let other_scalar: Vec<f64> = other.wall_gene_scalar_padded();
 
         distance += n_euclidean(self_scalar, other_scalar);
 
@@ -138,6 +136,13 @@ impl MazeGenome {
         }
 
         scalar
+    }
+
+    pub fn get_amount_of_junctures(&self) -> u32 {
+        let sum: u32 = 0;
+
+
+        sum
     }
 
     pub fn get_solution_path_cell_length(&self) -> u32 {
@@ -195,7 +200,14 @@ impl MazeGenome {
         }
 
         if rng.gen::<f64>() < config::MAZE.add_waypoint {
-            self.add_waypoint();
+            let mut added = false;
+            for _ in 0..10 {
+                added = self.add_waypoint();
+
+                if added {
+                    break;
+                }
+            }
         }
 
         if rng.gen::<f64>() < config::MAZE.increase_size {
@@ -363,7 +375,7 @@ impl MazeGenome {
         self.wall_genes.remove(index);
     }
 
-    pub fn add_waypoint(&mut self) {
+    pub fn add_waypoint(&mut self) -> bool {
         let mut rng = rand::thread_rng();
 
         let path_gene = PathGene::new(
@@ -374,7 +386,7 @@ impl MazeGenome {
         if path_gene.x == self.path_genes[self.path_genes.len() - 1].x
             || path_gene.y == self.path_genes[self.path_genes.len() - 1].y
         {
-            return;
+            return false;
         }
 
         let mut clone = self.clone();
@@ -398,9 +410,12 @@ impl MazeGenome {
                 &clone.path_genes,
             ) {
                 self.path_genes.push(path_gene);
+                return true;
             } else {
+                return false;
             }
         }
+        return false;
     }
 
     pub fn increase_size(&mut self) {
@@ -424,7 +439,7 @@ fn get_random_opening(number: f32) -> OpeningLocation {
         OpeningLocation::North
     } else if number >= 0.25 && number < 0.5 {
         OpeningLocation::East
-    } else if number >= 0.25 && number < 0.5 {
+    } else if number >= 0.5 && number < 0.75 {
         OpeningLocation::South
     } else {
         OpeningLocation::West
@@ -453,7 +468,7 @@ pub fn generate_random_maze(width: u32, height: u32, id: u32) -> MazeGenome {
     if initial_orientation == Orientation::Horizontal {
         let path_gene = PathGene::new(
             1 + (rng.gen::<f32>() * (width - 2) as f32) as u32,
-            (rng.gen::<f32>() * height as f32) as u32,
+            (rng.gen::<f32>() * (height - 1) as f32) as u32,
         );
 
         let path_genes = vec![path_gene];
@@ -469,11 +484,12 @@ pub fn generate_random_maze(width: u32, height: u32, id: u32) -> MazeGenome {
         );
         new_maze.add_waypoint();
         new_maze.add_waypoint();
+        new_maze.add_wall();
 
         new_maze
     } else {
         let path_gene = PathGene::new(
-            (rng.gen::<f32>() * width as f32) as u32,
+            1 + (rng.gen::<f32>() * (width - 2) as f32) as u32,
             height - 1 - (rng.gen::<f32>() * (height - 1) as f32) as u32,
         );
 
@@ -490,7 +506,18 @@ pub fn generate_random_maze(width: u32, height: u32, id: u32) -> MazeGenome {
         );
         new_maze.add_waypoint();
         new_maze.add_waypoint();
+        new_maze.add_wall();
 
         new_maze
     }
+}
+
+pub fn n_euclidean(a: Vec<f64>, b: Vec<f64>) -> f64 {
+    let mut distance: f64 = 0.0;
+
+    for (a, b) in a.iter().zip(b.iter()) {
+        distance += (b - a).powi(2);
+    }
+
+    distance.sqrt()
 }

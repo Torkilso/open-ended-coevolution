@@ -40,9 +40,9 @@ impl SpeciatedAgentQueue {
         queue
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = &MCCAgent> {
+    /*pub fn iter(&self) -> impl Iterator<Item = &MCCAgent> {
         self.species.iter().map(|species| species.iter()).flatten()
-    }
+    }*/
 
     pub fn len(&self) -> usize {
         let mut length = 0;

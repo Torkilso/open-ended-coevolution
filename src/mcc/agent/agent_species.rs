@@ -7,16 +7,16 @@ pub struct AgentSpecies {
 }
 
 impl AgentSpecies {
-    pub fn new(mut agent: MCCAgent, max_items_limit: usize) -> AgentSpecies {
+    pub fn new(agent: MCCAgent, max_items_limit: usize) -> AgentSpecies {
         AgentSpecies {
             agent_queue: AgentQueue::new(vec![agent.clone()], max_items_limit),
             centroid: agent.clone(),
         }
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = &MCCAgent> {
+    /*pub fn iter(&self) -> impl Iterator<Item = &MCCAgent> {
         self.agent_queue.iter()
-    }
+    }*/
 
     pub fn push(&mut self, agent: MCCAgent) {
         self.agent_queue.push(agent);

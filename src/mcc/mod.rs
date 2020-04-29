@@ -1,6 +1,3 @@
-use std::path::Path;
-use std::time::Instant;
-
 use crate::analytics::{Analyzer, GenerationStatistics};
 use crate::config;
 use crate::mcc::agent::agent_queue::AgentQueue;
@@ -11,9 +8,9 @@ use crate::mcc::maze::maze_queue::MazeQueue;
 use crate::mcc::maze::speciated_maze_queue::SpeciatedMazeQueue;
 use crate::neatns;
 use crate::simulator::simulate_many;
-use crate::visualization::maze::visualize_maze;
 
 pub(crate) mod agent;
+pub mod experiments;
 pub mod maze;
 
 pub fn run_regular_mcc(analyzer: &mut Analyzer) {
@@ -55,14 +52,18 @@ pub fn run_regular_mcc(analyzer: &mut Analyzer) {
         let generation_stats = generate_generation_stats(generation as u32, &agents, &mazes);
         analyzer.add_generation_stats(&generation_stats);
 
-        println!(
-            "Generation: {}",
-            generation_stats.to_whitespace_separated_string(),
-        );
+        if generation % 20 == 0 {
+            println!(
+                "Generation: {}",
+                generation_stats.to_whitespace_separated_string(),
+            );
+        }
     }
 }
 
 pub fn run_regular_speciated_mcc(analyzer: &mut Analyzer) {
+    println!("Running regular MCC with speciation");
+
     let seeds = neatns::generate_seeds();
 
     let mut agents = SpeciatedAgentQueue::new(seeds.agents, false, ReplacementStrategy::None);
@@ -73,6 +74,8 @@ pub fn run_regular_speciated_mcc(analyzer: &mut Analyzer) {
         let mut maze_children = mazes.get_children();
 
         simulate_many(&mut agent_children, &mut maze_children);
+
+        // update children with viable based on simulations
 
         for child in agent_children.iter() {
             if child.viable {
@@ -88,11 +91,14 @@ pub fn run_regular_speciated_mcc(analyzer: &mut Analyzer) {
 
         let generation_stats = generate_generation_stats_s(generation as u32, &agents, &mazes);
         analyzer.add_generation_stats(&generation_stats);
-
-        println!(
-            "Generation: {}",
-            generation_stats.to_whitespace_separated_string(),
-        );
+        if generation % 10 == 0 {
+            println!(
+                "Generation: {} | agent amount: {} | maze amount: {}",
+                generation_stats.to_whitespace_separated_string(),
+                agents.len(),
+                mazes.len()
+            );
+        }
     }
 }
 
@@ -115,7 +121,7 @@ fn generate_generation_stats(
     )
 }
 
-fn generate_generation_stats_s(
+pub fn generate_generation_stats_s(
     generation: u32,
     agents: &SpeciatedAgentQueue,
     mazes: &SpeciatedMazeQueue,

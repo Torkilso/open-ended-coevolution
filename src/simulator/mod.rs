@@ -1,3 +1,5 @@
+use std::{fmt, thread};
+
 use crate::config;
 use crate::maze::maze_genotype::MazeGenome;
 use crate::maze::maze_phenotype::MazePhenotype;
@@ -5,7 +7,6 @@ use crate::mcc::agent::mcc_agent::MCCAgent;
 use crate::neatns::agent::Agent;
 use crate::simulator::radar::get_radar_values;
 use crate::simulator::run_state::RunState;
-use std::{fmt, thread};
 
 pub mod radar;
 mod run_state;
@@ -155,6 +156,49 @@ pub fn simulate_single_mcc(
 
 // Simulates each agent in all mazes, marks viable agents and mazes that fulfill MC
 pub fn simulate_many(agents: &mut Vec<MCCAgent>, mazes: &mut Vec<MazeGenome>) {
+    let mut threads = vec![];
+
+    for (i, maze) in mazes.iter().enumerate() {
+        let maze_clone = maze.clone();
+        let agents_clone = agents.clone();
+
+        threads.push(thread::spawn(move || {
+            let maze_phenotype = maze_clone.to_phenotype();
+            let mut viable_agents: Vec<(usize, usize)> = vec![];
+
+            for (j, agent) in agents_clone.iter().enumerate() {
+                let simulator_result = simulate_single_mcc(
+                    agent,
+                    &maze_phenotype,
+                    maze_clone.get_solution_path_cell_length(),
+                    false,
+                );
+                if simulator_result.agent_reached_end {
+                    viable_agents.push((j, i));
+                }
+            }
+
+            return viable_agents;
+        }));
+    }
+
+    let mut all_viable_pairs: Vec<(usize, usize)> = vec![];
+
+    for child in threads {
+        let viable_pairs = child.join();
+        all_viable_pairs.append(&mut viable_pairs.unwrap());
+    }
+
+    for viable_pair in all_viable_pairs.iter() {
+        agents[viable_pair.0].viable = true;
+        agents[viable_pair.0].completed_maze_id = Some(mazes[viable_pair.1].id);
+        mazes[viable_pair.1].viable = true;
+        mazes[viable_pair.1].successful_agent_id = Some(agents[viable_pair.0].id)
+    }
+}
+
+// Simulates each agent in all mazes, marks viable agents and mazes that fulfill MC
+/*pub fn simulate_many(agents: &mut Vec<MCCAgent>, mazes: &mut Vec<MazeGenome>) {
     for maze in mazes.iter_mut() {
         let maze_phenotype = maze.to_phenotype();
         for agent in agents.iter_mut() {
@@ -173,4 +217,4 @@ pub fn simulate_many(agents: &mut Vec<MCCAgent>, mazes: &mut Vec<MazeGenome>) {
             }
         }
     }
-}
+}*/

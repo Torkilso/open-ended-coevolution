@@ -7,6 +7,7 @@ use crate::visualization::maze::visualize_maze;
 use crate::visualization::simulation::visualize_agent_path;
 use crate::visualization::VisualizationOptions;
 
+#[allow(dead_code)]
 pub fn visualise_mazes(mazes: &Vec<MazeGenome>, path: &String) {
     for (i, maze) in mazes.iter().enumerate() {
         let maze_seed_path = format!("{}/maze_{}.png", path, i);
@@ -16,6 +17,7 @@ pub fn visualise_mazes(mazes: &Vec<MazeGenome>, path: &String) {
     }
 }
 
+#[allow(dead_code)]
 pub fn visualise_maze(maze: &MazeGenome, path: &String) {
     let maze_seed_path = format!("{}", path);
     let maze_phenotype = maze.to_phenotype();
@@ -23,6 +25,7 @@ pub fn visualise_maze(maze: &MazeGenome, path: &String) {
     visualize_maze(&maze_phenotype, maze_seed_path, false);
 }
 
+#[allow(dead_code)]
 pub fn visualise_seeds_agent_path(
     mazes: &Vec<MazeGenome>,
     agents: &Vec<Agent>,
@@ -63,6 +66,7 @@ pub fn visualise_seeds_agent_path(
     }
 }
 
+#[allow(dead_code)]
 pub fn visualise_mazes_with_agent_path(
     mazes: &Vec<MazeGenome>,
     agents: &Vec<MCCAgent>,
