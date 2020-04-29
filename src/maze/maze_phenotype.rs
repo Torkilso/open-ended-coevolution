@@ -292,7 +292,7 @@ impl MazePhenotype {
         let half_width = self.width / 2;
 
         for y in (0..self.height).rev() {
-            for mut x in 0..self.width {
+            for x in 0..self.width {
                 if self.get_cell_at(x, y).path_direction == PathDirection::None
                     && !self.get_cell_at(x, y).is_waypoint
                     && !self.get_cell_at(x, y).in_subdivision
@@ -310,9 +310,7 @@ impl MazePhenotype {
                         end_x += 1;
                     }
 
-                    if end_x - start_x > half_width {
-
-                    }
+                    if end_x - start_x > half_width {}
 
                     let mut blockade_found = false;
 

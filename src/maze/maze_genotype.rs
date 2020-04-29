@@ -2,12 +2,12 @@ use core::fmt;
 use std::cmp::max;
 use std::i32;
 
-use rand::{Rng, thread_rng};
+use rand::{thread_rng, Rng};
 
 use crate::config;
-use crate::maze::{OpeningLocation, Orientation, PathDirection};
 use crate::maze::maze_phenotype::MazePhenotype;
 use crate::maze::maze_validator::MazeValidator;
+use crate::maze::{OpeningLocation, Orientation, PathDirection};
 
 #[derive(Debug, Copy, Clone)]
 pub struct WallGene {
@@ -139,8 +139,39 @@ impl MazeGenome {
     }
 
     pub fn get_amount_of_junctures(&self) -> u32 {
-        let sum: u32 = 0;
+        let mut sum: u32 = 0;
 
+        let mut previous_x = 0;
+        let mut previous_y = self.height - 1;
+
+        for (i, path_gene) in self.path_genes.iter().enumerate() {
+            if path_gene.x != previous_x && path_gene.y != previous_y {
+                sum += 1;
+            }
+
+            if i < self.path_genes.len() - 1 {
+                if path_gene.x != self.path_genes[i + 1].x && path_gene.y != self.path_genes[i + 1].y {
+                    sum += 1;
+                }
+            } else {
+                if path_gene.x != self.width - 1 && path_gene.y != 0 {
+                    sum += 1;
+                } else if self.first_direction == Orientation::Vertical && path_gene.x == self.width - 1 && path_gene.y != 0 {
+                    sum += 1;
+                } else if self.first_direction == Orientation::Horizontal && path_gene.x != self.width - 1 && path_gene.y == 0 {
+                    sum += 1;
+                }
+
+
+            }
+
+            previous_x = path_gene.x;
+            previous_y = path_gene.y;
+        }
+
+        if previous_x != self.width - 1 && previous_y != 0 {
+            sum += 1;
+        }
 
         sum
     }
@@ -200,9 +231,8 @@ impl MazeGenome {
         }
 
         if rng.gen::<f64>() < config::MAZE.add_waypoint {
-            let mut added = false;
             for _ in 0..10 {
-                added = self.add_waypoint();
+                let added = self.add_waypoint();
 
                 if added {
                     break;
@@ -434,7 +464,7 @@ impl fmt::Display for MazeGenome {
     }
 }
 
-fn get_random_opening(number: f32) -> OpeningLocation {
+pub fn get_random_opening(number: f32) -> OpeningLocation {
     if number < 0.25 {
         OpeningLocation::North
     } else if number >= 0.25 && number < 0.5 {
@@ -446,7 +476,7 @@ fn get_random_opening(number: f32) -> OpeningLocation {
     }
 }
 
-fn get_random_orientation(number: f32) -> Orientation {
+pub fn get_random_orientation(number: f32) -> Orientation {
     if number > 0.5 {
         Orientation::Horizontal
     } else {
@@ -468,7 +498,7 @@ pub fn generate_random_maze(width: u32, height: u32, id: u32) -> MazeGenome {
     if initial_orientation == Orientation::Horizontal {
         let path_gene = PathGene::new(
             1 + (rng.gen::<f32>() * (width - 2) as f32) as u32,
-            (rng.gen::<f32>() * (height - 1) as f32) as u32,
+            1 + (rng.gen::<f32>() * (height - 2) as f32) as u32,
         );
 
         let path_genes = vec![path_gene];

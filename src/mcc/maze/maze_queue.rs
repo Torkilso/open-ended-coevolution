@@ -89,13 +89,13 @@ impl MazeQueue {
     }
 
     pub fn get_largest_path_size(&self) -> u32 {
-        let max = self.mazes.iter().max_by_key(|p| p.path_genes.len());
+        let max = self.mazes.iter().max_by_key(|p| p.get_amount_of_junctures());
 
         max.unwrap().path_genes.len() as u32
     }
 
     pub fn get_smallest_path_size(&self) -> u32 {
-        let max = self.mazes.iter().min_by_key(|p| p.path_genes.len());
+        let max = self.mazes.iter().min_by_key(|p| p.get_amount_of_junctures());
 
         max.unwrap().path_genes.len() as u32
     }
@@ -103,7 +103,7 @@ impl MazeQueue {
     pub fn get_average_path_size(&self) -> f64 {
         let mut sum = 0;
         for maze in self.mazes.iter() {
-            sum += maze.path_genes.len();
+            sum += maze.get_amount_of_junctures();
         }
 
         sum as f64 / self.mazes.len() as f64

@@ -120,7 +120,7 @@ impl SpeciatedMazeQueue {
         let mut sum = 0;
         for s in self.species.iter() {
             for m in s.maze_queue.iter() {
-                sum += m.path_genes.len();
+                sum += m.get_amount_of_junctures();
             }
         }
 
