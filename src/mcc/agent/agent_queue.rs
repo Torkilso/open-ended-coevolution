@@ -3,7 +3,7 @@ use crate::mcc::agent::mcc_agent::MCCAgent;
 pub struct AgentQueue {
     agents: Vec<MCCAgent>,
     current_agent_index: usize,
-    max_items_limit: usize,
+    pub max_items_limit: usize,
     total_individuals_added: u32,
 }
 

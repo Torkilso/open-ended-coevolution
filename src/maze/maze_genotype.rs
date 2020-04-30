@@ -150,19 +150,25 @@ impl MazeGenome {
             }
 
             if i < self.path_genes.len() - 1 {
-                if path_gene.x != self.path_genes[i + 1].x && path_gene.y != self.path_genes[i + 1].y {
+                if path_gene.x != self.path_genes[i + 1].x
+                    && path_gene.y != self.path_genes[i + 1].y
+                {
                     sum += 1;
                 }
             } else {
                 if path_gene.x != self.width - 1 && path_gene.y != 0 {
                     sum += 1;
-                } else if self.first_direction == Orientation::Vertical && path_gene.x == self.width - 1 && path_gene.y != 0 {
+                } else if self.first_direction == Orientation::Vertical
+                    && path_gene.x == self.width - 1
+                    && path_gene.y != 0
+                {
                     sum += 1;
-                } else if self.first_direction == Orientation::Horizontal && path_gene.x != self.width - 1 && path_gene.y == 0 {
+                } else if self.first_direction == Orientation::Horizontal
+                    && path_gene.x != self.width - 1
+                    && path_gene.y == 0
+                {
                     sum += 1;
                 }
-
-
             }
 
             previous_x = path_gene.x;

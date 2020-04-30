@@ -3,7 +3,7 @@ use crate::maze::maze_genotype::MazeGenome;
 pub struct MazeQueue {
     pub mazes: Vec<MazeGenome>,
     current_maze_index: usize,
-    max_items_limit: usize,
+    pub(crate) max_items_limit: usize,
     total_individuals_added: u32,
 }
 
@@ -89,15 +89,21 @@ impl MazeQueue {
     }
 
     pub fn get_largest_path_size(&self) -> u32 {
-        let max = self.mazes.iter().max_by_key(|p| p.get_amount_of_junctures());
+        let max = self
+            .mazes
+            .iter()
+            .max_by_key(|p| p.get_amount_of_junctures());
 
-        max.unwrap().path_genes.len() as u32
+        max.unwrap().get_amount_of_junctures() as u32
     }
 
     pub fn get_smallest_path_size(&self) -> u32 {
-        let max = self.mazes.iter().min_by_key(|p| p.get_amount_of_junctures());
+        let max = self
+            .mazes
+            .iter()
+            .min_by_key(|p| p.get_amount_of_junctures());
 
-        max.unwrap().path_genes.len() as u32
+        max.unwrap().get_amount_of_junctures() as u32
     }
 
     pub fn get_average_path_size(&self) -> f64 {

@@ -12,7 +12,7 @@ pub fn run_varied_size_experiment(analyzer: &mut Analyzer) {
 
     let seeds = neatns::generate_seeds();
 
-    let mut agents = SpeciatedAgentQueue::new(seeds.agents, false, ReplacementStrategy::None);
+    let mut agents = SpeciatedAgentQueue::new(seeds.agents);
     let mut mazes = SpeciatedMazeQueue::new(seeds.mazes);
 
     for generation in 0..config::MCC.generations {
@@ -32,6 +32,10 @@ pub fn run_varied_size_experiment(analyzer: &mut Analyzer) {
                 mazes.push(child.clone())
             }
         }
+
+        //
+
+        // change max limit of species
 
         let generation_stats = generate_generation_stats_s(generation as u32, &agents, &mazes);
         analyzer.add_generation_stats(&generation_stats);
@@ -48,7 +52,7 @@ pub fn run_gradual_replacement_experiment(analyzer: &mut Analyzer) {
 
     let seeds = neatns::generate_seeds();
 
-    let mut agents = SpeciatedAgentQueue::new(seeds.agents, false, ReplacementStrategy::Gradual);
+    let mut agents = SpeciatedAgentQueue::new(seeds.agents);
     let mut mazes = SpeciatedMazeQueue::new(seeds.mazes);
 
     for generation in 0..config::MCC.generations {
@@ -72,6 +76,9 @@ pub fn run_gradual_replacement_experiment(analyzer: &mut Analyzer) {
         let generation_stats = generate_generation_stats_s(generation as u32, &agents, &mazes);
         analyzer.add_generation_stats(&generation_stats);
 
+        // remove bad species
+        // find new species pair
+
         println!(
             "Generation: {}",
             generation_stats.to_whitespace_separated_string(),
@@ -84,7 +91,7 @@ pub fn run_sudden_replacement_experiment(analyzer: &mut Analyzer) {
 
     let seeds = neatns::generate_seeds();
 
-    let mut agents = SpeciatedAgentQueue::new(seeds.agents, false, ReplacementStrategy::Sudden);
+    let mut agents = SpeciatedAgentQueue::new(seeds.agents);
     let mut mazes = SpeciatedMazeQueue::new(seeds.mazes);
 
     for generation in 0..config::MCC.generations {

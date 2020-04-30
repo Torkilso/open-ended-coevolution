@@ -4,13 +4,15 @@ use crate::mcc::maze::maze_queue::MazeQueue;
 pub struct MazeSpecies {
     centroid: MazeGenome,
     pub maze_queue: MazeQueue,
+    id: u32,
 }
 
 impl MazeSpecies {
-    pub fn new(maze: MazeGenome, max_items_limit: usize) -> MazeSpecies {
+    pub fn new(maze: MazeGenome, max_items_limit: usize, id: u32) -> MazeSpecies {
         MazeSpecies {
             maze_queue: MazeQueue::new(vec![maze.clone()], max_items_limit),
             centroid: maze.clone(),
+            id,
         }
     }
 

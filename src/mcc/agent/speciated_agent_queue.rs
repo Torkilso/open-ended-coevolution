@@ -6,16 +6,10 @@ use crate::neatns::agent::Agent;
 
 pub struct SpeciatedAgentQueue {
     species: Vec<AgentSpecies>,
-    varied_size_in_species: bool,
-    replacement_strategy: ReplacementStrategy,
 }
 
 impl SpeciatedAgentQueue {
-    pub fn new(
-        agents: Vec<Agent>,
-        varied_size_in_species: bool,
-        replacement_strategy: ReplacementStrategy,
-    ) -> SpeciatedAgentQueue {
+    pub fn new(agents: Vec<Agent>) -> SpeciatedAgentQueue {
         let mut mcc_agents: Vec<MCCAgent> = vec![];
 
         for agent in agents {
@@ -23,24 +17,24 @@ impl SpeciatedAgentQueue {
             mcc_agents.push(mcc_agent);
         }
 
-        let mut queue = SpeciatedAgentQueue {
-            species: vec![],
-            varied_size_in_species,
-            replacement_strategy,
-        };
+        let mut queue = SpeciatedAgentQueue { species: vec![] };
 
         let species_max_agents_limit: usize =
             config::MCC.agent_population_capacity / mcc_agents.len();
 
-        for agent in mcc_agents {
-            let species = AgentSpecies::new(agent, species_max_agents_limit);
+        for (i, agent) in mcc_agents.iter().enumerate() {
+            let species = AgentSpecies::new(agent.clone(), species_max_agents_limit, i as u32);
             queue.species.push(species);
         }
 
         queue
     }
 
-    /*pub fn iter(&self) -> impl Iterator<Item = &MCCAgent> {
+    pub fn iter_species(&self) -> impl Iterator<Item = &AgentSpecies> {
+        self.species.iter()
+    }
+
+    /*pub fn iter_individuals(&self) -> impl Iterator<Item = &MCCAgent> {
         self.species.iter().map(|species| species.iter()).flatten()
     }*/
 

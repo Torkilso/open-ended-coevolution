@@ -8,10 +8,13 @@ extern crate lazy_static;
 use chrono::Utc;
 
 use crate::analytics::Analyzer;
-use crate::maze::maze_genotype::{generate_random_maze, PathGene, MazeGenome, get_random_orientation, WallGene, get_random_opening};
+use crate::maze::maze_genotype::{
+    generate_random_maze, get_random_opening, get_random_orientation, MazeGenome, PathGene,
+    WallGene,
+};
+use crate::maze::Orientation;
 use crate::visualization::maze::visualize_maze;
 use rand::Rng;
-use crate::maze::Orientation;
 
 mod analytics;
 mod config;

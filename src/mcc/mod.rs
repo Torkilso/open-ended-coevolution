@@ -66,7 +66,7 @@ pub fn run_regular_speciated_mcc(analyzer: &mut Analyzer) {
 
     let seeds = neatns::generate_seeds();
 
-    let mut agents = SpeciatedAgentQueue::new(seeds.agents, false, ReplacementStrategy::None);
+    let mut agents = SpeciatedAgentQueue::new(seeds.agents);
     let mut mazes = SpeciatedMazeQueue::new(seeds.mazes);
 
     for generation in 0..config::MCC.generations {
@@ -74,8 +74,6 @@ pub fn run_regular_speciated_mcc(analyzer: &mut Analyzer) {
         let mut maze_children = mazes.get_children();
 
         simulate_many(&mut agent_children, &mut maze_children);
-
-        // update children with viable based on simulations
 
         for child in agent_children.iter() {
             if child.viable {
@@ -98,6 +96,28 @@ pub fn run_regular_speciated_mcc(analyzer: &mut Analyzer) {
                 agents.len(),
                 mazes.len()
             );
+
+            println!("Species populations");
+
+            for (i, s) in agents.iter_species().enumerate() {
+                println!(
+                    "Agent species {}: {}/{} | Average size: {}",
+                    i,
+                    s.agent_queue.len(),
+                    s.agent_queue.max_items_limit,
+                    s.agent_queue.get_average_size()
+                );
+            }
+            for (i, m) in mazes.iter_species().enumerate() {
+                println!(
+                    "Maze species {}: {}/{} | Average size: {} | Average junctures: {}",
+                    i,
+                    m.maze_queue.len(),
+                    m.maze_queue.max_items_limit,
+                    m.maze_queue.get_average_size(),
+                    m.maze_queue.get_average_path_size()
+                );
+            }
         }
     }
 }
