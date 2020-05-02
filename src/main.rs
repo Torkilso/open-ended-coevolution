@@ -86,21 +86,21 @@ fn main() {
         if config::EXPERIMENTS.run_varied_size_experiment {
             let results_path = format!("{}/varied_size_experiment", results_base_path);
             let mut analyzer = Analyzer::new(results_path, i);
-            mcc::experiments::run_varied_size_experiment(&mut analyzer);
+            mcc::experiments::varied_size::run_varied_size_experiment(&mut analyzer);
             analyzer.generate_results_files();
         }
 
         if config::EXPERIMENTS.run_gradual_replacement_experiment {
             let results_path = format!("{}/gradual_replacement_experiment", results_base_path);
             let mut analyzer = Analyzer::new(results_path, i);
-            mcc::experiments::run_gradual_replacement_experiment(&mut analyzer);
+            mcc::experiments::species_replacement::run_gradual_replacement_experiment(&mut analyzer);
             analyzer.generate_results_files();
         }
 
         if config::EXPERIMENTS.run_sudden_replacement_experiment {
             let results_path = format!("{}/sudden_replacement_experiment", results_base_path);
             let mut analyzer = Analyzer::new(results_path, i);
-            mcc::experiments::run_sudden_replacement_experiment(&mut analyzer);
+            mcc::experiments::species_replacement::run_sudden_replacement_experiment(&mut analyzer);
             analyzer.generate_results_files();
         }
     }

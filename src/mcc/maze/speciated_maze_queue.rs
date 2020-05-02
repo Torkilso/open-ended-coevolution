@@ -130,4 +130,20 @@ impl SpeciatedMazeQueue {
 
         sum as f64 / self.len() as f64
     }
+
+
+    pub fn get_average_size_increase(&self) -> f64 {
+        let mut sum = 0.0;
+        for s in self.species.iter() {
+            sum += s.statistics.get_overall_average_increase();
+        }
+
+        sum as f64 / self.species.len() as f64
+    }
+
+    pub fn save_state(&mut self) {
+        for s in self.species.iter_mut() {
+            s.save_state();
+        }
+    }
 }

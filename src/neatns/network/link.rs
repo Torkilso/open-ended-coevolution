@@ -45,6 +45,6 @@ impl Link {
 
     pub fn distance(&self, other: &Link) -> f64 {
         0.5 * (self.weight - other.weight).tanh().abs()
-            + 0.5 * ((self.enabled == other.enabled) as u64) as f64
+            + 0.5 * ((self.enabled != other.enabled) as u64) as f64
     }
 }

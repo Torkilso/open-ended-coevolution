@@ -3,7 +3,6 @@ use crate::config;
 use crate::mcc::agent::agent_queue::AgentQueue;
 use crate::mcc::agent::mcc_agent::MCCAgent;
 use crate::mcc::agent::speciated_agent_queue::SpeciatedAgentQueue;
-use crate::mcc::agent::ReplacementStrategy;
 use crate::mcc::maze::maze_queue::MazeQueue;
 use crate::mcc::maze::speciated_maze_queue::SpeciatedMazeQueue;
 use crate::neatns;
@@ -69,6 +68,9 @@ pub fn run_regular_speciated_mcc(analyzer: &mut Analyzer) {
     let mut agents = SpeciatedAgentQueue::new(seeds.agents);
     let mut mazes = SpeciatedMazeQueue::new(seeds.mazes);
 
+    agents.save_state();
+    mazes.save_state();
+
     for generation in 0..config::MCC.generations {
         let mut agent_children = agents.get_children();
         let mut maze_children = mazes.get_children();
@@ -89,7 +91,11 @@ pub fn run_regular_speciated_mcc(analyzer: &mut Analyzer) {
 
         let generation_stats = generate_generation_stats_s(generation as u32, &agents, &mazes);
         analyzer.add_generation_stats(&generation_stats);
+
         if generation % 10 == 0 {
+            agents.save_state();
+            mazes.save_state();
+
             println!(
                 "Generation: {} | agent amount: {} | maze amount: {}",
                 generation_stats.to_whitespace_separated_string(),
@@ -101,21 +107,24 @@ pub fn run_regular_speciated_mcc(analyzer: &mut Analyzer) {
 
             for (i, s) in agents.iter_species().enumerate() {
                 println!(
-                    "Agent species {}: {}/{} | Average size: {}",
+                    "Agent species {}: {}/{} | Avg size: {} | Avg size increase: {}",
                     i,
                     s.agent_queue.len(),
                     s.agent_queue.max_items_limit,
-                    s.agent_queue.get_average_size()
+                    s.agent_queue.get_average_size(),
+                    s.statistics.get_current_average_size_increase()
                 );
             }
             for (i, m) in mazes.iter_species().enumerate() {
                 println!(
-                    "Maze species {}: {}/{} | Average size: {} | Average junctures: {}",
+                    "Maze species {}: {}/{} | Avg size: {} | Avg junctures: {} | Avg size increase: {} | Avg complexity increase: {}",
                     i,
                     m.maze_queue.len(),
                     m.maze_queue.max_items_limit,
                     m.maze_queue.get_average_size(),
-                    m.maze_queue.get_average_path_size()
+                    m.maze_queue.get_average_path_size(),
+                    m.statistics.get_current_average_size_increase(),
+                    m.statistics.get_current_average_complexity_increase()
                 );
             }
         }
