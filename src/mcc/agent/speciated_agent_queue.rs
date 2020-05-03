@@ -29,7 +29,7 @@ impl SpeciatedAgentQueue {
         queue
     }
 
-    pub fn iter_species(&self) -> impl Iterator<Item=&AgentSpecies> {
+    pub fn iter_species(&self) -> impl Iterator<Item = &AgentSpecies> {
         self.species.iter()
     }
 
@@ -75,9 +75,16 @@ impl SpeciatedAgentQueue {
     pub fn get_children(&mut self) -> Vec<MCCAgent> {
         let mut children: Vec<MCCAgent> = vec![];
 
-        let amount: usize = config::MCC.agent_selection_limit / self.species.len();
+        let base_amount: usize = config::MCC.agent_selection_limit / self.species.len();
+        let mut rest = base_amount * self.species.len();
 
         for species in self.species.iter_mut() {
+            let amount = if rest > 0 {
+                base_amount + 1
+            } else {
+                base_amount
+            };
+            rest += 1;
             for child in species.get_children(amount) {
                 children.push(child);
             }

@@ -1,3 +1,4 @@
+use crate::config;
 use crate::maze::maze_genotype::MazeGenome;
 use crate::mcc::maze::maze_queue::MazeQueue;
 
@@ -49,7 +50,6 @@ impl MazeSpeciesStatistics {
         }
     }
 }
-
 
 pub struct MazeSpecies {
     centroid: MazeGenome,
@@ -106,16 +106,16 @@ impl MazeSpecies {
                 .average_size_increases
                 .push(new_average_increase);
         } else {
-            let new_average_increase = self.maze_queue.get_average_size() - 10.0;
+            let new_average_increase =
+                self.maze_queue.get_average_size() - config::MCC.default_maze_size as f64;
             self.statistics
                 .average_size_increases
                 .push(new_average_increase);
         }
-
         let last_average_complexity = self.statistics.average_path_complexities.last();
         if last_average_complexity.is_some() {
             let new_average_complexity =
-                self.maze_queue.get_average_size() - *last_average_complexity.unwrap();
+                self.maze_queue.get_average_path_size() - *last_average_complexity.unwrap();
             self.statistics
                 .average_path_complexity_increases
                 .push(new_average_complexity);

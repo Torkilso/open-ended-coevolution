@@ -23,18 +23,25 @@ pub struct ReplacementController {
 }
 
 impl ReplacementController {
-    pub fn find_species_to_replace(&self, agents: SpeciatedAgentQueue, mazes: SpeciatedMazeQueue) {
+    pub fn find_species_to_replace(
+        &self,
+        _agents: SpeciatedAgentQueue,
+        _mazes: SpeciatedMazeQueue,
+    ) {
         // look for species that perform very bad compared to others
         // also look at history to see how long they have performed bad
         // replace with new seeds if they are bad for 50 generations?
         //
     }
 
-    pub fn update_population_properties(&self, agents: SpeciatedAgentQueue, mazes: SpeciatedMazeQueue) {
+    pub fn update_population_properties(
+        &self,
+        _agents: SpeciatedAgentQueue,
+        _mazes: SpeciatedMazeQueue,
+    ) {
         // go through all replacement entries and update capacity for species
     }
 }
-
 
 pub fn run_gradual_replacement_experiment(analyzer: &mut Analyzer) {
     println!("Running gradual replacement experiment");

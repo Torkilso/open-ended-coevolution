@@ -28,4 +28,7 @@ pub struct Config {
 
     #[envconfig(from = "maze_selection_limit", default = "10")]
     pub maze_selection_limit: usize,
+
+    #[envconfig(from = "default_maze_size", default = "10")]
+    pub default_maze_size: usize,
 }

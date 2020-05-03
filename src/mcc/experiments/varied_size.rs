@@ -6,7 +6,6 @@ use crate::mcc::maze::speciated_maze_queue::SpeciatedMazeQueue;
 use crate::neatns;
 use crate::simulator::simulate_many;
 
-
 pub struct VariedSizeEntry {
     from_species_id: u32,
     to_species_id: u32,
@@ -16,17 +15,33 @@ pub struct VariedSizeEntry {
 }
 
 pub struct VariedSizeController {
-    entries: Vec<VariedSizeEntry>
+    entries: Vec<VariedSizeEntry>,
 }
 
 impl VariedSizeController {
-    pub fn find_species_to_adjust(&self, agents: SpeciatedAgentQueue, mazes: SpeciatedMazeQueue) {
+    pub fn find_species_to_adjust(
+        &self,
+        agents: &SpeciatedAgentQueue,
+        mazes: &SpeciatedMazeQueue,
+    ) -> Vec<VariedSizeEntry> {
         // rank species based on performance
+        // do not rank species that has active entry
         // if species continue to perform bad, create varied size entry
+        vec!()
     }
 
-    pub fn update_population_properties(&self, agents: SpeciatedAgentQueue, mazes: SpeciatedMazeQueue) {
-        // go through all replacement entries and update capacity for species
+    pub fn update_population_properties(
+        &mut self,
+        agents: &SpeciatedAgentQueue,
+        mazes: &SpeciatedMazeQueue,
+    ) {
+        let mut new_entries = self.find_species_to_adjust(agents, mazes);
+
+        self.entries.append(&mut new_entries);
+
+        for entry in self.entries.iter() {
+            //
+        }
     }
 }
 
@@ -37,6 +52,8 @@ pub fn run_varied_size_experiment(analyzer: &mut Analyzer) {
 
     let mut agents = SpeciatedAgentQueue::new(seeds.agents);
     let mut mazes = SpeciatedMazeQueue::new(seeds.mazes);
+
+    let mut varied_size_controller = VariedSizeController { entries: vec![] };
 
     for generation in 0..config::MCC.generations {
         let mut agent_children = agents.get_children();
@@ -59,6 +76,7 @@ pub fn run_varied_size_experiment(analyzer: &mut Analyzer) {
         //
 
         // change max limit of species
+        varied_size_controller.update_population_properties(&agents, &mazes);
 
         let generation_stats = generate_generation_stats_s(generation as u32, &agents, &mazes);
         analyzer.add_generation_stats(&generation_stats);

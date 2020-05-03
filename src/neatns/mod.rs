@@ -36,7 +36,11 @@ pub fn generate_seeds() -> Seeds {
             loop {
                 let mut generations = 0;
 
-                let mut maze = generate_random_maze(10, 10, i as u32);
+                let mut maze = generate_random_maze(
+                    config::MCC.default_maze_size as u32,
+                    config::MCC.default_maze_size as u32,
+                    i as u32,
+                );
                 let maze_phenotype = maze.to_phenotype();
 
                 let mut population = Population::new(config::NEATNS.population_size, 10, 2);

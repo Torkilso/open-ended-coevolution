@@ -50,7 +50,7 @@ impl GenerationStatistics {
 
     pub fn to_whitespace_separated_string(&self) -> String {
         let s = format!(
-            "{} {} {} {} {} {} {} {} {} {}",
+            "{} {:.2} {} {} {:.2} {} {} {:.2} {} {}",
             self.generation,
             self.average_maze_size,
             self.largest_maze_size,

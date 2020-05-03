@@ -8,13 +8,6 @@ extern crate lazy_static;
 use chrono::Utc;
 
 use crate::analytics::Analyzer;
-use crate::maze::maze_genotype::{
-    generate_random_maze, get_random_opening, get_random_orientation, MazeGenome, PathGene,
-    WallGene,
-};
-use crate::maze::Orientation;
-use crate::visualization::maze::visualize_maze;
-use rand::Rng;
 
 mod analytics;
 mod config;
@@ -93,7 +86,9 @@ fn main() {
         if config::EXPERIMENTS.run_gradual_replacement_experiment {
             let results_path = format!("{}/gradual_replacement_experiment", results_base_path);
             let mut analyzer = Analyzer::new(results_path, i);
-            mcc::experiments::species_replacement::run_gradual_replacement_experiment(&mut analyzer);
+            mcc::experiments::species_replacement::run_gradual_replacement_experiment(
+                &mut analyzer,
+            );
             analyzer.generate_results_files();
         }
 

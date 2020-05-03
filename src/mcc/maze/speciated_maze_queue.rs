@@ -61,7 +61,8 @@ impl SpeciatedMazeQueue {
     pub fn get_children(&mut self) -> Vec<MazeGenome> {
         let mut children: Vec<MazeGenome> = vec![];
 
-        let amount: usize = config::MCC.agent_selection_limit / self.species.len();
+        // should always be 1
+        let amount: usize = config::MCC.maze_selection_limit / self.species.len();
 
         for species in self.species.iter_mut() {
             for child in species.get_children(amount) {
@@ -131,11 +132,37 @@ impl SpeciatedMazeQueue {
         sum as f64 / self.len() as f64
     }
 
-
     pub fn get_average_size_increase(&self) -> f64 {
         let mut sum = 0.0;
         for s in self.species.iter() {
             sum += s.statistics.get_overall_average_increase();
+        }
+
+        sum as f64 / self.species.len() as f64
+    }
+
+    pub fn get_average_complexity_increase(&self) -> f64 {
+        let mut sum = 0.0;
+        for s in self.species.iter() {
+            sum += s.statistics.get_overall_average_path_complexity_increase();
+        }
+
+        sum as f64 / self.species.len() as f64
+    }
+
+    pub fn get_last_average_size_increase(&self) -> f64 {
+        let mut sum = 0.0;
+        for s in self.species.iter() {
+            sum += s.statistics.get_current_average_size_increase();
+        }
+
+        sum as f64 / self.species.len() as f64
+    }
+
+    pub fn get_last_average_complexity_increase(&self) -> f64 {
+        let mut sum = 0.0;
+        for s in self.species.iter() {
+            sum += s.statistics.get_current_average_complexity_increase();
         }
 
         sum as f64 / self.species.len() as f64
