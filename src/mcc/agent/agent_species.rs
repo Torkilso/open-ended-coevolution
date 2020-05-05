@@ -1,6 +1,7 @@
 use crate::mcc::agent::agent_queue::AgentQueue;
 use crate::mcc::agent::mcc_agent::MCCAgent;
 
+#[derive(Clone)]
 pub struct AgentSpeciesStatistics {
     average_sizes: Vec<f64>,
     maximum_sizes: Vec<u32>,
@@ -24,15 +25,16 @@ impl AgentSpeciesStatistics {
     }
 }
 
+#[derive(Clone)]
 pub struct AgentSpecies {
     centroid: MCCAgent,
     pub agent_queue: AgentQueue,
-    id: u32,
+    pub(crate) id: u32,
     pub statistics: AgentSpeciesStatistics,
 }
 
 impl AgentSpecies {
-    pub fn new(agent: MCCAgent, max_items_limit: usize, id: u32) -> AgentSpecies {
+    pub fn new(agent: MCCAgent, max_items_limit: u32, id: u32) -> AgentSpecies {
         AgentSpecies {
             agent_queue: AgentQueue::new(vec![agent.clone()], max_items_limit),
             centroid: agent.clone(),

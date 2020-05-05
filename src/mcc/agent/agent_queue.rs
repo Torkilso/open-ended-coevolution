@@ -1,14 +1,15 @@
 use crate::mcc::agent::mcc_agent::MCCAgent;
 
+#[derive(Clone)]
 pub struct AgentQueue {
     agents: Vec<MCCAgent>,
     current_agent_index: usize,
-    pub max_items_limit: usize,
+    pub max_items_limit: u32,
     total_individuals_added: u32,
 }
 
 impl AgentQueue {
-    pub fn new(mcc_agents: Vec<MCCAgent>, max_items_limit: usize) -> AgentQueue {
+    pub fn new(mcc_agents: Vec<MCCAgent>, max_items_limit: u32) -> AgentQueue {
         let total_individuals_added = mcc_agents.len() as u32;
         AgentQueue {
             agents: mcc_agents,
@@ -29,8 +30,8 @@ impl AgentQueue {
     pub fn push(&mut self, agent: MCCAgent) {
         self.agents.push(agent);
 
-        if self.agents.len() >= self.max_items_limit {
-            self.remove_oldest(self.agents.len() - self.max_items_limit);
+        if self.agents.len() as u32 >= self.max_items_limit {
+            self.remove_oldest(self.agents.len() - self.max_items_limit as usize);
         }
     }
 
@@ -54,7 +55,8 @@ impl AgentQueue {
             }
 
             children.push(self.agents.get(self.current_agent_index).unwrap().clone());
-            self.current_agent_index = (self.current_agent_index + 1) % self.max_items_limit;
+            self.current_agent_index =
+                (self.current_agent_index + 1) % self.max_items_limit as usize;
         }
 
         for child in children.iter_mut() {

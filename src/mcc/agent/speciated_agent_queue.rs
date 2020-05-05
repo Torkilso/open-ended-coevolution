@@ -4,7 +4,7 @@ use crate::mcc::agent::mcc_agent::MCCAgent;
 use crate::neatns::agent::Agent;
 
 pub struct SpeciatedAgentQueue {
-    species: Vec<AgentSpecies>,
+    pub(crate) species: Vec<AgentSpecies>,
 }
 
 impl SpeciatedAgentQueue {
@@ -18,23 +18,15 @@ impl SpeciatedAgentQueue {
 
         let mut queue = SpeciatedAgentQueue { species: vec![] };
 
-        let base_amount: usize = config::MCC.agent_population_capacity / mcc_agents.len();
-        let mut rest = config::MCC.agent_population_capacity % base_amount;
-
-        println!(
-            "config::MCC.agent_population_capacity {}",
-            config::MCC.agent_population_capacity
-        );
-        println!("base amount {}", base_amount);
-        println!("rest {}", rest);
+        let base_amount: u32 = config::MCC.agent_population_capacity / mcc_agents.len() as u32;
+        let rest = config::MCC.agent_population_capacity % base_amount;
 
         for (i, agent) in mcc_agents.iter().enumerate() {
-            let amount = if i < rest {
+            let amount = if i < rest as usize {
                 base_amount + 1
             } else {
                 base_amount
             };
-            println!("amount {}", amount);
 
             let species = AgentSpecies::new(agent.clone(), amount, i as u32);
             queue.species.push(species);
@@ -45,6 +37,10 @@ impl SpeciatedAgentQueue {
 
     pub fn iter_species(&self) -> impl Iterator<Item = &AgentSpecies> {
         self.species.iter()
+    }
+
+    pub fn iter_species_mut(&mut self) -> impl Iterator<Item = &mut AgentSpecies> {
+        self.species.iter_mut()
     }
 
     /*pub fn iter_individuals(&self) -> impl Iterator<Item = &MCCAgent> {
@@ -139,14 +135,14 @@ impl SpeciatedAgentQueue {
         sum as f64 / self.len() as f64
     }
 
-    pub fn get_average_size_increase(&self) -> f64 {
+    /*pub fn get_average_size_increase(&self) -> f64 {
         let mut sum = 0.0;
         for s in self.species.iter() {
             sum += s.statistics.get_overall_average_increase();
         }
 
         sum as f64 / self.species.len() as f64
-    }
+    }*/
 
     pub fn save_state(&mut self) {
         for s in self.species.iter_mut() {

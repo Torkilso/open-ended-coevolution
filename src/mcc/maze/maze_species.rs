@@ -2,6 +2,7 @@ use crate::config;
 use crate::maze::maze_genotype::MazeGenome;
 use crate::mcc::maze::maze_queue::MazeQueue;
 
+#[derive(Debug, Clone)]
 pub struct MazeSpeciesStatistics {
     average_sizes: Vec<f64>,
     maximum_sizes: Vec<u32>,
@@ -53,41 +54,9 @@ impl MazeSpeciesStatistics {
     pub fn get_overall_score(&self) -> f64 {
         self.get_overall_average_increase() + self.get_overall_average_path_complexity_increase()
     }
-
-    pub fn stagnant_for_generations(&self, generations: u32) -> bool {
-        let mut stagnant = true;
-        let mut current = 0;
-
-        for e in self.average_size_increases.iter().rev() {
-            if *e > 0.0 {
-                stagnant = false;
-            }
-
-            current += 1;
-
-            if current == generations {
-                break;
-            }
-        }
-
-        current = 0;
-
-        for e in self.average_path_complexity_increases.iter().rev() {
-            if *e > 0.0 {
-                stagnant = false;
-            }
-
-            current += 1;
-
-            if current == generations {
-                break;
-            }
-        }
-
-        stagnant
-    }
 }
 
+#[derive(Debug, Clone)]
 pub struct MazeSpecies {
     centroid: MazeGenome,
     pub maze_queue: MazeQueue,

@@ -2,7 +2,7 @@ use envconfig::Envconfig;
 
 #[derive(Envconfig)]
 pub struct Config {
-    #[envconfig(from = "generations", default = "200")]
+    #[envconfig(from = "generations", default = "1000")]
     pub generations: usize,
 
     #[envconfig(from = "maze_population_capacity", default = "250")]
@@ -12,7 +12,7 @@ pub struct Config {
     pub maze_seed_amount: usize,
 
     #[envconfig(from = "agent_population_capacity", default = "250")]
-    pub agent_population_capacity: usize,
+    pub agent_population_capacity: u32,
 
     #[envconfig(from = "agent_seed_amount", default = "20")]
     pub agent_seed_amount: usize,
@@ -32,12 +32,18 @@ pub struct Config {
     #[envconfig(from = "default_maze_size", default = "10")]
     pub default_maze_size: usize,
 
-    #[envconfig(from = "varied_size_generation_jumps", default = "10")]
-    pub varied_size_generation_jumps: usize,
+    #[envconfig(from = "generations_between_save", default = "10")]
+    pub generations_between_save: usize,
 
-    #[envconfig(from = "varied_size_default_borrow_amount", default = "10")]
-    pub varied_size_default_borrow_amount: u32,
+    #[envconfig(from = "varied_size_maze_default_borrow_amount", default = "2")]
+    pub varied_size_maze_default_borrow_amount: u32,
 
-    #[envconfig(from = "varied_size_minimum_generation", default = "50")]
-    pub varied_size_minimum_generation: usize,
+    #[envconfig(from = "varied_size_agent_default_borrow_amount", default = "1")]
+    pub varied_size_agent_default_borrow_amount: u32,
+
+    #[envconfig(from = "varied_size_generations_between_search", default = "200")]
+    pub varied_size_generations_between_search: usize,
+
+    #[envconfig(from = "replacement_generations_between_search", default = "200")]
+    pub replacement_generations_between_search: usize,
 }

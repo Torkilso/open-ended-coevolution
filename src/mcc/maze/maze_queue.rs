@@ -1,5 +1,6 @@
 use crate::maze::maze_genotype::MazeGenome;
 
+#[derive(Debug, Clone)]
 pub struct MazeQueue {
     pub mazes: Vec<MazeGenome>,
     current_maze_index: usize,
