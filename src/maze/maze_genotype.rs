@@ -519,8 +519,6 @@ pub fn generate_random_maze(width: u32, height: u32, id: u32) -> MazeGenome {
             id,
         );
         new_maze.add_waypoint();
-        new_maze.add_waypoint();
-        new_maze.add_wall();
 
         new_maze
     } else {

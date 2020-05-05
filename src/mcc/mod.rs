@@ -24,7 +24,7 @@ pub fn run_regular_mcc(analyzer: &mut Analyzer) {
         .collect();
 
     let mut agents = AgentQueue::new(mcc_agents, config::MCC.agent_population_capacity);
-    let mut mazes = MazeQueue::new(seeds.mazes, config::MCC.maze_population_capacity);
+    let mut mazes = MazeQueue::new(seeds.mazes, config::MCC.maze_population_capacity as u32);
 
     //let global_start = Instant::now();
 
@@ -107,7 +107,7 @@ pub fn run_regular_speciated_mcc(analyzer: &mut Analyzer) {
     }
 }
 
-fn print_stats(agents: &SpeciatedAgentQueue, mazes: &SpeciatedMazeQueue) {
+pub fn print_stats(agents: &SpeciatedAgentQueue, mazes: &SpeciatedMazeQueue) {
     println!(
         "agent amount: {} | maze amount: {}",
         agents.len(),

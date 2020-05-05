@@ -10,7 +10,7 @@ impl SpeciatedMazeQueue {
     pub fn new(mazes: Vec<MazeGenome>) -> SpeciatedMazeQueue {
         let mut queue = SpeciatedMazeQueue { species: vec![] };
 
-        let species_max_mazes_limit: usize = config::MCC.maze_population_capacity / mazes.len();
+        let species_max_mazes_limit: u32 = config::MCC.maze_population_capacity / mazes.len() as u32;
 
         for (i, maze) in mazes.iter().enumerate() {
             let species = MazeSpecies::new(maze.clone(), species_max_mazes_limit, i as u32);
@@ -34,6 +34,9 @@ impl SpeciatedMazeQueue {
         self.species.iter()
     }
 
+    pub fn iter_species_mut(&mut self) -> impl Iterator<Item = &mut MazeSpecies> {
+        self.species.iter_mut()
+    }
     /*pub fn iter_individuals(&self) -> impl Iterator<Item = &MazeGenome> {
         self.species.iter().map(|species| species.iter()).flatten()
     }*/

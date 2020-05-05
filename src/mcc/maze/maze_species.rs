@@ -49,17 +49,54 @@ impl MazeSpeciesStatistics {
             0.0
         }
     }
+
+    pub fn get_overall_score(&self) -> f64 {
+        self.get_overall_average_increase() + self.get_overall_average_path_complexity_increase()
+    }
+
+    pub fn stagnant_for_generations(&self, generations: u32) -> bool {
+        let mut stagnant = true;
+        let mut current = 0;
+
+        for e in self.average_size_increases.iter().rev() {
+            if *e > 0.0 {
+                stagnant = false;
+            }
+
+            current += 1;
+
+            if current == generations {
+                break;
+            }
+        }
+
+        current = 0;
+
+        for e in self.average_path_complexity_increases.iter().rev() {
+            if *e > 0.0 {
+                stagnant = false;
+            }
+
+            current += 1;
+
+            if current == generations {
+                break;
+            }
+        }
+
+        stagnant
+    }
 }
 
 pub struct MazeSpecies {
     centroid: MazeGenome,
     pub maze_queue: MazeQueue,
-    id: u32,
+    pub id: u32,
     pub statistics: MazeSpeciesStatistics,
 }
 
 impl MazeSpecies {
-    pub fn new(maze: MazeGenome, max_items_limit: usize, id: u32) -> MazeSpecies {
+    pub fn new(maze: MazeGenome, max_items_limit: u32, id: u32) -> MazeSpecies {
         MazeSpecies {
             maze_queue: MazeQueue::new(vec![maze.clone()], max_items_limit),
             centroid: maze.clone(),

@@ -6,7 +6,7 @@ pub struct Config {
     pub generations: usize,
 
     #[envconfig(from = "maze_population_capacity", default = "250")]
-    pub maze_population_capacity: usize,
+    pub maze_population_capacity: u32,
 
     #[envconfig(from = "maze_seed_amount", default = "10")]
     pub maze_seed_amount: usize,
@@ -31,4 +31,13 @@ pub struct Config {
 
     #[envconfig(from = "default_maze_size", default = "10")]
     pub default_maze_size: usize,
+
+    #[envconfig(from = "varied_size_generation_jumps", default = "10")]
+    pub varied_size_generation_jumps: usize,
+
+    #[envconfig(from = "varied_size_default_borrow_amount", default = "10")]
+    pub varied_size_default_borrow_amount: u32,
+
+    #[envconfig(from = "varied_size_minimum_generation", default = "50")]
+    pub varied_size_minimum_generation: usize,
 }

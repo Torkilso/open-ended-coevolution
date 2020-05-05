@@ -18,11 +18,25 @@ impl SpeciatedAgentQueue {
 
         let mut queue = SpeciatedAgentQueue { species: vec![] };
 
-        let species_max_agents_limit: usize =
-            config::MCC.agent_population_capacity / mcc_agents.len();
+        let base_amount: usize = config::MCC.agent_population_capacity / mcc_agents.len();
+        let mut rest = config::MCC.agent_population_capacity % base_amount;
+
+        println!(
+            "config::MCC.agent_population_capacity {}",
+            config::MCC.agent_population_capacity
+        );
+        println!("base amount {}", base_amount);
+        println!("rest {}", rest);
 
         for (i, agent) in mcc_agents.iter().enumerate() {
-            let species = AgentSpecies::new(agent.clone(), species_max_agents_limit, i as u32);
+            let amount = if i < rest {
+                base_amount + 1
+            } else {
+                base_amount
+            };
+            println!("amount {}", amount);
+
+            let species = AgentSpecies::new(agent.clone(), amount, i as u32);
             queue.species.push(species);
         }
 
@@ -76,7 +90,7 @@ impl SpeciatedAgentQueue {
         let mut children: Vec<MCCAgent> = vec![];
 
         let base_amount: usize = config::MCC.agent_selection_limit / self.species.len();
-        let mut rest = base_amount * self.species.len();
+        let mut rest = config::MCC.agent_selection_limit - base_amount * self.species.len();
 
         for species in self.species.iter_mut() {
             let amount = if rest > 0 {
@@ -84,7 +98,7 @@ impl SpeciatedAgentQueue {
             } else {
                 base_amount
             };
-            rest += 1;
+            rest -= 1;
             for child in species.get_children(amount) {
                 children.push(child);
             }

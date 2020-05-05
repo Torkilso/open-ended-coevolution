@@ -3,12 +3,12 @@ use crate::maze::maze_genotype::MazeGenome;
 pub struct MazeQueue {
     pub mazes: Vec<MazeGenome>,
     current_maze_index: usize,
-    pub(crate) max_items_limit: usize,
+    pub(crate) max_items_limit: u32,
     total_individuals_added: u32,
 }
 
 impl MazeQueue {
-    pub fn new(mazes: Vec<MazeGenome>, max_items_limit: usize) -> MazeQueue {
+    pub fn new(mazes: Vec<MazeGenome>, max_items_limit: u32) -> MazeQueue {
         let total_individuals_added = mazes.len() as u32;
 
         MazeQueue {
@@ -30,8 +30,8 @@ impl MazeQueue {
     pub fn push(&mut self, maze: MazeGenome) {
         self.mazes.push(maze);
 
-        if self.mazes.len() >= self.max_items_limit {
-            self.remove_oldest(self.mazes.len() - self.max_items_limit);
+        if self.mazes.len() >= self.max_items_limit as usize {
+            self.remove_oldest(self.mazes.len() - self.max_items_limit as usize);
         }
     }
 
@@ -55,7 +55,7 @@ impl MazeQueue {
             }
 
             children.push(self.mazes.get(self.current_maze_index).unwrap().clone());
-            self.current_maze_index = (self.current_maze_index + 1) % self.max_items_limit;
+            self.current_maze_index = (self.current_maze_index + 1) % self.max_items_limit as usize;
         }
 
         for child in children.iter_mut() {
