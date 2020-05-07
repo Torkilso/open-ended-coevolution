@@ -5,6 +5,7 @@ use crate::neatns::agent::Agent;
 
 pub struct SpeciatedAgentQueue {
     pub(crate) species: Vec<AgentSpecies>,
+    pub species_added: u32,
 }
 
 impl SpeciatedAgentQueue {
@@ -16,7 +17,10 @@ impl SpeciatedAgentQueue {
             mcc_agents.push(mcc_agent);
         }
 
-        let mut queue = SpeciatedAgentQueue { species: vec![] };
+        let mut queue = SpeciatedAgentQueue {
+            species: vec![],
+            species_added: 0,
+        };
 
         let base_amount: u32 = config::MCC.agent_population_capacity / mcc_agents.len() as u32;
         let rest = config::MCC.agent_population_capacity % base_amount;
@@ -30,6 +34,7 @@ impl SpeciatedAgentQueue {
 
             let species = AgentSpecies::new(agent.clone(), amount, i as u32);
             queue.species.push(species);
+            queue.species_added += 1;
         }
 
         queue
@@ -135,14 +140,23 @@ impl SpeciatedAgentQueue {
         sum as f64 / self.len() as f64
     }
 
-    /*pub fn get_average_size_increase(&self) -> f64 {
+    pub fn get_overall_average_size_increase(&self) -> f64 {
         let mut sum = 0.0;
         for s in self.species.iter() {
             sum += s.statistics.get_overall_average_increase();
         }
 
         sum as f64 / self.species.len() as f64
-    }*/
+    }
+
+    pub fn get_latest_average_size_increase(&self) -> f64 {
+        let mut sum = 0.0;
+        for s in self.species.iter() {
+            sum += s.statistics.get_current_average_size_increase();
+        }
+
+        sum as f64 / self.species.len() as f64
+    }
 
     pub fn save_state(&mut self) {
         for s in self.species.iter_mut() {

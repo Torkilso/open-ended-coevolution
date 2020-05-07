@@ -19,6 +19,12 @@ pub struct GenerationStatistics {
     average_agent_size: f64,
     largest_agent_size: u32,
     smallest_agent_size: u32,
+    average_agent_size_increase: f64,
+    average_maze_size_increase: f64,
+    average_maze_complexity_increase: f64,
+    overall_average_agent_size_increase: f64,
+    overall_average_maze_size_increase: f64,
+    overall_average_maze_complexity_increase: f64,
 }
 
 impl GenerationStatistics {
@@ -33,6 +39,12 @@ impl GenerationStatistics {
         average_agent_size: f64,
         largest_agent_size: u32,
         smallest_agent_size: u32,
+        average_agent_size_increase: f64,
+        average_maze_size_increase: f64,
+        average_maze_complexity_increase: f64,
+        overall_average_agent_size_increase: f64,
+        overall_average_maze_size_increase: f64,
+        overall_average_maze_complexity_increase: f64,
     ) -> GenerationStatistics {
         GenerationStatistics {
             generation,
@@ -45,12 +57,18 @@ impl GenerationStatistics {
             average_agent_size,
             largest_agent_size,
             smallest_agent_size,
+            average_agent_size_increase,
+            average_maze_size_increase,
+            average_maze_complexity_increase,
+            overall_average_agent_size_increase,
+            overall_average_maze_size_increase,
+            overall_average_maze_complexity_increase,
         }
     }
 
     pub fn to_whitespace_separated_string(&self) -> String {
         let s = format!(
-            "{} {:.2} {} {} {:.2} {} {} {:.2} {} {}",
+            "{} {:.2} {} {} {:.2} {} {} {:.2} {} {} {:.5} {:.5} {:.5} {:.5} {:.5} {:.5}",
             self.generation,
             self.average_maze_size,
             self.largest_maze_size,
@@ -61,6 +79,12 @@ impl GenerationStatistics {
             self.average_agent_size,
             self.largest_agent_size,
             self.smallest_agent_size,
+            self.average_agent_size_increase,
+            self.average_maze_size_increase,
+            self.average_maze_complexity_increase,
+            self.overall_average_agent_size_increase,
+            self.overall_average_maze_size_increase,
+            self.overall_average_maze_complexity_increase,
         );
         s
     }

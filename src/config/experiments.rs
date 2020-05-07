@@ -8,15 +8,15 @@ pub struct Config {
     #[envconfig(from = "run_regular_speciated_mcc", default = "false")]
     pub run_regular_speciated_mcc: bool,
 
-    #[envconfig(from = "run_varied_size_experiment", default = "true")]
+    #[envconfig(from = "run_varied_size_experiment", default = "false")]
     pub run_varied_size_experiment: bool,
 
     #[envconfig(from = "run_gradual_replacement_experiment", default = "false")]
     pub run_gradual_replacement_experiment: bool,
 
-    #[envconfig(from = "run_sudden_replacement_experiment", default = "false")]
+    #[envconfig(from = "run_sudden_replacement_experiment", default = "true")]
     pub run_sudden_replacement_experiment: bool,
 
-    #[envconfig(from = "batches", default = "3")]
+    #[envconfig(from = "batches", default = "1")]
     pub batches: u32,
 }

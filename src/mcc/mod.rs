@@ -12,10 +12,10 @@ pub(crate) mod agent;
 pub mod experiments;
 pub mod maze;
 
-pub fn run_regular_mcc(analyzer: &mut Analyzer) {
+pub fn run_regular_mcc(_analyzer: &mut Analyzer) {
     println!("Running regular MCC with no speciation");
 
-    let seeds = neatns::generate_seeds();
+    let seeds = neatns::generate_seeds(config::MCC.maze_seed_amount, true);
 
     let mcc_agents: Vec<MCCAgent> = seeds
         .agents
@@ -28,7 +28,7 @@ pub fn run_regular_mcc(analyzer: &mut Analyzer) {
 
     //let global_start = Instant::now();
 
-    for generation in 0..config::MCC.generations {
+    for _generation in 0..config::MCC.generations {
         //let start = Instant::now();
 
         let mut agent_children = agents.get_children(config::MCC.agent_selection_limit);
@@ -48,22 +48,22 @@ pub fn run_regular_mcc(analyzer: &mut Analyzer) {
             }
         }
 
-        let generation_stats = generate_generation_stats(generation as u32, &agents, &mazes);
-        analyzer.add_generation_stats(&generation_stats);
+        //let generation_stats = generate_generation_stats(generation as u32, &agents, &mazes);
+        //analyzer.add_generation_stats(&generation_stats);
 
-        if generation % 20 == 0 {
+        /*if generation % 20 == 0 {
             println!(
                 "Generation: {}",
                 generation_stats.to_whitespace_separated_string(),
             );
-        }
+        }*/
     }
 }
 
 pub fn run_regular_speciated_mcc(analyzer: &mut Analyzer) {
     println!("Running regular MCC with speciation");
 
-    let seeds = neatns::generate_seeds();
+    let seeds = neatns::generate_seeds(config::MCC.maze_seed_amount, true);
 
     let mut agents = SpeciatedAgentQueue::new(seeds.agents);
     let mut mazes = SpeciatedMazeQueue::new(seeds.mazes);
@@ -94,15 +94,15 @@ pub fn run_regular_speciated_mcc(analyzer: &mut Analyzer) {
         let generation_stats = generate_generation_stats_s(generation as u32, &agents, &mazes);
         analyzer.add_generation_stats(&generation_stats);
 
-        if generation % 10 == 0 && generation != 0 {
-            agents.save_state();
-            mazes.save_state();
+        agents.save_state();
+        mazes.save_state();
 
+        if generation % 10 == 0 && generation != 0 {
             println!(
                 "Generation: {} ",
                 generation_stats.to_whitespace_separated_string(),
             );
-            print_stats(&agents, &mazes);
+            //print_stats(&agents, &mazes);
         }
     }
 }
@@ -116,8 +116,8 @@ pub fn print_stats(agents: &SpeciatedAgentQueue, mazes: &SpeciatedMazeQueue) {
 
     println!(
         "Overall avg size increase: {} | Overall avg complexity increase: {}",
-        mazes.get_average_size_increase(),
-        mazes.get_average_complexity_increase()
+        mazes.get_overall_average_size_increase(),
+        mazes.get_overall_average_complexity_increase()
     );
 
     println!(
@@ -128,20 +128,20 @@ pub fn print_stats(agents: &SpeciatedAgentQueue, mazes: &SpeciatedMazeQueue) {
 
     println!("Species populations");
 
-    for (i, s) in agents.iter_species().enumerate() {
+    for (_, s) in agents.iter_species().enumerate() {
         println!(
             "Agent species {}: {}/{}\t| Avg size: {:.2} | Avg size increase: {:.2}",
-            i,
+            s.id,
             s.agent_queue.len(),
             s.agent_queue.max_items_limit,
             s.agent_queue.get_average_size(),
             s.statistics.get_current_average_size_increase()
         );
     }
-    for (i, m) in mazes.iter_species().enumerate() {
+    for (_, m) in mazes.iter_species().enumerate() {
         println!(
             "Maze species {}: {}/{}\t| Avg size: {:.2} | Avg junctures: {:.2} | Avg size increase: {:.2} | Avg complexity increase: {:.2}",
-            i,
+            m.id,
             m.maze_queue.len(),
             m.maze_queue.max_items_limit,
             m.maze_queue.get_average_size(),
@@ -152,7 +152,7 @@ pub fn print_stats(agents: &SpeciatedAgentQueue, mazes: &SpeciatedMazeQueue) {
     }
 }
 
-fn generate_generation_stats(
+/*fn generate_generation_stats(
     generation: u32,
     agents: &AgentQueue,
     mazes: &MazeQueue,
@@ -169,7 +169,7 @@ fn generate_generation_stats(
         agents.get_largest_size(),
         agents.get_smallest_size(),
     )
-}
+}*/
 
 pub fn generate_generation_stats_s(
     generation: u32,
@@ -187,5 +187,11 @@ pub fn generate_generation_stats_s(
         agents.get_average_size(),
         agents.get_largest_size(),
         agents.get_smallest_size(),
+        agents.get_latest_average_size_increase(),
+        mazes.get_last_average_size_increase(),
+        mazes.get_last_average_complexity_increase(),
+        agents.get_overall_average_size_increase(),
+        mazes.get_overall_average_size_increase(),
+        mazes.get_overall_average_complexity_increase(),
     )
 }

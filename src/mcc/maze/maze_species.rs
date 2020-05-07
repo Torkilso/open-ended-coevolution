@@ -83,9 +83,9 @@ impl MazeSpecies {
         }
     }
 
-    /*pub fn iter(&self) -> impl Iterator<Item = &MazeGenome> {
+    pub fn iter(&self) -> impl Iterator<Item = &MazeGenome> {
         self.maze_queue.iter()
-    }*/
+    }
 
     pub fn len(&self) -> usize {
         self.maze_queue.len()

@@ -25,13 +25,13 @@ impl Seeds {
 // generate seeds for mcc with neatns.
 // outputs a set of agents and a set of mazes that fulfill the mc.
 #[allow(unreachable_code)]
-pub fn generate_seeds() -> Seeds {
+pub fn generate_seeds(maze_amount: u32, find_double_agents: bool) -> Seeds {
     let mut mazes_fulfilling_mc: Vec<MazeGenome> = vec![];
     let mut agents_fulfilling_mc: Vec<Agent> = vec![];
 
     let mut threads = vec![];
 
-    for i in 0..config::MCC.maze_seed_amount {
+    for i in 0..maze_amount {
         threads.push(thread::spawn(move || {
             loop {
                 let mut generations = 0;
@@ -80,6 +80,10 @@ pub fn generate_seeds() -> Seeds {
         }
     }
 
+    if !find_double_agents {
+        return Seeds::new(mazes_fulfilling_mc, agents_fulfilling_mc);
+    }
+
     let mut agent_threads = vec![];
 
     for maze in mazes_fulfilling_mc.clone() {
@@ -122,4 +126,31 @@ pub fn generate_seeds() -> Seeds {
         }
     }
     Seeds::new(mazes_fulfilling_mc, agents_fulfilling_mc)
+}
+
+pub fn find_agent_seed_for_maze(maze: MazeGenome) -> Agent {
+    loop {
+        let mut generations = 0;
+
+        let maze_phenotype = maze.to_phenotype();
+
+        let mut population = Population::new(config::NEATNS.population_size, 10, 2);
+
+        while generations < config::MCC.find_seed_generation_limit {
+            population.evolve();
+            let result = population.run_simulation_and_update_fitness(
+                &maze_phenotype,
+                maze.get_solution_path_cell_length(),
+            );
+
+            if result.is_some() {
+                let successful_agent = result.unwrap();
+                println!("Found agent!",);
+                return successful_agent;
+            }
+
+            generations += 1;
+        }
+        println!("Did not find any within generation limit! Resetting.");
+    }
 }

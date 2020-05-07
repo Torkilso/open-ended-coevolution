@@ -9,13 +9,13 @@ pub struct Config {
     pub maze_population_capacity: u32,
 
     #[envconfig(from = "maze_seed_amount", default = "10")]
-    pub maze_seed_amount: usize,
+    pub maze_seed_amount: u32,
 
     #[envconfig(from = "agent_population_capacity", default = "250")]
     pub agent_population_capacity: u32,
 
     #[envconfig(from = "agent_seed_amount", default = "20")]
-    pub agent_seed_amount: usize,
+    pub agent_seed_amount: u32,
 
     #[envconfig(from = "find_seed_generation_limit", default = "200")]
     pub find_seed_generation_limit: usize,
@@ -41,9 +41,9 @@ pub struct Config {
     #[envconfig(from = "varied_size_agent_default_borrow_amount", default = "1")]
     pub varied_size_agent_default_borrow_amount: u32,
 
-    #[envconfig(from = "varied_size_generations_between_search", default = "200")]
+    #[envconfig(from = "varied_size_generations_between_search", default = "100")]
     pub varied_size_generations_between_search: usize,
 
-    #[envconfig(from = "replacement_generations_between_search", default = "200")]
+    #[envconfig(from = "replacement_generations_between_search", default = "100")]
     pub replacement_generations_between_search: usize,
 }

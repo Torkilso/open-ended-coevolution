@@ -4,11 +4,15 @@ use crate::mcc::maze::maze_species::MazeSpecies;
 
 pub struct SpeciatedMazeQueue {
     pub species: Vec<MazeSpecies>,
+    pub species_added: u32,
 }
 
 impl SpeciatedMazeQueue {
     pub fn new(mazes: Vec<MazeGenome>) -> SpeciatedMazeQueue {
-        let mut queue = SpeciatedMazeQueue { species: vec![] };
+        let mut queue = SpeciatedMazeQueue {
+            species: vec![],
+            species_added: 0,
+        };
 
         let species_max_mazes_limit: u32 =
             config::MCC.maze_population_capacity / mazes.len() as u32;
@@ -16,6 +20,7 @@ impl SpeciatedMazeQueue {
         for (i, maze) in mazes.iter().enumerate() {
             let species = MazeSpecies::new(maze.clone(), species_max_mazes_limit, i as u32);
             queue.species.push(species);
+            queue.species_added += 1;
         }
 
         queue
@@ -38,9 +43,10 @@ impl SpeciatedMazeQueue {
     pub fn iter_species_mut(&mut self) -> impl Iterator<Item = &mut MazeSpecies> {
         self.species.iter_mut()
     }
-    /*pub fn iter_individuals(&self) -> impl Iterator<Item = &MazeGenome> {
+
+    pub fn iter_individuals(&self) -> impl Iterator<Item = &MazeGenome> {
         self.species.iter().map(|species| species.iter()).flatten()
-    }*/
+    }
 
     pub fn push(&mut self, maze: MazeGenome) {
         let mut distances: Vec<f64> = vec![];
@@ -80,6 +86,24 @@ impl SpeciatedMazeQueue {
         }
 
         children
+    }
+
+    pub fn get_smallest_maze(&self) -> Option<MazeGenome> {
+        let mut smallest_found: Option<MazeGenome> = Option::None;
+
+        for maze in self.iter_individuals() {
+
+            if smallest_found.is_none() {
+                smallest_found = Some(maze.clone());
+            } else {
+                let small = smallest_found.clone().unwrap();
+
+                if small.width > maze.width {
+                    smallest_found = Some(maze.clone());
+                }
+            }
+        }
+        smallest_found
     }
 
     pub fn get_largest_size(&self) -> u32 {
@@ -136,7 +160,7 @@ impl SpeciatedMazeQueue {
         sum as f64 / self.len() as f64
     }
 
-    pub fn get_average_size_increase(&self) -> f64 {
+    pub fn get_overall_average_size_increase(&self) -> f64 {
         let mut sum = 0.0;
         for s in self.species.iter() {
             sum += s.statistics.get_overall_average_increase();
@@ -145,7 +169,7 @@ impl SpeciatedMazeQueue {
         sum as f64 / self.species.len() as f64
     }
 
-    pub fn get_average_complexity_increase(&self) -> f64 {
+    pub fn get_overall_average_complexity_increase(&self) -> f64 {
         let mut sum = 0.0;
         for s in self.species.iter() {
             sum += s.statistics.get_overall_average_path_complexity_increase();
