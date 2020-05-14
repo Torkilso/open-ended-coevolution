@@ -48,9 +48,9 @@ impl AgentSpecies {
         }
     }
 
-    /*pub fn iter(&self) -> impl Iterator<Item = &MCCAgent> {
+    pub fn iter(&self) -> impl Iterator<Item = &MCCAgent> {
         self.agent_queue.iter()
-    }*/
+    }
 
     pub fn push(&mut self, agent: MCCAgent) {
         self.agent_queue.push(agent);

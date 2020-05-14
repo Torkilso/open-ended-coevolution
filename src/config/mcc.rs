@@ -2,7 +2,7 @@ use envconfig::Envconfig;
 
 #[derive(Envconfig)]
 pub struct Config {
-    #[envconfig(from = "generations", default = "1000")]
+    #[envconfig(from = "generations", default = "2000")]
     pub generations: usize,
 
     #[envconfig(from = "maze_population_capacity", default = "250")]
@@ -19,9 +19,6 @@ pub struct Config {
 
     #[envconfig(from = "find_seed_generation_limit", default = "200")]
     pub find_seed_generation_limit: usize,
-
-    #[envconfig(from = "speciation_threshold", default = "0.85")]
-    pub speciation_threshold: f64,
 
     #[envconfig(from = "agent_selection_limit", default = "40")]
     pub agent_selection_limit: usize,

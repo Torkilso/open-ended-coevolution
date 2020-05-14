@@ -12,7 +12,7 @@ pub(crate) mod agent;
 pub mod experiments;
 pub mod maze;
 
-pub fn run_regular_mcc(_analyzer: &mut Analyzer) {
+pub fn run_regular_mcc(analyzer: &mut Analyzer) {
     println!("Running regular MCC with no speciation");
 
     let seeds = neatns::generate_seeds(config::MCC.maze_seed_amount, true);
@@ -26,11 +26,7 @@ pub fn run_regular_mcc(_analyzer: &mut Analyzer) {
     let mut agents = AgentQueue::new(mcc_agents, config::MCC.agent_population_capacity);
     let mut mazes = MazeQueue::new(seeds.mazes, config::MCC.maze_population_capacity as u32);
 
-    //let global_start = Instant::now();
-
     for _generation in 0..config::MCC.generations {
-        //let start = Instant::now();
-
         let mut agent_children = agents.get_children(config::MCC.agent_selection_limit);
         let mut maze_children = mazes.get_children(config::MCC.maze_selection_limit);
 
@@ -58,6 +54,7 @@ pub fn run_regular_mcc(_analyzer: &mut Analyzer) {
             );
         }*/
     }
+    analyzer.generate_diversity_score_no_species(&agents, &mazes);
 }
 
 pub fn run_regular_speciated_mcc(analyzer: &mut Analyzer) {
@@ -67,8 +64,6 @@ pub fn run_regular_speciated_mcc(analyzer: &mut Analyzer) {
 
     let mut agents = SpeciatedAgentQueue::new(seeds.agents);
     let mut mazes = SpeciatedMazeQueue::new(seeds.mazes);
-
-    print_stats(&agents, &mazes);
 
     agents.save_state();
     mazes.save_state();
@@ -97,7 +92,7 @@ pub fn run_regular_speciated_mcc(analyzer: &mut Analyzer) {
         agents.save_state();
         mazes.save_state();
 
-        if generation % 10 == 0 && generation != 0 {
+        if generation % 100 == 0 && generation != 0 {
             println!(
                 "Generation: {} ",
                 generation_stats.to_whitespace_separated_string(),
@@ -105,8 +100,11 @@ pub fn run_regular_speciated_mcc(analyzer: &mut Analyzer) {
             //print_stats(&agents, &mazes);
         }
     }
+
+    analyzer.generate_diversity_score(&agents, &mazes);
 }
 
+#[allow(dead_code)]
 pub fn print_stats(agents: &SpeciatedAgentQueue, mazes: &SpeciatedMazeQueue) {
     println!(
         "agent amount: {} | maze amount: {}",
@@ -178,6 +176,8 @@ pub fn generate_generation_stats_s(
 ) -> GenerationStatistics {
     GenerationStatistics::new(
         generation,
+        agents.len() as u32,
+        mazes.len() as u32,
         mazes.get_average_size(),
         mazes.get_largest_size(),
         mazes.get_smallest_size(),

@@ -43,7 +43,7 @@ pub fn generate_seeds(maze_amount: u32, find_double_agents: bool) -> Seeds {
                 );
                 let maze_phenotype = maze.to_phenotype();
 
-                let mut population = Population::new(config::NEATNS.population_size, 10, 2);
+                let mut population = Population::new(config::NEAT.population_size, 10, 2);
 
                 while generations < config::MCC.find_seed_generation_limit {
                     population.evolve();
@@ -93,7 +93,7 @@ pub fn generate_seeds(maze_amount: u32, find_double_agents: bool) -> Seeds {
 
                 let maze_phenotype = maze.to_phenotype();
 
-                let mut population = Population::new(config::NEATNS.population_size, 10, 2);
+                let mut population = Population::new(config::NEAT.population_size, 10, 2);
 
                 while generations < config::MCC.find_seed_generation_limit {
                     population.evolve();
@@ -134,7 +134,7 @@ pub fn find_agent_seed_for_maze(maze: MazeGenome) -> Agent {
 
         let maze_phenotype = maze.to_phenotype();
 
-        let mut population = Population::new(config::NEATNS.population_size, 10, 2);
+        let mut population = Population::new(config::NEAT.population_size, 10, 2);
 
         while generations < config::MCC.find_seed_generation_limit {
             population.evolve();

@@ -2,11 +2,11 @@ use envconfig::Envconfig;
 
 #[derive(Envconfig)]
 pub struct Config {
-    #[envconfig(from = "POPULATION_SIZE", default = "100")]
-    pub population_size: usize,
+    #[envconfig(from = "generations_without_addition", default = "10")]
+    pub generations_without_addition: u32,
 
-    #[envconfig(from = "ARCHIVE_SEED_AMOUNT", default = "1")]
-    pub archive_seed_amount: usize,
+    #[envconfig(from = "increase_novelty_threshold_limit", default = "4")]
+    pub increase_novelty_threshold_limit: u32,
 
     #[envconfig(from = "INITIAL_NOVELTY_THRESHOLD", default = "6.0")]
     pub initial_novelty_threshold: f64,

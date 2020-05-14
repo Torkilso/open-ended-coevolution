@@ -46,19 +46,19 @@ pub fn run_varied_size_experiment(analyzer: &mut Analyzer) {
         agents.save_state();
         mazes.save_state();
 
-        println!(
-            "Generation: {} ",
-            generation_stats.to_whitespace_separated_string(),
-        );
-
         if generation % config::MCC.generations_between_save == 0 && generation != 0 {
             if generation % config::MCC.varied_size_generations_between_search == 0
                 && generation != 0
             {
+                println!(
+                    "Generation: {} ",
+                    generation_stats.to_whitespace_separated_string(),
+                );
                 varied_size_controller.update_population_properties(&mut agents, &mut mazes);
             }
 
             //print_stats(&agents, &mazes);
         }
     }
+    analyzer.generate_diversity_score(&agents, &mazes);
 }

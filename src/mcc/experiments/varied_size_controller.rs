@@ -34,6 +34,14 @@ impl VariedSizeController {
             let mut valid_to = true;
             let mut valid_from = true;
 
+            let from_species_check = agents.iter_species_mut().find(|m| m.id == w.id);
+
+            if from_species_check.is_some() {
+                if from_species_check.unwrap().agent_queue.max_items_limit <= config::MCC.varied_size_agent_default_borrow_amount {
+                    continue;
+                }
+            }
+
             {
                 let to_species = agents.iter_species_mut().find(|m| m.id == b.id);
 
@@ -82,6 +90,14 @@ impl VariedSizeController {
         for (w, b) in worst.iter().zip(best) {
             let mut valid_to = true;
             let mut valid_from = true;
+
+            let from_species_check = mazes.iter_species_mut().find(|m| m.id == w.id);
+
+            if from_species_check.is_some() {
+                if from_species_check.unwrap().maze_queue.max_items_limit <= config::MCC.varied_size_maze_default_borrow_amount {
+                    continue;
+                }
+            }
 
             {
                 let to_species = mazes.iter_species_mut().find(|m| m.id == b.id);

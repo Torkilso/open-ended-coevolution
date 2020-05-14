@@ -1,5 +1,5 @@
 use crate::config;
-use crate::maze::maze_genotype::{generate_random_maze};
+use crate::maze::maze_genotype::generate_random_maze;
 use crate::mcc::agent::agent_species::AgentSpecies;
 use crate::mcc::agent::mcc_agent::MCCAgent;
 use crate::mcc::agent::speciated_agent_queue::SpeciatedAgentQueue;

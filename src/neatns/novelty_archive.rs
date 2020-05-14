@@ -48,7 +48,7 @@ impl NoveltyArchive {
             self.generations_without_addition = 0
         }
 
-        if self.generations_without_addition == 10 {
+        if self.generations_without_addition == config::NEATNS.generations_without_addition {
             self.novelty_threshold *= 0.95;
             if self.novelty_threshold < config::NEATNS.novelty_floor {
                 self.novelty_threshold = config::NEATNS.novelty_floor
@@ -56,7 +56,7 @@ impl NoveltyArchive {
             self.generations_without_addition = 0
         }
 
-        if self.items_added_in_generation >= 4 {
+        if self.items_added_in_generation >= config::NEATNS.increase_novelty_threshold_limit {
             self.novelty_threshold *= 1.2
         }
 

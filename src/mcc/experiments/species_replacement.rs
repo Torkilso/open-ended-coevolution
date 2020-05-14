@@ -7,7 +7,7 @@ use crate::mcc::{generate_generation_stats_s, print_stats};
 use crate::neatns;
 use crate::simulator::simulate_many;
 
-pub fn run_sudden_replacement_experiment(analyzer: &mut Analyzer) {
+pub fn run_replacement_experiment(analyzer: &mut Analyzer) {
     println!("Running sudden replacement experiment");
 
     let seeds = neatns::generate_seeds(config::MCC.maze_seed_amount, true);
@@ -49,14 +49,14 @@ pub fn run_sudden_replacement_experiment(analyzer: &mut Analyzer) {
             if generation % config::MCC.replacement_generations_between_search == 0
                 && generation != 0
             {
+                println!(
+                    "Generation: {} ",
+                    generation_stats.to_whitespace_separated_string(),
+                );
                 replacement_controller.update_population_properties(&mut agents, &mut mazes);
             }
-
-            println!(
-                "Generation: {} ",
-                generation_stats.to_whitespace_separated_string(),
-            );
-            print_stats(&agents, &mazes);
+            //print_stats(&agents, &mazes);
         }
     }
+    analyzer.generate_diversity_score(&agents, &mazes);
 }

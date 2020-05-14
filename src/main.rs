@@ -66,7 +66,7 @@ fn main() {
             let results_path = format!("{}/regular_mcc", results_base_path);
             let mut analyzer = Analyzer::new(results_path, i);
             mcc::run_regular_mcc(&mut analyzer);
-            analyzer.generate_results_files()
+            //analyzer.generate_results_files();
         }
 
         if config::EXPERIMENTS.run_regular_speciated_mcc {
@@ -83,19 +83,10 @@ fn main() {
             analyzer.generate_results_files();
         }
 
-        /*if config::EXPERIMENTS.run_gradual_replacement_experiment {
-            let results_path = format!("{}/gradual_replacement_experiment", results_base_path);
+        if config::EXPERIMENTS.run_replacement_experiment {
+            let results_path = format!("{}/replacement_experiment", results_base_path);
             let mut analyzer = Analyzer::new(results_path, i);
-            mcc::experiments::species_replacement::run_gradual_replacement_experiment(
-                &mut analyzer,
-            );
-            analyzer.generate_results_files();
-        }*/
-
-        if config::EXPERIMENTS.run_sudden_replacement_experiment {
-            let results_path = format!("{}/sudden_replacement_experiment", results_base_path);
-            let mut analyzer = Analyzer::new(results_path, i);
-            mcc::experiments::species_replacement::run_sudden_replacement_experiment(&mut analyzer);
+            mcc::experiments::species_replacement::run_replacement_experiment(&mut analyzer);
             analyzer.generate_results_files();
         }
     }

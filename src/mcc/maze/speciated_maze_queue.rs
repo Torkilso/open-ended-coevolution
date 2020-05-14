@@ -92,7 +92,6 @@ impl SpeciatedMazeQueue {
         let mut smallest_found: Option<MazeGenome> = Option::None;
 
         for maze in self.iter_individuals() {
-
             if smallest_found.is_none() {
                 smallest_found = Some(maze.clone());
             } else {
