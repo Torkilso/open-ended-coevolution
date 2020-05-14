@@ -3,7 +3,7 @@ use crate::config;
 use crate::mcc::agent::speciated_agent_queue::SpeciatedAgentQueue;
 use crate::mcc::experiments::replacement_controller::ReplacementController;
 use crate::mcc::maze::speciated_maze_queue::SpeciatedMazeQueue;
-use crate::mcc::{generate_generation_stats_s, print_stats};
+use crate::mcc::{generate_generation_stats_s};
 use crate::neatns;
 use crate::simulator::simulate_many;
 
