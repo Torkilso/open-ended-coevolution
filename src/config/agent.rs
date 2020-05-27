@@ -2,17 +2,17 @@ use envconfig::Envconfig;
 
 #[derive(Envconfig)]
 pub struct Config {
-    #[envconfig(from = "mutate_weight", default = "0.001")]
+    #[envconfig(from = "mutate_weight", default = "0.6")]
     pub mutate_weight: f32,
 
-    #[envconfig(from = "add_connection", default = "0.001")]
+    #[envconfig(from = "add_connection", default = "0.1")]
     pub add_connection: f32,
 
-    #[envconfig(from = "add_neuron", default = "0.001")]
+    #[envconfig(from = "add_neuron", default = "0.01")]
     pub add_neuron: f32,
 
-    #[envconfig(from = "delete_neuron", default = "0.001")]
-    pub delete_neuron: f32,
+    #[envconfig(from = "disable_connection", default = "0.005")]
+    pub disable_connection: f32,
 
     #[envconfig(from = "start_offset", default = "315.0")] // pointing south east
     pub start_offset: f64,

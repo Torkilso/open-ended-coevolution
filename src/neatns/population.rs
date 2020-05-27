@@ -263,8 +263,6 @@ impl Population {
             }
         }
 
-        self.novelty_archive.end_of_generation();
-
         Option::None
     }
 }

@@ -3,20 +3,12 @@ use crate::simulator::Point;
 
 pub struct NoveltyArchive {
     pub(crate) novelty_items: Vec<Point>,
-    generation: u32,
-    items_added_in_generation: u32,
-    novelty_threshold: f64,
-    generations_without_addition: u32,
 }
 
 impl NoveltyArchive {
     pub fn new() -> NoveltyArchive {
         NoveltyArchive {
             novelty_items: vec![],
-            generation: 0,
-            items_added_in_generation: 0,
-            novelty_threshold: config::NEATNS.initial_novelty_threshold,
-            generations_without_addition: 0,
         }
     }
 
@@ -34,33 +26,6 @@ impl NoveltyArchive {
 
         let closest_points = distances[0..config::NEATNS.amount_of_neighbors].to_vec();
         closest_points.iter().sum::<f64>() / closest_points.len() as f64
-    }
-
-    pub fn end_of_generation(&mut self) {
-        self.generation += 1;
-        self.adjust_archive_settings()
-    }
-
-    pub fn adjust_archive_settings(&mut self) {
-        if self.items_added_in_generation == 0 {
-            self.generations_without_addition += 1;
-        } else {
-            self.generations_without_addition = 0
-        }
-
-        if self.generations_without_addition == config::NEATNS.generations_without_addition {
-            self.novelty_threshold *= 0.95;
-            if self.novelty_threshold < config::NEATNS.novelty_floor {
-                self.novelty_threshold = config::NEATNS.novelty_floor
-            }
-            self.generations_without_addition = 0
-        }
-
-        if self.items_added_in_generation >= config::NEATNS.increase_novelty_threshold_limit {
-            self.novelty_threshold *= 1.2
-        }
-
-        self.items_added_in_generation = 0;
     }
 
     pub fn find_distances_to_point(&self, current_point: &Point) -> Vec<f64> {

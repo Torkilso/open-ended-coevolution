@@ -94,19 +94,19 @@ impl AgentGenome {
     pub fn mutate(&mut self) {
         let mut rng = rand::thread_rng();
 
-        if rng.gen::<f64>() < config::NEAT.add_node_probability {
+        if rng.gen::<f64>() < config::AGENT.add_neuron {
             self.mutation_add_node();
         }
 
-        if rng.gen::<f64>() < config::NEAT.add_connection_probability {
+        if rng.gen::<f64>() < config::AGENT.add_connection {
             self.mutation_add_connection();
         }
 
-        if rng.gen::<f64>() < config::NEAT.disable_connection_probability {
+        if rng.gen::<f64>() < config::AGENT.disable_connection {
             self.mutation_disable_connection();
         }
 
-        if rng.gen::<f64>() < config::NEAT.mutate_link_weight_probability {
+        if rng.gen::<f64>() < config::AGENT.mutate_weight {
             self.mutate_link_weight();
         }
     }
