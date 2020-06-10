@@ -59,4 +59,5 @@ pub fn run_replacement_experiment(analyzer: &mut Analyzer) {
         }
     }
     analyzer.generate_diversity_score(&agents, &mazes);
+    analyzer.visualize_trajectories(&mazes, &agents);
 }

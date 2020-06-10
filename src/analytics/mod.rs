@@ -9,6 +9,9 @@ use crate::mcc::maze::maze_queue::MazeQueue;
 use crate::mcc::maze::speciated_maze_queue::SpeciatedMazeQueue;
 use crate::neatns::novelty_archive::euclidean_distance;
 use crate::simulator::{simulate_single_mcc, SimulatorResult};
+use crate::analytics::image::visualise_mazes_with_agent_path;
+use crate::maze::maze_genotype::MazeGenome;
+use crate::mcc::agent::mcc_agent::MCCAgent;
 
 mod image;
 mod text;
@@ -142,6 +145,31 @@ impl Analyzer {
         self.visualise_mazes(&seeds.mazes, &seeds_folder_path);
         self.visualise_mazes_with_agent_path(&seeds.mazes, &seeds.agents, &seeds_folder_path);
     }*/
+
+    pub fn visualize_trajectories(&self, mazes_queue: &SpeciatedMazeQueue,
+                                  agents_queue: &SpeciatedAgentQueue, ) {
+        let path_string = format!("{}/trajectories_{}/", self.results_path, self.batch_number);
+
+        let result = create_directory(path_string.clone());
+
+        if result.is_err() {
+            panic!("Could not create directory in visualise_mazes_with_agent_path!");
+        }
+
+
+        let mut mazes = vec![];
+        let mut agents = vec![];
+
+        for m in mazes_queue.iter_individuals() {
+            mazes.push(m.clone());
+        }
+
+        for a in agents_queue.iter_individuals() {
+            agents.push(a.clone());
+        }
+
+        visualise_mazes_with_agent_path(&mazes, &agents, path_string);
+    }
 
     pub fn add_generation_stats(&mut self, generation_statistics: &GenerationStatistics) {
         self.generation_stats.push(generation_statistics.clone())

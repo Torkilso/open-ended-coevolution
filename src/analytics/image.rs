@@ -72,13 +72,7 @@ pub fn visualise_mazes_with_agent_path(
     agents: &Vec<MCCAgent>,
     folder_path: String,
 ) {
-    let result = create_directory(folder_path.clone());
-
-    if result.is_err() {
-        panic!("Could not create directory in visualise_mazes_with_agent_path!");
-    }
-
-    for (i, maze) in mazes.iter().enumerate() {
+        for (i, maze) in mazes.iter().enumerate() {
         if maze.successful_agent_id.is_some() {
             let agent = agents
                 .iter()

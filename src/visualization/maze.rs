@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use image::{Rgb, RgbImage};
-use imageproc::drawing::{draw_filled_circle_mut, draw_filled_rect_mut, draw_line_segment_mut};
+use imageproc::drawing::{draw_filled_circle_mut, draw_filled_rect_mut, draw_line_segment_mut, draw_hollow_circle_mut, draw_cross_mut};
 use imageproc::rect::Rect;
 
 use crate::config;
@@ -49,25 +49,25 @@ pub fn draw_maze(
             );
 
             if display_solution {
-                if cell.is_waypoint {
+                if cell.is_waypoint && x < 9 {
                     draw_filled_circle_mut(
                         drawing,
                         (
-                            (x * scale_usize + offset) as i32,
-                            (y * scale_usize + offset) as i32,
+                            (x * scale_usize + offset * 4) as i32,
+                            (y * scale_usize + offset * 4) as i32,
                         ),
-                        radius,
+                        offset as i32,
                         Rgb([0, 0, 0]),
                     );
                 }
-                if cell.is_juncture {
+                /*if cell.is_juncture {
                     draw_filled_circle_mut(
                         drawing,
                         (
-                            (x * scale_usize + offset) as i32,
-                            (y * scale_usize + offset) as i32,
+                            (x * scale_usize + offset * 4) as i32,
+                            (y * scale_usize + offset * 4) as i32,
                         ),
-                        radius,
+                        offset as i32,
                         Rgb([0, 0, 0]),
                     );
                 }
@@ -81,7 +81,7 @@ pub fn draw_maze(
                         radius,
                         Rgb([0, 0, 0]),
                     );
-                }
+                }*/
             }
         }
     }
